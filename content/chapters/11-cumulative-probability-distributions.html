@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cumulative Probability Distributions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FAF7F2;
+    --paper-dim:#F1ECE2;
+    --ink:#1E1B16;
+    --ink-soft:#5B5548;
+    --navy:#1F2A44;
+    --navy-soft:#2C3A5C;
+    --brass:#A9793D;
+    --rule:#D9D2C3;
+    --serif:'Spectral', Georgia, serif;
+    --sans:'IBM Plex Sans', -apple-system, sans-serif;
+    --mono:'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.6;
+  }
+  main{
+    max-width:680px;
+    margin:0 auto;
+    padding:3.6rem 1.6rem 5rem;
+  }
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:.7rem;
+    color:var(--brass);
+    letter-spacing:.03em;
+    margin:0 0 .6rem;
+  }
+  h1{
+    font-family:var(--serif);
+    font-weight:500;
+    font-size:2.1rem;
+    margin:0 0 .3rem;
+  }
+  .sub{
+    color:var(--ink-soft);
+    font-size:.95rem;
+    margin:0 0 2.2rem;
+    padding-bottom:1.6rem;
+    border-bottom:1px solid var(--rule);
+  }
+  h2{
+    font-family:var(--sans);
+    font-weight:600;
+    font-size:.95rem;
+    color:var(--navy-soft);
+    margin:2.1rem 0 .6rem;
+  }
+  h2:first-of-type{ margin-top:0; }
+  p{ margin:.5rem 0; }
+  ul{ margin:.5rem 0; padding-left:1.2rem; }
+  li{ margin:.3rem 0; }
+  b{ color:var(--ink); }
+  a{ color:var(--navy-soft); }
+  .formula{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:.4rem;
+    font-family:var(--mono);
+    font-size:1rem;
+    background:var(--paper-dim);
+    border-left:2px solid var(--brass);
+    padding:.75rem 1rem;
+    margin:.7rem 0;
+  }
+  .formula .eq{ margin:0 .15rem; color:var(--ink-soft); }
+
+  .calc{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:.55rem;
+    font-family:var(--mono);
+    font-size:.92rem;
+    color:var(--ink);
+    background:var(--paper);
+    border:1px solid var(--rule);
+    border-radius:2px;
+    padding:.6rem .8rem;
+    margin:.55rem 0 .1rem;
+  }
+  .calc .eq{ color:var(--ink-soft); }
+  .calc .result{ color:var(--brass); font-weight:600; }
+
+  table.prob-table{
+    border-collapse:collapse;
+    width:100%;
+    margin:.9rem 0 1.3rem;
+    font-family:var(--mono);
+    font-size:.85rem;
+  }
+  table.prob-table th, table.prob-table td{
+    border:1px solid var(--rule);
+    padding:.55rem .8rem;
+    text-align:center;
+  }
+  table.prob-table thead th{
+    background:var(--paper-dim);
+    color:var(--navy-soft);
+    font-weight:600;
+  }
+  table.prob-table th[scope="row"]{
+    background:var(--paper-dim);
+    color:var(--navy-soft);
+    font-weight:600;
+    text-align:center;
+  }
+  table.prob-table .tot{ color:var(--brass); font-weight:600; }
+  .table-caption{
+    font-family:var(--sans);
+    font-size:.82rem;
+    color:var(--ink-soft);
+    margin:-.6rem 0 .8rem;
+  }
+  .ex{
+    background:var(--paper-dim);
+    border:1px solid var(--rule);
+    border-radius:2px;
+    padding:.8rem 1rem;
+    margin:.7rem 0;
+  }
+  .ex .q{ font-weight:600; font-size:.9rem; }
+  .ex .a{ font-size:.88rem; color:var(--ink-soft); margin-top:.2rem; }
+
+  footer{
+    max-width:680px;
+    margin:0 auto;
+    padding:0 1.6rem 3rem;
+    font-size:.76rem;
+    color:var(--ink-soft);
+  }
+</style>
+</head>
+<body>
+<main>
+
+  <p class="eyebrow">CHAPTER 11 &middot; LESSON NOTES</p>
+  <h1>Cumulative Probability Distributions</h1>
+  <p class="sub">Moving from "what is the probability of exactly this value" to "what is the probability of this value or less", and why that question turns out to be more useful in practice.</p>
+
+  <h2>A different kind of question</h2>
+  <p>So far, every probability we calculated answered a question like "what is the probability that X is exactly this value?" For our bag game, we found P(X = 4), the probability of drawing all 4 red balls exactly.</p>
+  <p>But some real questions are not about an exact value. Think about the bag game from the house's side. A player only wins if they draw all 4 red balls. Any other result, drawing 3 red balls or fewer, means the player loses, and the house keeps the money. The house does not care about each exact outcome separately. It only cares about one thing: what is the probability that a player draws <b>3 or fewer</b> red balls?</p>
+  <p>This "at most this many" kind of question comes up often outside bag games too. For example: what is the probability that an employee gets to work in <b>less than 40 minutes</b>? Nobody asks for the probability of taking exactly 40.00 minutes. They ask about a range, everything up to some limit.</p>
+  <p>This chapter is about exactly that: a way to answer "at most this value" questions directly, called the <b>cumulative probability distribution</b>.</p>
+
+  <h2>Defining cumulative probability</h2>
+  <p>The cumulative probability of a random variable X, written F(x), is defined as the probability that X takes a value <b>less than or equal to</b> x:</p>
+  <div class="formula">
+    <span>F(x) = P(X &le; x)</span>
+  </div>
+  <p>For example, F(4) means P(X &le; 4), the probability that X is 4 or less. F(3) means P(X &le; 3), the probability that X is 3 or less, and so on for any value of x.</p>
+
+  <h2>Building the cumulative table for our bag game</h2>
+  <p>Recall from Chapter 10, Binomial Distribution, in the <a class="chapter-ref-link" onclick="parent.navigateToReference('s2','10','full-generalized-formula')" href="javascript:void(0)">"The full generalized formula" section</a>, the individual probabilities for our bag game, where P = 0.6 and 4 balls are drawn:</p>
+  <table class="prob-table">
+    <thead>
+      <tr><th scope="col">X</th><th scope="col">0</th><th scope="col">1</th><th scope="col">2</th><th scope="col">3</th><th scope="col">4</th></tr>
+    </thead>
+    <tbody>
+      <tr><th scope="row">P(X)</th><td>0.0256</td><td>0.1536</td><td>0.3456</td><td>0.3456</td><td>0.1296</td></tr>
+    </tbody>
+  </table>
+  <p>To build the cumulative distribution, add these individual probabilities up, one value at a time, running from X = 0 upward.</p>
+
+  <p>F(0) is just the individual probability of X = 0, since there is nothing smaller to add:</p>
+  <div class="calc">
+    <span>F(0) = 0.0256</span>
+  </div>
+
+  <div class="ex">
+    <p class="q">Before reading on, try finding F(1) yourself. This one is not graded, it is just to get you thinking about the approach.</p>
+    <p class="a">F(1) means P(X &le; 1), the probability that X is 0 or 1. Add the individual probabilities for those two values:</p>
+    <div class="calc">
+      <span>F(1) = 0.0256 + 0.1536</span><span class="eq">=</span><span class="result">0.1792</span>
+    </div>
+  </div>
+
+  <p>Keep going the same way. F(2) adds one more value on top of F(1):</p>
+  <div class="calc">
+    <span>F(2) = 0.0256 + 0.1536 + 0.3456</span><span class="eq">=</span><span class="result">0.5248</span>
+  </div>
+
+  <p>F(3):</p>
+  <div class="calc">
+    <span>F(3) = 0.0256 + 0.1536 + 0.3456 + 0.3456</span><span class="eq">=</span><span class="result">0.8704</span>
+  </div>
+
+  <p>And F(4), adding in the last remaining value:</p>
+  <div class="calc">
+    <span>F(4) = 0.0256 + 0.1536 + 0.3456 + 0.3456 + 0.1296</span><span class="eq">=</span><span class="result">1.0000</span>
+  </div>
+
+  <p>Putting all five together gives the full cumulative probability distribution:</p>
+  <table class="prob-table">
+    <thead>
+      <tr><th scope="col">x</th><th scope="col">0</th><th scope="col">1</th><th scope="col">2</th><th scope="col">3</th><th scope="col">4</th></tr>
+    </thead>
+    <tbody>
+      <tr><th scope="row">F(x) = P(X &le; x)</th><td>0.0256</td><td>0.1792</td><td>0.5248</td><td>0.8704</td><td class="tot">1.0000</td></tr>
+    </tbody>
+  </table>
+
+  <h2>A property worth noticing</h2>
+  <p>Look at F(4) in the table above: it comes out to exactly 1.0000. This is not a coincidence specific to this example. 4 is the largest possible value X can take in this game, so P(X &le; 4) covers every single possible outcome. The probability of "some outcome or another happening" is always 1, so <b>the cumulative probability at the largest possible value of X is always 1</b>, no matter what the individual probabilities look like.</p>
+
+  <h2>Back to the house's question</h2>
+  <p>Recall the actual question from earlier: what is the probability that a player draws 3 or fewer red balls, and therefore loses? That is exactly P(X &le; 3), which is F(3):</p>
+  <div class="calc">
+    <span>P(losing) = F(3) = 0.8704</span>
+  </div>
+  <p>So the house wins about 87% of the time. Notice this could also have been found a shorter way: since F(4) must equal 1, and winning (X = 4) and losing (X &le; 3) cover every possibility between them, F(3) = 1 &minus; P(X = 4) = 1 &minus; 0.1296 = 0.8704. Same answer, just approaching it from the other direction.</p>
+
+  <h2>Using cumulative probability to find a range</h2>
+  <p>Cumulative probability is also useful for finding the probability that X falls in a range, not just "at most" some value. Suppose a company has the cumulative probability distribution of its employees' weights, and two values from that table are F(60) = 0.367 and F(65) = 0.467. What is the probability that a randomly picked employee weighs between 60 and 65 kg?</p>
+  <div class="ex">
+    <p class="q">How would you find P(60 &le; X &le; 65) using only F(60) and F(65)?</p>
+    <p class="a">F(65) already includes everyone weighing 65 kg or less, which includes everyone weighing 60 kg or less too. To get just the part between 60 and 65, subtract away the part you do not want:</p>
+    <div class="calc">
+      <span>P(60 &le; X &le; 65) = F(65) &minus; F(60) = 0.467 &minus; 0.367</span><span class="eq">=</span><span class="result">0.1</span>
+    </div>
+    <p class="a">So there is a 0.1, or 10%, probability that a randomly picked employee weighs between 60 and 65 kg. This "subtract one cumulative value from another" technique works for finding the probability of any range, once you already know the cumulative distribution.</p>
+  </div>
+
+  <p>Cumulative probability distributions will come up again soon, when we move from discrete random variables like this bag game to continuous random variables, where a value can fall anywhere along a continuous scale instead of a fixed list of outcomes.</p>
+
+  <p>Next, we will learn about continuous random variables.</p>
+
+</main>
+<footer>Notes by @Ankit Surana</footer>
+</body>
+</html>

@@ -1,0 +1,594 @@
+/*
+  Typography and motion here follow Apple's own published design guidance
+  (WWDC "Designing Fluid Interfaces", 2018) as distilled in the
+  emilkowalski/skills "apple-design" and "emil-design-eng" skills:
+    - motion should feel like a spring, not a simple ease-in/ease-out
+    - use transitions (not keyframes) for state changes
+    - give pressable elements immediate scale(0.97) feedback on :active
+    - keep bounce subtle, restraint over decoration
+  The --ease-spring curve below is the same cubic-bezier approximation of
+  an iOS spring used in Vaul (Emil Kowalski's own drawer library).
+*/
+
+:root{
+  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text',
+               'Helvetica Neue', 'Segoe UI', Roboto, Ubuntu, sans-serif;
+
+  --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --paper:#FAF7F2;
+  --paper-dim:#F1ECE2;
+  --ink:#1E1B16;
+  --ink-soft:#5B5548;
+  --navy:#1B2438;
+  --navy-deep:#141C2C;
+  --brass:#B78A4A;
+  --rule:#D9D2C3;
+  --sidebar-w:272px;
+  --sidebar-gap:.7rem;
+
+  --badge-bg: rgba(255,255,255,.68);
+  --badge-border: rgba(255,255,255,.5);
+  --badge-divider: rgba(0,0,0,.08);
+  --badge-btn-bg: rgba(0,0,0,.05);
+  --badge-btn-bg-hover: rgba(0,0,0,.09);
+
+  /* Sidebar, theme-matched: light in light mode, dark in dark mode --
+     see html.dark below for the flip. */
+  --sidebar-bg: #FAF7F2;
+  --sidebar-border: #E5DDD0;
+  --sidebar-text: #1E1B16;
+  --sidebar-text-soft: #5B5548;
+  --sidebar-text-muted: #9A9384;
+  --sidebar-hover-bg: #F1ECE2;
+  --sidebar-active-bg: #F1ECE2;
+  --sidebar-divider: #E5DDD0;
+}
+
+/*
+  Dark mode: overriding the same variables used everywhere else, so
+  nothing that already reads var(--paper)/var(--ink)/etc. needs to change,
+  it just picks up the new values once <html> has this class. The toggle
+  itself lives in shell.js (writes this class + persists the choice).
+*/
+html.dark{
+  --paper:#17191C;
+  --paper-dim:#202226;
+  --ink:#EDEAE3;
+  --ink-soft:#A6A29A;
+  --rule:#33353A;
+  --badge-bg: rgba(30,32,36,.68);
+  --badge-border: rgba(255,255,255,.08);
+  --badge-divider: rgba(255,255,255,.1);
+  --badge-btn-bg: rgba(255,255,255,.08);
+  --badge-btn-bg-hover: rgba(255,255,255,.14);
+
+  --sidebar-bg: #1C1D20;
+  --sidebar-border: rgba(255,255,255,.08);
+  --sidebar-text: #FFFFFF;
+  --sidebar-text-soft: #C7CDDD;
+  --sidebar-text-muted: #7C88A6;
+  --sidebar-hover-bg: rgba(255,255,255,.07);
+  --sidebar-active-bg: rgba(255,255,255,.13);
+  --sidebar-divider: rgba(255,255,255,.08);
+}
+
+*{ box-sizing:border-box; }
+
+html, body{
+  margin:0;
+  height:100%;
+  background:var(--paper);
+  font-family:var(--font-sans);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  letter-spacing:-0.011em;
+  color:var(--ink);
+  transition:background-color 220ms var(--ease-out), color 220ms var(--ease-out);
+  /* Mobile Safari/Chrome show their own translucent blue "tap highlight"
+     on any tappable element by default -- a separate mechanism from
+     :focus-visible below, and not something an outline fix touches.
+     Every interactive element here already has its own :active feedback
+     (a scale transform), so the native overlay is redundant on top of it. */
+  -webkit-tap-highlight-color: transparent;
+}
+
+button{ font-family:inherit; -webkit-tap-highlight-color:transparent; }
+a{ -webkit-tap-highlight-color:transparent; }
+/* Every button in the shell showed the browser's harsh default blue
+   focus ring (visible in the mobile hamburger, but true of all of them).
+   Replace it with something matching the app's own accent, and only for
+   actual keyboard navigation -- mouse/touch clicks never trigger
+   :focus-visible, so this doesn't add a ring to every tap either. */
+button:focus{ outline:none; }
+button:focus-visible{ outline:2px solid var(--brass); outline-offset:2px; }
+
+/* ---- top-right user badge: frosted glass, floating, not a header bar ---- */
+#top-right-controls{
+  position:fixed;
+  top:1rem;
+  right:1.1rem;
+  z-index:50;
+  display:flex;
+  align-items:center;
+  gap:.6rem;
+}
+#user-badge{
+  background:var(--badge-bg);
+  backdrop-filter:blur(20px) saturate(180%);
+  -webkit-backdrop-filter:blur(20px) saturate(180%);
+  border:1px solid var(--badge-border);
+  border-radius:999px;
+  padding:.42rem .5rem .42rem 1rem;
+  display:flex;
+  align-items:center;
+  gap:.6rem;
+  font-size:.83rem;
+  letter-spacing:-0.006em;
+  box-shadow:0 1px 2px rgba(0,0,0,.04), 0 8px 24px rgba(0,0,0,.06);
+  transition:background-color 220ms var(--ease-out), border-color 220ms var(--ease-out);
+}
+#user-name{ color:var(--ink-soft); font-weight:500; }
+#live-clock{
+  color:var(--ink-soft);
+  font-variant-numeric:tabular-nums;
+  font-size:.78rem;
+  padding-right:.5rem;
+  border-right:1px solid var(--badge-divider);
+  white-space:nowrap;
+}
+/* Standalone floating toggle, deliberately outside the badge pill so it
+   stands out on its own rather than blending in as just another badge
+   icon. Color-coded to its own state: yellow sun for light mode
+   (what clicking it will turn OFF), grey moon for dark mode. Lives in
+   the same #top-right-controls flex row as the badge, so it can never
+   overlap it regardless of how wide the badge's content gets. */
+#theme-toggle{
+  border:1px solid rgba(0,0,0,.06);
+  background:#FCE18A;
+  color:#8A5A00;
+  font-size:1.05rem;
+  line-height:1;
+  width:38px; height:38px;
+  flex-shrink:0;
+  border-radius:50%;
+  cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 1px 2px rgba(0,0,0,.04), 0 8px 24px rgba(0,0,0,.08);
+  transition:background-color 200ms var(--ease-out), color 200ms var(--ease-out), transform 150ms var(--ease-spring);
+}
+#theme-toggle:hover{ transform:scale(1.06); }
+#theme-toggle:active{ transform:scale(0.88); }
+html.dark #theme-toggle{
+  background:#4B5058;
+  color:#E8E9EB;
+  border-color:rgba(255,255,255,.1);
+}
+
+/* ---- notification bell: rings when new content has been added since
+   the student's last visit, stops the moment they open it ---- */
+#notif-bell-wrap{ position:relative; }
+#notif-bell{
+  border:1px solid rgba(0,0,0,.06);
+  background:#fff;
+  color:var(--ink-soft);
+  font-size:1rem;
+  line-height:1;
+  width:38px; height:38px;
+  border-radius:50%;
+  cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 1px 2px rgba(0,0,0,.04), 0 8px 24px rgba(0,0,0,.08);
+  transition:background-color 200ms var(--ease-out), transform 150ms var(--ease-spring);
+}
+html.dark #notif-bell{
+  background:#2A2D33;
+  border-color:rgba(255,255,255,.1);
+}
+#notif-bell:active{ transform:scale(0.88); }
+#notif-bell.__has-news{ animation:__bell-ring 1.8s ease-in-out infinite; }
+#notif-bell.__has-news::after{
+  content:'';
+  position:absolute;
+  top:2px; right:2px;
+  width:9px; height:9px;
+  border-radius:50%;
+  background:#C0392B;
+  border:2px solid var(--paper);
+}
+@keyframes __bell-ring{
+  0%, 100% { transform:rotate(0deg); }
+  6%  { transform:rotate(-14deg); }
+  12% { transform:rotate(11deg); }
+  18% { transform:rotate(-8deg); }
+  24% { transform:rotate(5deg); }
+  30% { transform:rotate(0deg); }
+}
+#notif-dropdown{
+  position:absolute;
+  top:46px;
+  right:0;
+  width:260px;
+  background:#fff;
+  border:1px solid rgba(0,0,0,.08);
+  border-radius:12px;
+  box-shadow:0 8px 30px rgba(0,0,0,.15);
+  padding:.6rem;
+  font-size:.83rem;
+  z-index:60;
+}
+html.dark #notif-dropdown{
+  background:#232529;
+  border-color:rgba(255,255,255,.1);
+  color:var(--ink);
+}
+#notif-dropdown .nd-title{
+  font-weight:600;
+  font-size:.78rem;
+  color:var(--ink-soft);
+  text-transform:uppercase;
+  letter-spacing:.03em;
+  padding:.2rem .4rem .5rem;
+}
+#notif-dropdown .nd-item{
+  display:block;
+  padding:.45rem .5rem;
+  border-radius:8px;
+  color:var(--ink);
+  text-decoration:none;
+  cursor:pointer;
+}
+#notif-dropdown .nd-item:hover{ background:rgba(0,0,0,.05); }
+html.dark #notif-dropdown .nd-item:hover{ background:rgba(255,255,255,.08); }
+#notif-dropdown .nd-empty{
+  padding:.5rem;
+  color:var(--ink-soft);
+}
+
+#logout-btn{
+  border:none;
+  background:var(--badge-btn-bg);
+  color:var(--ink-soft);
+  font-size:.76rem;
+  font-weight:500;
+  padding:.34rem .7rem;
+  border-radius:999px;
+  cursor:pointer;
+  transition:background-color 200ms var(--ease-out), transform 150ms var(--ease-spring);
+}
+#logout-btn:hover{ background:var(--badge-btn-bg-hover); }
+#logout-btn:active{ transform:scale(0.94); }
+
+/* "Manage students" link, only shown to admins (see shell.js, which
+   toggles the hidden attribute based on /api/me's is_admin flag). Sits
+   inside the same badge pill as the logout button so both share the
+   same subtle background chip treatment. */
+#admin-link{
+  background:var(--badge-btn-bg);
+  color:var(--ink-soft);
+  font-size:.76rem;
+  font-weight:500;
+  padding:.34rem .7rem;
+  border-radius:999px;
+  text-decoration:none;
+  transition:background-color 200ms var(--ease-out), transform 150ms var(--ease-spring);
+}
+#admin-link:hover{ background:var(--badge-btn-bg-hover); }
+#admin-link:active{ transform:scale(0.94); }
+
+/* ---- sidebar: simple, solid panel, theme-matched (light in light mode,
+   dark in dark mode) -- no transparency, matching the clean pill style
+   used for the badge/toggle/bell above ---- */
+#sidebar{
+  position:fixed;
+  top:var(--sidebar-gap); left:var(--sidebar-gap); bottom:var(--sidebar-gap);
+  width:var(--sidebar-w);
+  z-index:65;
+  overflow-y:auto;
+  overflow-x:hidden;
+  border-radius:22px;
+  background:var(--sidebar-bg);
+  border:1px solid var(--sidebar-border);
+  box-shadow:0 20px 45px -12px rgba(0,0,0,.18);
+  padding:1.5rem 0 1rem;
+  color:var(--sidebar-text);
+  transition:background-color 220ms var(--ease-out), border-color 220ms var(--ease-out), transform 280ms var(--ease-spring);
+}
+
+/* Brand wordmark: confident sans-serif, not the old italic serif treatment */
+#brand{
+  display:flex;
+  align-items:center;
+  gap:.55rem;
+  padding:0 1.3rem 1.1rem;
+  margin-bottom:.5rem;
+  border-bottom:1px solid var(--sidebar-divider);
+}
+#brand span{
+  font-family:var(--font-sans);
+  font-weight:700;
+  font-size:1.28rem;
+  letter-spacing:-0.025em;
+  color:var(--sidebar-text);
+}
+.brand-logo{
+  max-height:26px;
+  max-width:150px;
+  display:block;
+}
+
+/* ---- overall reading progress ---- */
+#read-progress{
+  padding:0 1.3rem .7rem;
+  font-size:.76rem;
+  color:var(--sidebar-text-muted);
+  letter-spacing:-0.006em;
+}
+
+/* ---- search ---- */
+#search-wrap{ padding:0 .9rem .8rem; }
+#search-input{
+  width:100%;
+  background:var(--sidebar-hover-bg);
+  border:1px solid var(--sidebar-border);
+  border-radius:10px;
+  padding:.5rem .7rem;
+  font-family:inherit;
+  font-size:.82rem;
+  color:var(--sidebar-text);
+  transition:background-color 180ms var(--ease-out), border-color 180ms var(--ease-out);
+}
+#search-input::placeholder{ color:var(--sidebar-text-muted); }
+#search-input:focus{
+  outline:none;
+  border-color:var(--brass);
+}
+#search-results{ padding:0 .5rem .4rem; }
+#search-results .sr-empty{
+  padding:.6rem 1rem;
+  font-size:.8rem;
+  color:var(--sidebar-text-muted);
+}
+.sr-result{
+  display:block;
+  padding:.55rem .8rem;
+  margin:.15rem 0;
+  border-radius:10px;
+  color:var(--sidebar-text-soft);
+  cursor:pointer;
+  transition:background-color 200ms var(--ease-out), transform 150ms var(--ease-spring);
+}
+.sr-result:hover{ background:var(--sidebar-hover-bg); color:var(--sidebar-text); }
+.sr-result:active{ transform:scale(0.98); }
+.sr-result-title{ font-size:.83rem; font-weight:600; letter-spacing:-0.006em; }
+.sr-result-snippet{
+  display:block;
+  font-size:.76rem;
+  color:var(--sidebar-text-muted);
+  margin-top:.15rem;
+  line-height:1.4;
+}
+.sr-result-snippet mark{
+  background:none;
+  color:var(--brass);
+  font-weight:600;
+}
+
+/* ---- accordion sections ---- */
+.sb-section{ margin:0 .5rem .15rem; padding-bottom:.5rem; border-bottom:1px solid var(--sidebar-border); }
+.sb-section:last-child{ border-bottom:none; }
+
+.sb-section-header{
+  width:100%;
+  display:flex;
+  align-items:center;
+  gap:.6rem;
+  background:none;
+  border:none;
+  cursor:pointer;
+  border-radius:12px;
+  padding:.62rem .8rem;
+  text-align:left;
+  font-family:inherit;
+  color:var(--sidebar-text);
+  transition:background-color 200ms var(--ease-out), transform 150ms var(--ease-spring);
+}
+.sb-section-header:hover{ background:var(--sidebar-hover-bg); }
+.sb-section-header:active{ transform:scale(0.98); }
+
+.sb-section-num{
+  font-family:var(--font-sans);
+  font-variant-numeric:tabular-nums;
+  font-size:.72rem;
+  font-weight:600;
+  color:var(--brass);
+  flex-shrink:0;
+}
+.sb-section-title-text{
+  flex:1;
+  font-size:.79rem;
+  font-weight:600;
+  letter-spacing:-0.006em;
+  color:var(--sidebar-text-soft);
+  transition:color 200ms var(--ease-out);
+}
+.sb-chevron{
+  flex-shrink:0;
+  font-size:.95rem;
+  color:var(--sidebar-text-muted);
+  transition:transform 380ms var(--ease-spring);
+}
+.sb-section.expanded .sb-chevron{ transform:rotate(90deg); }
+.sb-section.expanded .sb-section-title-text{ color:var(--sidebar-text); }
+
+/*
+  The actual "fluid" open/close: a CSS-only technique (grid-template-rows
+  0fr <-> 1fr) that smoothly animates to an intrinsic ("auto") height
+  without needing JavaScript to measure pixels, and without a
+  motion/animation library. This is exactly the "use transitions, not
+  keyframes" guidance from the apple-design skill -- the browser
+  interpolates the grid track continuously, starting from wherever it
+  currently is, which is what makes it feel like a spring rather than a
+  toggle even though it's driven by a single CSS property.
+*/
+.sb-section-chapters-wrap{
+  display:grid;
+  grid-template-rows:0fr;
+  transition:grid-template-rows 420ms var(--ease-spring);
+}
+.sb-section.expanded .sb-section-chapters-wrap{
+  grid-template-rows:1fr;
+}
+.sb-section-chapters{
+  overflow:hidden;
+  min-height:0;
+  padding-top:.15rem;
+}
+
+.sb-chapter{
+  display:flex;
+  align-items:center;
+  gap:.4rem;
+  margin:.12rem .3rem;
+  padding:.5rem .7rem .5rem 1.55rem;
+  border-radius:10px;
+  color:var(--sidebar-text-soft);
+  text-decoration:none;
+  font-size:.85rem;
+  letter-spacing:-0.006em;
+  cursor:pointer;
+  transition:background-color 200ms var(--ease-out), color 200ms var(--ease-out), transform 150ms var(--ease-spring);
+}
+.sb-chapter-title{ flex:1; }
+.sb-chapter-check{
+  flex-shrink:0;
+  font-size:.72rem;
+  color:var(--brass);
+  opacity:0;
+  transform:scale(0.6);
+  transition:opacity 250ms var(--ease-out), transform 250ms var(--ease-spring);
+}
+.sb-chapter.visited .sb-chapter-check{ opacity:1; transform:scale(1); }
+.sb-chapter:hover{ background:var(--sidebar-hover-bg); color:var(--sidebar-text); }
+.sb-chapter:active{ transform:scale(0.97); }
+.sb-chapter.active{
+  background:var(--sidebar-active-bg);
+  color:var(--sidebar-text);
+  font-weight:500;
+}
+#sidebar-list .empty{ padding:1rem 1.4rem; color:var(--sidebar-text-muted); font-size:.85rem; }
+
+/* ---- content pane ---- */
+#content-pane{
+  position:fixed;
+  top:0;
+  left:calc(var(--sidebar-w) + var(--sidebar-gap) * 2);
+  right:0;
+  bottom:0;
+  background:var(--paper);
+}
+#content-frame{
+  width:100%;
+  height:100%;
+  border:none;
+  display:none;
+}
+#empty-state{
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--ink-soft);
+  font-size:.95rem;
+  letter-spacing:-0.006em;
+}
+
+/* ---- mobile hamburger + backdrop (hidden on desktop by default) ---- */
+#mobile-menu-btn{
+  display:none;
+  position:fixed;
+  top:1rem;
+  left:1rem;
+  z-index:70;
+  width:38px; height:38px;
+  border-radius:50%;
+  border:1px solid rgba(0,0,0,.06);
+  background:#fff;
+  color:var(--ink);
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  box-shadow:0 1px 2px rgba(0,0,0,.04), 0 8px 24px rgba(0,0,0,.08);
+}
+html.dark #mobile-menu-btn{
+  background:#2A2D33;
+  color:#EDE9DF;
+  border-color:rgba(255,255,255,.1);
+}
+#sidebar-backdrop{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:55;
+  background:rgba(0,0,0,.4);
+  opacity:0;
+  transition:opacity 220ms var(--ease-out);
+}
+
+@media (max-width: 760px){
+  #mobile-menu-btn{ display:flex; }
+
+  /* Sidebar becomes an overlay drawer, hidden off-screen by default,
+     rather than a panel that squeezes the content next to it -- there
+     isn't room for both on a phone screen. */
+  #sidebar{
+    top:0; left:0; bottom:0;
+    width:min(300px, 82vw);
+    border-radius:0 22px 22px 0;
+    transform:translateX(-100%);
+  }
+  body.sidebar-open #sidebar{ transform:translateX(0); }
+  /* The hamburger button sits at the same top-left corner the open
+     drawer occupies -- without this it renders on top of the sidebar's
+     own brand text. Hidden while open since the backdrop, Escape key,
+     and picking a chapter all already close the drawer regardless. */
+  body.sidebar-open #mobile-menu-btn{ display:none; }
+  body.sidebar-open #sidebar-backdrop{ display:block; opacity:1; }
+
+  #content-pane{ top:4.4rem; left:0; }
+
+  .sb-chapter{ font-size:.81rem; padding:.5rem .6rem .5rem 1.3rem; }
+  .sb-section-header{ padding:.55rem .65rem; }
+  .sb-section-title-text{ font-size:.74rem; }
+  #brand span{ font-size:1.15rem; }
+
+  /* Top-right controls would otherwise collide with the hamburger button
+     and get cramped on a narrow screen -- shrink everything down a size,
+     not just the text. Keep the same top offset as the hamburger button
+     itself (both 1rem) rather than pulling it tighter -- less than that
+     reads as no breathing room at all against the very top of the screen. */
+  #top-right-controls{ top:1rem; right:.7rem; gap:.4rem; }
+  #theme-toggle, #notif-bell{ width:32px; height:32px; font-size:.9rem; }
+  #theme-toggle svg, #notif-bell svg{ width:15px; height:15px; }
+  #user-badge{ padding:.32rem .4rem .32rem .7rem; gap:.4rem; font-size:.78rem; }
+  #logout-btn, #admin-link{ padding:.28rem .55rem; font-size:.72rem; }
+  #live-clock{ display:none; }
+  #user-name{
+    max-width:30vw;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+  }
+  #notif-dropdown{
+    position:fixed;
+    top:3.6rem;
+    right:.7rem;
+    left:auto;
+    width:min(260px, calc(100vw - 1.4rem));
+  }
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{ transition-duration:1ms !important; }
+}

@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Expected Value</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FAF7F2;
+    --paper-dim:#F1ECE2;
+    --ink:#1E1B16;
+    --ink-soft:#5B5548;
+    --navy:#1F2A44;
+    --navy-soft:#2C3A5C;
+    --brass:#A9793D;
+    --rule:#D9D2C3;
+    --serif:'Spectral', Georgia, serif;
+    --sans:'IBM Plex Sans', -apple-system, sans-serif;
+    --mono:'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.6;
+  }
+  main{
+    max-width:680px;
+    margin:0 auto;
+    padding:3.6rem 1.6rem 5rem;
+  }
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:.7rem;
+    color:var(--brass);
+    letter-spacing:.03em;
+    margin:0 0 .6rem;
+  }
+  h1{
+    font-family:var(--serif);
+    font-weight:500;
+    font-size:2.1rem;
+    margin:0 0 .3rem;
+  }
+  .sub{
+    color:var(--ink-soft);
+    font-size:.95rem;
+    margin:0 0 2.2rem;
+    padding-bottom:1.6rem;
+    border-bottom:1px solid var(--rule);
+  }
+  h2{
+    font-family:var(--sans);
+    font-weight:600;
+    font-size:.95rem;
+    color:var(--navy-soft);
+    margin:2.1rem 0 .6rem;
+  }
+  h2:first-of-type{ margin-top:0; }
+  p{ margin:.5rem 0; }
+  ul{ margin:.5rem 0; padding-left:1.2rem; }
+  ol{ margin:.5rem 0; padding-left:1.4rem; }
+  li{ margin:.3rem 0; }
+  b{ color:var(--ink); }
+  .formula{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:.4rem;
+    font-family:var(--mono);
+    font-size:1rem;
+    background:var(--paper-dim);
+    border-left:2px solid var(--brass);
+    padding:.75rem 1rem;
+    margin:.7rem 0;
+  }
+  .formula .eq{ margin:0 .15rem; color:var(--ink-soft); }
+
+  .frac{
+    display:inline-flex;
+    flex-direction:column;
+    align-items:center;
+    vertical-align:middle;
+    line-height:1.15;
+  }
+  .frac .num{ padding:0 .35em .16em; border-bottom:1.4px solid currentColor; }
+  .frac .den{ padding:.16em .35em 0; }
+
+  .calc{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:.55rem;
+    font-family:var(--mono);
+    font-size:.92rem;
+    color:var(--ink);
+    background:var(--paper);
+    border:1px solid var(--rule);
+    border-radius:2px;
+    padding:.6rem .8rem;
+    margin:.55rem 0 .1rem;
+  }
+  .calc .eq{ color:var(--ink-soft); }
+  .calc .result{ color:var(--brass); font-weight:600; }
+
+  table.prob-table{
+    border-collapse:collapse;
+    width:100%;
+    margin:.9rem 0 1.3rem;
+    font-family:var(--mono);
+    font-size:.85rem;
+  }
+  table.prob-table th, table.prob-table td{
+    border:1px solid var(--rule);
+    padding:.55rem .8rem;
+    text-align:center;
+  }
+  table.prob-table thead th{
+    background:var(--paper-dim);
+    color:var(--navy-soft);
+    font-weight:600;
+  }
+  table.prob-table th[scope="row"]{
+    background:var(--paper-dim);
+    color:var(--navy-soft);
+    font-weight:600;
+    text-align:center;
+  }
+  table.prob-table .tot{ color:var(--brass); font-weight:600; }
+  .table-caption{
+    font-family:var(--sans);
+    font-size:.82rem;
+    color:var(--ink-soft);
+    margin:-.6rem 0 .8rem;
+  }
+  .ex{
+    background:var(--paper-dim);
+    border:1px solid var(--rule);
+    border-radius:2px;
+    padding:.8rem 1rem;
+    margin:.7rem 0;
+  }
+  .ex .q{ font-weight:600; font-size:.9rem; }
+  .ex .a{ font-size:.88rem; color:var(--ink-soft); margin-top:.2rem; }
+  .chart-wrap{ margin:1.1rem 0 .3rem; }
+  .chart-svg{ width:100%; height:auto; display:block; max-width:440px; margin:0 auto; }
+  .chart-axis-label{
+    text-align:center;
+    font-size:.8rem;
+    color:var(--ink-soft);
+    margin-top:.5rem;
+  }
+  .fig-label{
+    font-family:var(--mono);
+    font-weight:600;
+    color:var(--brass);
+  }
+  footer{
+    max-width:680px;
+    margin:0 auto;
+    padding:0 1.6rem 3rem;
+    font-size:.76rem;
+    color:var(--ink-soft);
+  }
+</style>
+</head>
+<body>
+<main>
+
+  <p class="eyebrow">CHAPTER 6 &middot; LESSON NOTES</p>
+  <h1>Expected Value</h1>
+  <p class="sub">What a random variable takes "on average," and how to use it to judge whether a game, a bet, or a project is worth it.</p>
+
+  <h2>Where we are in the three steps</h2>
+  <p>Recall the three-step process for the bag game from Chapter 4, Random Variables, in the <a class="chapter-ref-link" onclick="parent.navigateToReference('s1','04','bag-of-balls-game')" href="javascript:void(0)">"The bag of balls game" section</a>:</p>
+  <ol>
+    <li>Find all the possible combinations.</li>
+    <li>Find the probability of each combination.</li>
+    <li>Use the probabilities to estimate the profit or loss per player.</li>
+  </ol>
+  <p>Steps 1 and 2 are done. We defined X as the number of red balls, and found its probability distribution: P(0) = 0.027, P(1) = 0.160, P(2) = 0.347, P(3) = 0.333, and P(4) = 0.133. Now, step 3, we use these probabilities to work out what a player should expect from this game.</p>
+
+  <h2>Imagine 1000 people play the game</h2>
+  <p>Suppose 1000 people play the bag game. How many of them would you expect to land on each value of X? Multiply each probability by 1000:</p>
+
+  <table class="prob-table">
+    <thead>
+      <tr><th scope="col">X (red balls)</th><th scope="col">0</th><th scope="col">1</th><th scope="col">2</th><th scope="col">3</th><th scope="col">4</th><th scope="col" class="tot">Total</th></tr>
+    </thead>
+    <tbody>
+      <tr><th scope="row">P(X)</th><td>0.027</td><td>0.160</td><td>0.347</td><td>0.333</td><td>0.133</td><td class="tot">1.000</td></tr>
+      <tr><th scope="row">Expected people (out of 1000)</th><td>27</td><td>160</td><td>347</td><td>333</td><td>133</td><td class="tot">1000</td></tr>
+    </tbody>
+  </table>
+
+  <div class="ex">
+    <p class="q">Out of 1000 players, how many would you expect to draw exactly 1 red ball?</p>
+    <p class="a">Multiply the probability of X = 1 by the number of players:</p>
+    <div class="calc">
+      <span>1000</span><span class="eq">&times;</span><span>0.160</span><span class="eq">=</span>
+      <span class="result">160</span>
+    </div>
+    <p class="a">So about 160 of the 1000 players would draw exactly 1 red ball.</p>
+  </div>
+
+  <h2>How many red balls in total?</h2>
+  <p>Across all 1000 people, how many red balls were drawn in total? The 27 people who drew 0 red balls contribute 0 red balls each. The 160 people who drew 1 red ball contribute 1 each. The 347 people who drew 2 contribute 2 each, and so on. Add up every group's contribution:</p>
+
+  <div class="formula">
+    <span>(0 &times; 27) + (1 &times; 160) + (2 &times; 347) + (3 &times; 333) + (4 &times; 133)</span>
+  </div>
+
+  <table class="prob-table">
+    <thead>
+      <tr><th scope="col">X</th><th scope="col">0</th><th scope="col">1</th><th scope="col">2</th><th scope="col">3</th><th scope="col">4</th><th scope="col" class="tot">Total</th></tr>
+    </thead>
+    <tbody>
+      <tr><th scope="row">People</th><td>27</td><td>160</td><td>347</td><td>333</td><td>133</td><td class="tot">1000</td></tr>
+      <tr><th scope="row">Red balls (X &times; people)</th><td>0</td><td>160</td><td>694</td><td>999</td><td>532</td><td class="tot">2385</td></tr>
+    </tbody>
+  </table>
+
+  <p>So across 1000 games, 2385 red balls were drawn in total. To find the average per person, divide by the number of players:</p>
+  <div class="calc">
+    <span class="frac"><span class="num">2385</span><span class="den">1000</span></span><span class="eq">=</span>
+    <span class="result">2.385</span>
+  </div>
+  <p>In other words, a player can expect to draw about 2.385 red balls in one game.</p>
+
+  <div class="ex">
+    <p class="q">Check the "Expected people" row above: do the five groups (27, 160, 347, 333, 133) add up to all 1000 players?</p>
+    <p class="a">27 + 160 + 347 + 333 + 133 = 1000. Yes, every player falls into exactly one of the five groups, so they add up to the full 1000.</p>
+  </div>
+
+  <h2>The formal definition of expected value</h2>
+  <p>The expected value of a random variable X is the value you would "expect" to get after performing the experiment once. It is also called the <b>expectation</b>, the <b>average</b>, or the <b>mean value</b>. If X can take the values x1, x2, up to xn, the expected value, written E(X), is:</p>
+  <div class="formula">
+    <span>E(X) = x1 &middot; P(x1) + x2 &middot; P(x2) + ... + xn &middot; P(xn)</span>
+  </div>
+  <p>In words: take every value X can be, multiply it by the probability of that value, and add up all those products.</p>
+
+  <h2>Getting 2.385 directly from the probabilities</h2>
+  <p>You do not actually need to imagine 1000 players. The same answer comes straight from the formula, using the probability distribution of X directly:</p>
+  <div class="formula">
+    <span>E(X)</span><span class="eq">=</span>
+    <span>(0 &times; 0.027) + (1 &times; 0.160) + (2 &times; 0.347) + (3 &times; 0.333) + (4 &times; 0.133)</span>
+  </div>
+
+  <div class="ex">
+    <p class="q">Work out E(X) term by term using the probabilities P(0) = 0.027, P(1) = 0.160, P(2) = 0.347, P(3) = 0.333, and P(4) = 0.133.</p>
+    <p class="a">Multiply each value of X by its own probability:</p>
+    <div class="calc">
+      <span>0 &times; 0.027 = 0</span>
+      <span>1 &times; 0.160 = 0.160</span>
+      <span>2 &times; 0.347 = 0.694</span>
+    </div>
+    <div class="calc">
+      <span>3 &times; 0.333 = 0.999</span>
+      <span>4 &times; 0.133 = 0.532</span>
+    </div>
+    <p class="a">Now add up all five products:</p>
+    <div class="calc">
+      <span>0 + 0.160 + 0.694 + 0.999 + 0.532</span><span class="eq">=</span>
+      <span class="result">2.385</span>
+    </div>
+    <p class="a">This is the same 2.385 we found by imagining 1000 players. The formula is just a shortcut that skips the "imagine 1000 people" step and works directly off the probabilities.</p>
+  </div>
+
+  <p>So the expected value of X is 2.385. A player can expect to draw about 2.385 red balls per game, on average.</p>
+
+  <h2>What does 2.385 actually mean?</h2>
+  <p>You can never actually draw 2.385 red balls in one game. You always get a whole number: 0, 1, 2, 3, or 4. So what does an expected value of 2.385 actually mean?</p>
+  <p>It means that if you played this game an infinite number of times, the average number of red balls per game, across all those games, would settle at 2.385. It is a long-run average, not a result you should expect on any single attempt. Figure 1 shows where this value falls.</p>
+
+  <div class="chart-wrap">
+    <svg class="chart-svg" viewBox="0 0 400 90" xmlns="http://www.w3.org/2000/svg">
+      <line x1="30" y1="45" x2="370" y2="45" stroke="#5B5548" stroke-width="1.5"/>
+      <line x1="30" y1="38" x2="30" y2="52" stroke="#5B5548" stroke-width="1.5"/>
+      <line x1="115" y1="38" x2="115" y2="52" stroke="#5B5548" stroke-width="1.5"/>
+      <line x1="200" y1="38" x2="200" y2="52" stroke="#5B5548" stroke-width="1.5"/>
+      <line x1="285" y1="38" x2="285" y2="52" stroke="#5B5548" stroke-width="1.5"/>
+      <line x1="370" y1="38" x2="370" y2="52" stroke="#5B5548" stroke-width="1.5"/>
+      <text x="30" y="70" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#1E1B16">0</text>
+      <text x="115" y="70" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#1E1B16">1</text>
+      <text x="200" y="70" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#1E1B16">2</text>
+      <text x="285" y="70" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#1E1B16">3</text>
+      <text x="370" y="70" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#1E1B16">4</text>
+      <circle cx="232.7" cy="45" r="6" fill="#A9793D"/>
+      <text x="232.7" y="24" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="#A9793D">E(X) = 2.385</text>
+    </svg>
+    <p class="chart-axis-label"><span class="fig-label">Figure 1.</span> X can only ever land exactly on 0, 1, 2, 3, or 4. E(X) sits between 2 and 3, a value X itself can never actually take.</p>
+  </div>
+
+  <p>This is not unusual. Expected values often land on a number the random variable itself can never take.</p>
+
+  <div class="ex">
+    <p class="q">You throw a fair die once and let X be the number that comes up. What is E(X)?</p>
+    <p class="a">X can be 1, 2, 3, 4, 5, or 6, each with probability 1/6. Add up value times probability for all six:</p>
+    <div class="calc">
+      <span>E(X)</span><span class="eq">=</span>
+      <span class="frac"><span class="num">1 + 2 + 3 + 4 + 5 + 6</span><span class="den">6</span></span><span class="eq">=</span>
+      <span class="frac"><span class="num">21</span><span class="den">6</span></span><span class="eq">=</span>
+      <span class="result">3.5</span>
+    </div>
+    <p class="a">A die can never actually show 3.5. Just like the bag game, this is the long-run average if you rolled the die over and over, not a single-roll result.</p>
+  </div>
+
+  <h2>A better random variable: the money won</h2>
+  <p>Knowing you can expect 2.385 red balls per game still does not tell us whether the house makes or loses money. Red balls are not what gets paid out, money is. So define a new random variable: let Y be the amount of money a player wins from playing the game once.</p>
+  <p>Y can only take two values:</p>
+  <ul>
+    <li>Y = +&#8377;150, if the player wins (draws 4 red balls).</li>
+    <li>Y = &minus;&#8377;10, if the player loses (draws 0, 1, 2, or 3 red balls).</li>
+  </ul>
+  <p>We already know P(X = 4) = 0.133, so P(Y = +150) = 0.133. Losing covers every other outcome, so P(Y = &minus;10) is the sum of the other four probabilities:</p>
+  <div class="calc">
+    <span>0.027 + 0.160 + 0.347 + 0.333</span><span class="eq">=</span>
+    <span class="result">0.867</span>
+  </div>
+
+  <div class="ex">
+    <p class="q">Check that P(Y = +150) and P(Y = &minus;10) add up to 1, as they should for a valid probability distribution.</p>
+    <p class="a">0.133 + 0.867 = 1.000. Since winning and losing cover every possible outcome of the game, and Y can only be one of these two values, they must add up to 1.</p>
+  </div>
+
+  <h2>Expected value of the money</h2>
+  <p>Now apply the same expected value formula to Y:</p>
+  <div class="formula">
+    <span>E(Y) = (150 &times; 0.133) + (&minus;10 &times; 0.867)</span>
+  </div>
+  <div class="calc">
+    <span>150 &times; 0.133 = 19.95</span>
+    <span>&minus;10 &times; 0.867 = &minus;8.67</span>
+  </div>
+  <div class="calc">
+    <span>19.95 &minus; 8.67</span><span class="eq">=</span>
+    <span class="result">&#8377;11.28</span>
+  </div>
+
+  <div class="ex">
+    <p class="q">E(Y) came out to +&#8377;11.28. Is that a good result for the house running this game?</p>
+    <p class="a">No, it is bad for the house. A positive expected value here means the average player wins &#8377;11.28 per game. If many people play, the house pays out more than it collects, on average, and loses money in the long run.</p>
+  </div>
+
+  <p>For the house to be profitable, the expected value of the player's winnings needs to be negative, so that the average player loses money and the house gains it. There are a few ways to make E(Y) negative: reduce the prize money, increase the penalty for losing, or reduce the player's chances of winning. This is exactly how real casino games are designed: the game's rules are set so that a player's expected winnings always work out negative.</p>
+
+  <h2>Back to the business example: expected return</h2>
+  <p>Recall the project the company was deciding whether to invest in, from Chapter 5, Probability Distributions, in the <a class="chapter-ref-link" onclick="parent.navigateToReference('s1','05','business-example')" href="javascript:void(0)">"A business example: will the project make a profit?" section</a>. We built this probability distribution for X, the net revenue of the project:</p>
+
+  <table class="prob-table">
+    <thead>
+      <tr><th scope="col">X (net revenue, &#8377; crores)</th><th scope="col" class="tot">P(x)</th></tr>
+    </thead>
+    <tbody>
+      <tr><th scope="row">&minus;305</th><td class="tot">0.1</td></tr>
+      <tr><th scope="row">+15</th><td class="tot">0.7</td></tr>
+      <tr><th scope="row">+95</th><td class="tot">0.2</td></tr>
+    </tbody>
+  </table>
+
+  <p>The expected value of X here is also called the <b>expected return</b>. Apply the same formula, first with the general notation, then with the actual numbers plugged in:</p>
+  <div class="formula">
+    <span>E(X) = (&minus;305) &middot; P(X = &minus;305) + (+15) &middot; P(X = +15) + (+95) &middot; P(X = +95)</span>
+  </div>
+  <div class="formula">
+    <span>E(X) = (&minus;305 &times; 0.1) + (15 &times; 0.7) + (95 &times; 0.2)</span>
+  </div>
+
+  <div class="ex">
+    <p class="q">Work out the expected return E(X) for the project, term by term.</p>
+    <p class="a">Multiply each net revenue value by its own probability:</p>
+    <div class="calc">
+      <span>&minus;305 &times; 0.1 = &minus;30.5</span>
+      <span>15 &times; 0.7 = 10.5</span>
+      <span>95 &times; 0.2 = 19</span>
+    </div>
+    <p class="a">Now add up all three:</p>
+    <div class="calc">
+      <span>&minus;30.5 + 10.5 + 19</span><span class="eq">=</span>
+      <span class="result">&minus;1</span>
+    </div>
+    <p class="a">The expected return is &minus;&#8377;1 crore. Since it is negative, the project is not worth investing in: on average, across many similar projects under this same mix of economic outcomes, it would lose money rather than make it.</p>
+  </div>
+
+  <p>This is the real value of expected value: it lets you weigh every possible outcome against how likely it is, and boil an uncertain situation down to a single number you can act on, whether that is a bag game, a casino, or a company deciding where to invest.</p>
+
+  <p>Next, let's summarize everything from random variables through expected value in one place.</p>
+
+</main>
+<footer>Notes by @Ankit Surana</footer>
+</body>
+</html>

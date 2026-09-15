@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Random Variables</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FAF7F2;
+    --paper-dim:#F1ECE2;
+    --ink:#1E1B16;
+    --ink-soft:#5B5548;
+    --navy:#1F2A44;
+    --navy-soft:#2C3A5C;
+    --brass:#A9793D;
+    --rule:#D9D2C3;
+    --serif:'Spectral', Georgia, serif;
+    --sans:'IBM Plex Sans', -apple-system, sans-serif;
+    --mono:'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.6;
+  }
+  main{
+    max-width:680px;
+    margin:0 auto;
+    padding:3.6rem 1.6rem 5rem;
+  }
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:.7rem;
+    color:var(--brass);
+    letter-spacing:.03em;
+    margin:0 0 .6rem;
+  }
+  h1{
+    font-family:var(--serif);
+    font-weight:500;
+    font-size:2.1rem;
+    margin:0 0 .3rem;
+  }
+  .sub{
+    color:var(--ink-soft);
+    font-size:.95rem;
+    margin:0 0 2.2rem;
+    padding-bottom:1.6rem;
+    border-bottom:1px solid var(--rule);
+  }
+  h2{
+    font-family:var(--sans);
+    font-weight:600;
+    font-size:.95rem;
+    color:var(--navy-soft);
+    margin:2.1rem 0 .6rem;
+  }
+  h2:first-of-type{ margin-top:0; }
+  p{ margin:.5rem 0; }
+  ul{ margin:.5rem 0; padding-left:1.2rem; }
+  li{ margin:.3rem 0; }
+  b{ color:var(--ink); }
+  .formula{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:.4rem;
+    font-family:var(--mono);
+    font-size:1rem;
+    background:var(--paper-dim);
+    border-left:2px solid var(--brass);
+    padding:.75rem 1rem;
+    margin:.7rem 0;
+  }
+  .formula .eq{ margin:0 .15rem; color:var(--ink-soft); }
+
+  /* stacked fraction: <span class="frac"><span class="num">a</span><span class="den">b</span></span> */
+  .frac{
+    display:inline-flex;
+    flex-direction:column;
+    align-items:center;
+    vertical-align:middle;
+    line-height:1.15;
+  }
+  .frac .num{
+    padding:0 .35em .16em;
+    border-bottom:1.4px solid currentColor;
+  }
+  .frac .den{ padding:.16em .35em 0; }
+
+  /* computation line under a reasoning sentence, same shape as .formula but lighter */
+  .calc{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:.55rem;
+    font-family:var(--mono);
+    font-size:.92rem;
+    color:var(--ink);
+    background:var(--paper);
+    border:1px solid var(--rule);
+    border-radius:2px;
+    padding:.6rem .8rem;
+    margin:.55rem 0 .1rem;
+  }
+  .calc .eq{ color:var(--ink-soft); }
+  .calc .result{ color:var(--brass); font-weight:600; }
+  .frac.result{ color:var(--brass); font-weight:600; }
+
+  table.prob-table{
+    border-collapse:collapse;
+    width:100%;
+    margin:.9rem 0 1.3rem;
+    font-family:var(--mono);
+    font-size:.85rem;
+  }
+  table.prob-table th, table.prob-table td{
+    border:1px solid var(--rule);
+    padding:.55rem .8rem;
+    text-align:center;
+  }
+  table.prob-table thead th{
+    background:var(--paper-dim);
+    color:var(--navy-soft);
+    font-weight:600;
+  }
+  table.prob-table th[scope="row"]{
+    background:var(--paper-dim);
+    color:var(--navy-soft);
+    font-weight:600;
+    text-align:center;
+  }
+  table.prob-table .tot{ color:var(--brass); font-weight:600; }
+  .table-caption{
+    font-family:var(--sans);
+    font-size:.82rem;
+    color:var(--ink-soft);
+    margin:-.6rem 0 .8rem;
+  }
+  .ex{
+    background:var(--paper-dim);
+    border:1px solid var(--rule);
+    border-radius:2px;
+    padding:.8rem 1rem;
+    margin:.7rem 0;
+  }
+  .ex .q{ font-weight:600; font-size:.9rem; }
+  .ex .a{ font-size:.88rem; color:var(--ink-soft); margin-top:.2rem; }
+  footer{
+    max-width:680px;
+    margin:0 auto;
+    padding:0 1.6rem 3rem;
+    font-size:.76rem;
+    color:var(--ink-soft);
+  }
+</style>
+</head>
+<body>
+<main>
+
+  <p class="eyebrow">CHAPTER 4 &middot; LESSON NOTES</p>
+  <h1>Random Variables</h1>
+  <p class="sub">What a random variable is, how to build one from a bag-of-balls game, and why the choice of random variable depends on what you care about.</p>
+
+  <h2>What is a random variable?</h2>
+  <p>A <b>random variable</b> takes the outcome of a random experiment and turns it into a number. Instead of describing an outcome in words, like "you drew a red ball", you describe it with a number, like "you drew 1 red ball". Formally, a random variable is an association between the outcome of an experiment and a number. We usually write a random variable as a capital letter, such as X.</p>
+
+  <h2 id="bag-of-balls-game">The bag of balls game</h2>
+  <p>Here is a game. A bag has 5 balls: 3 red and 2 blue. You draw one ball, note its color, and put it back in the bag. You repeat this 4 times. Since the ball goes back in the bag each time, every draw has the same chances: 3 out of 5 for red, 2 out of 5 for blue.</p>
+  <p>If you get a red ball on all 4 draws, you receive &#8377;150. If you get any other pattern of colors, you pay &#8377;10. Would you play this game? To answer that, we go through three steps:</p>
+  <ol style="margin:.5rem 0 1rem; padding-left:1.4rem;">
+    <li style="margin:.3rem 0;">Find all the possible combinations.</li>
+    <li style="margin:.3rem 0;">Find the probability of each combination.</li>
+    <li style="margin:.3rem 0;">Use the probabilities to estimate the profit or loss per player.</li>
+  </ol>
+  <p>This chapter covers step 1, listing every outcome, and shows how to turn those outcomes into a random variable, which is what step 2 needs. Working out the actual probabilities is step 2, and comes in the next chapter.</p>
+
+  <h2 id="listing-all-outcomes">Listing all the outcomes</h2>
+  <p>Each draw gives either red (R) or blue (B), and you draw 4 times. So the number of possible color patterns is:</p>
+  <div class="formula"><span>2 &times; 2 &times; 2 &times; 2 = 2</span><span style="font-size:.7em; vertical-align:super;">4</span><span class="eq">=</span><span class="result" style="color:var(--brass); font-weight:600;">16</span></div>
+  <p>Here are all 16 patterns, grouped by how many red balls they contain. For example, in the "1 red, 3 blue" group, the single red ball could land on the 1st draw, the 2nd draw, the 3rd draw, or the 4th draw, giving 4 different patterns: RBBB, BRBB, BBRB, and BBBR.</p>
+
+  <table class="prob-table">
+    <thead>
+      <tr><th scope="col">Pattern group</th><th scope="col">Example outcomes</th><th scope="col" class="tot">Count</th></tr>
+    </thead>
+    <tbody>
+      <tr><th scope="row">0 red, 4 blue</th><td style="font-family:var(--mono); text-align:center;">BBBB</td><td class="tot">1</td></tr>
+      <tr><th scope="row">1 red, 3 blue</th><td style="font-family:var(--mono); text-align:center;">RBBB, BRBB, BBRB, BBBR</td><td class="tot">4</td></tr>
+      <tr><th scope="row">2 red, 2 blue</th><td style="font-family:var(--mono); text-align:center;">RRBB, RBRB, RBBR, BRRB, BRBR, BBRR</td><td class="tot">6</td></tr>
+      <tr><th scope="row">3 red, 1 blue</th><td style="font-family:var(--mono); text-align:center;">RRRB, RRBR, RBRR, BRRR</td><td class="tot">4</td></tr>
+      <tr><th scope="row">4 red, 0 blue</th><td style="font-family:var(--mono); text-align:center;">RRRR</td><td class="tot">1</td></tr>
+      <tr><th scope="row" class="tot">Total</th><td></td><td class="tot">16</td></tr>
+    </tbody>
+  </table>
+  <p class="table-caption">These 16 patterns are not equally likely. Red comes up more often than blue on each draw, so patterns with more red balls are more likely than patterns with fewer. Working out exactly how likely each one is comes in the next chapter.</p>
+
+  <h2 id="turning-outcomes-into-random-variable">Turning the outcomes into a random variable</h2>
+  <p>Now define the random variable for this game. Let X be the number of red balls in the 4 draws. To find X for any outcome, look at the 4 draws in order and count how many of them are red.</p>
+  <p>Worked example: take the outcome RBBB (red, blue, blue, blue).</p>
+  <ul>
+    <li>Draw 1 = R (red)</li>
+    <li>Draw 2 = B (blue)</li>
+    <li>Draw 3 = B (blue)</li>
+    <li>Draw 4 = B (blue)</li>
+  </ul>
+  <p>Only draw 1 is red. That is 1 red draw out of the 4, so X = 1 for this outcome.</p>
+  <p>X does not care about the order of the colors, only the count. So every pattern in a row of the earlier table maps to the same value of X:</p>
+
+  <table class="prob-table">
+    <thead>
+      <tr><th scope="col">X (number of red balls)</th><th scope="col">0</th><th scope="col">1</th><th scope="col">2</th><th scope="col">3</th><th scope="col">4</th></tr>
+    </thead>
+    <tbody>
+      <tr><th scope="row">Number of outcomes</th><td>1</td><td>4</td><td>6</td><td>4</td><td>1</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Why this random variable, and not another one?</h2>
+  <p>Number of red balls is not the only way to quantify these outcomes. For the same experiment, you could just as easily define:</p>
+  <ul>
+    <li>the number of blue balls drawn, or</li>
+    <li>the number of red balls minus the number of blue balls.</li>
+  </ul>
+  <p>Take the outcome blue, red, red, red as an example. Write out each of the 4 draws in order first:</p>
+  <ul>
+    <li>Draw 1 = blue</li>
+    <li>Draw 2 = red</li>
+    <li>Draw 3 = red</li>
+    <li>Draw 4 = red</li>
+  </ul>
+  <p>Now count for each definition:</p>
+  <ul>
+    <li><b>Number of red balls:</b> draws 2, 3, and 4 are red. That is 3 draws, so X = 3.</li>
+    <li><b>Number of blue balls:</b> only draw 1 is blue. That is 1 draw, so this variable = 1.</li>
+    <li><b>Red balls minus blue balls:</b> 3 red draws minus 1 blue draw, so 3 &minus; 1 = 2.</li>
+  </ul>
+  <p>All three are valid random variables, since each one is a clear rule that turns any outcome into a number. None of them is more "correct" than the others in general.</p>
+  <p>Which one you pick depends on what you actually care about. In this game, the payout rule only depends on how many red balls you drew (all 4 red wins, anything else loses), so number of red balls is the useful choice here. That is why we defined X that way.</p>
+
+  <div class="ex">
+    <p class="q">For the outcome red, blue, red, blue, what value would each of these three random variables take: number of red balls, number of blue balls, and red balls minus blue balls?</p>
+    <p class="a">First, write out each of the 4 draws in order:</p>
+    <ul>
+      <li>Draw 1 = red</li>
+      <li>Draw 2 = blue</li>
+      <li>Draw 3 = red</li>
+      <li>Draw 4 = blue</li>
+    </ul>
+    <p class="a">Now count for each definition:</p>
+    <ul>
+      <li><b>Number of red balls:</b> draws 1 and 3 are red. That is 2 draws, so this variable = 2.</li>
+      <li><b>Number of blue balls:</b> draws 2 and 4 are blue. That is 2 draws, so this variable = 2.</li>
+      <li><b>Red balls minus blue balls:</b> 2 red draws minus 2 blue draws, so 2 &minus; 2 = 0.</li>
+    </ul>
+  </div>
+
+  <div class="ex">
+    <p class="q">In the bag game, what values can the random variable X (the number of red balls) take, and how many of the 16 outcomes give each value?</p>
+    <p class="a">X can be 0, 1, 2, 3, or 4, since with 4 draws you can never have fewer than 0 or more than 4 red balls. The outcome counts for each value, from the table above, are 1, 4, 6, 4, and 1.</p>
+    <p class="a">Add these counts together:</p>
+    <div class="calc">
+      <span>1 + 4 + 6 + 4 + 1</span><span class="eq">=</span>
+      <span class="result">16</span>
+    </div>
+    <p class="a">This matches the total number of outcomes, 16. It has to match, because every single one of the 16 outcomes has some exact number of red balls between 0 and 4, so each outcome is counted in exactly one of these five groups, never in two groups and never in none.</p>
+  </div>
+  <div class="ex">
+    <p class="q">You win the &#8377;150 prize only if you get a red ball on every draw. In terms of X, what condition is that, and how many of the 16 outcomes satisfy it?</p>
+    <p class="a">Getting a red ball on every one of the 4 draws means all 4 draws are red, which is exactly X = 4. Looking back at the outcomes table, only one pattern has all 4 draws red: RRRR. So only 1 of the 16 outcomes satisfies X = 4. The other 15 outcomes all have at least one blue draw, so X is 3 or less for those, and they all mean you pay &#8377;10 instead.</p>
+  </div>
+
+  <h2>Random variables outside the game: predicting loan defaults</h2>
+  <p>The same idea shows up far beyond bags of balls. Say you are a data analyst at a bank, trying to predict which customers will default on their loan, meaning they stop paying it back. You have this data:</p>
+
+  <table class="prob-table">
+    <thead>
+      <tr><th scope="col">Customer</th><th scope="col">Yearly income</th><th scope="col">Loan due</th><th scope="col">Dependents</th><th scope="col" class="tot">Default prediction</th></tr>
+    </thead>
+    <tbody>
+      <tr><th scope="row">1</th><td>&#8377;10 lakh</td><td>&#8377;75 lakh</td><td>3</td><td class="tot">Yes</td></tr>
+      <tr><th scope="row">2</th><td>&#8377;15 lakh</td><td>&#8377;50 lakh</td><td>2</td><td class="tot">No</td></tr>
+      <tr><th scope="row">3</th><td>&#8377;20 lakh</td><td>&#8377;40 lakh</td><td>1</td><td class="tot">No</td></tr>
+    </tbody>
+  </table>
+
+  <p>The "Default prediction" column is Yes or No, which is words, not numbers. Define a random variable X for it:</p>
+  <div class="formula"><span>X = 1, if the customer is predicted to default</span></div>
+  <div class="formula"><span>X = 0, if the customer is not predicted to default</span></div>
+
+  <p>The table now becomes fully numeric:</p>
+  <table class="prob-table">
+    <thead>
+      <tr><th scope="col">Customer</th><th scope="col">Yearly income</th><th scope="col">Loan due</th><th scope="col">Dependents</th><th scope="col" class="tot">X</th></tr>
+    </thead>
+    <tbody>
+      <tr><th scope="row">1</th><td>&#8377;10 lakh</td><td>&#8377;75 lakh</td><td>3</td><td class="tot">1</td></tr>
+      <tr><th scope="row">2</th><td>&#8377;15 lakh</td><td>&#8377;50 lakh</td><td>2</td><td class="tot">0</td></tr>
+      <tr><th scope="row">3</th><td>&#8377;20 lakh</td><td>&#8377;40 lakh</td><td>1</td><td class="tot">0</td></tr>
+    </tbody>
+  </table>
+  <p>Once every column is a number, it becomes possible to perform statistical analysis on the data that words like "Yes" and "No" would not allow.</p>
+
+  <div class="ex">
+    <p class="q">Look at Customer 2 in the table above: their Default prediction is No. Using the rule X = 1 for default and X = 0 for no default, what is X for Customer 2?</p>
+    <p class="a">Customer 2 is predicted not to default, so X = 0. This matches the converted table above.</p>
+  </div>
+
+  <p>We have now finished step 1 (listing every outcome) and set up the random variable X that step 2 needs. Step 2, working out how likely each value of X actually is, turns this table of counts into a full probability distribution, and comes in the next chapter. Step 3, using those probabilities to work out whether this game is worth playing, comes after that.</p>
+
+</main>
+<footer>Notes by @Ankit Surana</footer>
+</body>
+</html>

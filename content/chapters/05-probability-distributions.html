@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Probability Distributions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FAF7F2;
+    --paper-dim:#F1ECE2;
+    --ink:#1E1B16;
+    --ink-soft:#5B5548;
+    --navy:#1F2A44;
+    --navy-soft:#2C3A5C;
+    --brass:#A9793D;
+    --bar:#8C3A2E;
+    --rule:#D9D2C3;
+    --serif:'Spectral', Georgia, serif;
+    --sans:'IBM Plex Sans', -apple-system, sans-serif;
+    --mono:'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.6;
+  }
+  main{
+    max-width:680px;
+    margin:0 auto;
+    padding:3.6rem 1.6rem 5rem;
+  }
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:.7rem;
+    color:var(--brass);
+    letter-spacing:.03em;
+    margin:0 0 .6rem;
+  }
+  h1{
+    font-family:var(--serif);
+    font-weight:500;
+    font-size:2.1rem;
+    margin:0 0 .3rem;
+  }
+  .sub{
+    color:var(--ink-soft);
+    font-size:.95rem;
+    margin:0 0 2.2rem;
+    padding-bottom:1.6rem;
+    border-bottom:1px solid var(--rule);
+  }
+  h2{
+    font-family:var(--sans);
+    font-weight:600;
+    font-size:.95rem;
+    color:var(--navy-soft);
+    margin:2.1rem 0 .6rem;
+  }
+  h2:first-of-type{ margin-top:0; }
+  p{ margin:.5rem 0; }
+  ul{ margin:.5rem 0; padding-left:1.2rem; }
+  ol{ margin:.5rem 0; padding-left:1.4rem; }
+  li{ margin:.3rem 0; }
+  b{ color:var(--ink); }
+  .formula{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:.4rem;
+    font-family:var(--mono);
+    font-size:1rem;
+    background:var(--paper-dim);
+    border-left:2px solid var(--brass);
+    padding:.75rem 1rem;
+    margin:.7rem 0;
+  }
+  .formula .eq{ margin:0 .15rem; color:var(--ink-soft); }
+
+  .frac{
+    display:inline-flex;
+    flex-direction:column;
+    align-items:center;
+    vertical-align:middle;
+    line-height:1.15;
+  }
+  .frac .num{ padding:0 .35em .16em; border-bottom:1.4px solid currentColor; }
+  .frac .den{ padding:.16em .35em 0; }
+
+  .calc{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:.55rem;
+    font-family:var(--mono);
+    font-size:.92rem;
+    color:var(--ink);
+    background:var(--paper);
+    border:1px solid var(--rule);
+    border-radius:2px;
+    padding:.6rem .8rem;
+    margin:.55rem 0 .1rem;
+  }
+  .calc .eq{ color:var(--ink-soft); }
+  .calc .result{ color:var(--brass); font-weight:600; }
+
+  table.prob-table{
+    border-collapse:collapse;
+    width:100%;
+    margin:.9rem 0 1.3rem;
+    font-family:var(--mono);
+    font-size:.85rem;
+  }
+  table.prob-table th, table.prob-table td{
+    border:1px solid var(--rule);
+    padding:.55rem .8rem;
+    text-align:center;
+  }
+  table.prob-table thead th{
+    background:var(--paper-dim);
+    color:var(--navy-soft);
+    font-weight:600;
+  }
+  table.prob-table th[scope="row"]{
+    background:var(--paper-dim);
+    color:var(--navy-soft);
+    font-weight:600;
+    text-align:center;
+  }
+  table.prob-table .tot{ color:var(--brass); font-weight:600; }
+  .table-caption{
+    font-family:var(--sans);
+    font-size:.82rem;
+    color:var(--ink-soft);
+    margin:-.6rem 0 .8rem;
+  }
+  .fig-label{
+    font-family:var(--mono);
+    font-weight:600;
+    color:var(--brass);
+  }
+  .ex{
+    background:var(--paper-dim);
+    border:1px solid var(--rule);
+    border-radius:2px;
+    padding:.8rem 1rem;
+    margin:.7rem 0;
+  }
+  .ex .q{ font-weight:600; font-size:.9rem; }
+  .ex .a{ font-size:.88rem; color:var(--ink-soft); margin-top:.2rem; }
+
+  .chart-wrap{ margin:1.1rem 0 .3rem; }
+  .chart-svg{ width:100%; height:auto; display:block; }
+  .chart-axis-label{
+    text-align:center;
+    font-size:.8rem;
+    color:var(--ink-soft);
+    margin-top:.5rem;
+  }
+
+  footer{
+    max-width:680px;
+    margin:0 auto;
+    padding:0 1.6rem 3rem;
+    font-size:.76rem;
+    color:var(--ink-soft);
+  }
+</style>
+</head>
+<body>
+<main>
+
+  <p class="eyebrow">CHAPTER 5 &middot; LESSON NOTES</p>
+  <h1>Probability Distributions</h1>
+  <p class="sub">Turning real results from the bag game into a table and a chart, then generalizing to any probability distribution, table, chart, or equation, with a business example.</p>
+
+  <h2>Where we are in the three steps</h2>
+  <p>Recall the three-step process for the bag game from Chapter 4, Random Variables, in the <a class="chapter-ref-link" onclick="parent.navigateToReference('s1','04','bag-of-balls-game')" href="javascript:void(0)">"The bag of balls game" section</a>:</p>
+  <ol>
+    <li>Find all the possible combinations.</li>
+    <li>Find the probability of each combination.</li>
+    <li>Use the probabilities to estimate the profit or loss per player.</li>
+  </ol>
+  <p>Step 1 is done. We defined X as the number of red balls drawn, and grouped the 16 possible outcomes into 5 values of X, from 0 to 4. Now we move to step 2: finding the probability of each value of X.</p>
+
+  <h2 id="real-people-play-the-game">Real people play the game</h2>
+  <p>To find these probabilities, 75 employees played the game. For each person, we noted their result and recorded which value of X they landed on. As more people played, a chart filled up showing how many people landed on each value. This chart, with X on one axis and the count of people on the other, is called a <b>histogram</b>.</p>
+
+  <p>Here is what the histogram looked like after all 75 people had played (Figure 1):</p>
+
+  <div class="chart-wrap">
+    <svg class="chart-svg" viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
+      <line x1="20" y1="200" x2="380" y2="200" stroke="#D9D2C3" stroke-width="1"/>
+      <rect x="35" y="187.7" width="50" height="12.3" fill="#8C3A2E" rx="2"/>
+      <text x="60" y="181" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="14" font-weight="600" fill="#1E1B16">2</text>
+      <text x="60" y="220" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#5B5548">0</text>
+
+      <rect x="105" y="126.2" width="50" height="73.8" fill="#8C3A2E" rx="2"/>
+      <text x="130" y="119" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="14" font-weight="600" fill="#1E1B16">12</text>
+      <text x="130" y="220" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#5B5548">1</text>
+
+      <rect x="175" y="40" width="50" height="160" fill="#8C3A2E" rx="2"/>
+      <text x="200" y="33" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="14" font-weight="600" fill="#1E1B16">26</text>
+      <text x="200" y="220" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#5B5548">2</text>
+
+      <rect x="245" y="46.2" width="50" height="153.8" fill="#8C3A2E" rx="2"/>
+      <text x="270" y="39" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="14" font-weight="600" fill="#1E1B16">25</text>
+      <text x="270" y="220" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#5B5548">3</text>
+
+      <rect x="315" y="138.5" width="50" height="61.5" fill="#8C3A2E" rx="2"/>
+      <text x="340" y="131" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="14" font-weight="600" fill="#1E1B16">10</text>
+      <text x="340" y="220" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#5B5548">4</text>
+
+      <text x="200" y="240" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#5B5548">X (number of red balls)</text>
+    </svg>
+    <p class="chart-axis-label"><span class="fig-label">Figure 1.</span> Bar height is frequency, the number of people who got that value.</p>
+  </div>
+
+  <table class="prob-table">
+    <thead>
+      <tr><th scope="col">X (number of red balls)</th><th scope="col">0</th><th scope="col">1</th><th scope="col">2</th><th scope="col">3</th><th scope="col">4</th><th scope="col" class="tot">Total</th></tr>
+    </thead>
+    <tbody>
+      <tr><th scope="row">Frequency (people)</th><td>2</td><td>12</td><td>26</td><td>25</td><td>10</td><td class="tot">75</td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="frequency-to-probability">From frequency to probability</h2>
+  <p>Recall empirical probability from Chapter 2, Probability Recap, in the <a class="chapter-ref-link" onclick="parent.navigateToReference('s1','02','empirical-theoretical-probability')" href="javascript:void(0)">"Empirical vs. theoretical probability" section</a>: the number of times something happened, divided by the number of trials. Here, each of the 75 people who played the game is one trial, and X landing on a given value is what we are counting.</p>
+
+  <div class="ex">
+    <p class="q">26 of the 75 people drew exactly 2 red balls. What is the probability that a random player from this group gets X = 2?</p>
+    <p class="a">Use the frequency for X = 2 over the total number of players:</p>
+    <div class="calc">
+      <span>P(X = 2)</span><span class="eq">=</span>
+      <span class="frac"><span class="num">26</span><span class="den">75</span></span><span class="eq">is about</span>
+      <span class="result">0.347</span>
+    </div>
+    <p class="a">In plain terms, about 35% of the players who tried this game drew exactly 2 red balls.</p>
+  </div>
+
+  <p>Using the same idea for every value of X, here is the full probability distribution:</p>
+
+  <table class="prob-table">
+    <thead>
+      <tr><th scope="col">X (number of red balls)</th><th scope="col">0</th><th scope="col">1</th><th scope="col">2</th><th scope="col">3</th><th scope="col">4</th><th scope="col" class="tot">Total</th></tr>
+    </thead>
+    <tbody>
+      <tr><th scope="row">P(X)</th><td>0.027</td><td>0.160</td><td>0.347</td><td>0.333</td><td>0.133</td><td class="tot">1.000</td></tr>
+    </tbody>
+  </table>
+  <p class="table-caption">This table, showing the probability of every possible value of X, is called the probability distribution of X.</p>
+
+  <div class="ex">
+    <p class="q">25 of the 75 people drew exactly 3 red balls. What is P(X = 3)?</p>
+    <p class="a">Same method as before, using the frequency for X = 3:</p>
+    <div class="calc">
+      <span>P(X = 3)</span><span class="eq">=</span>
+      <span class="frac"><span class="num">25</span><span class="den">75</span></span><span class="eq">is about</span>
+      <span class="result">0.333</span>
+    </div>
+    <p class="a">In plain terms, about 33% of the players drew exactly 3 red balls.</p>
+  </div>
+
+  <div class="ex">
+    <p class="q">Add up all five probabilities in the distribution: P(X=0) + P(X=1) + P(X=2) + P(X=3) + P(X=4). What do you get, and why does that make sense?</p>
+    <p class="a">0.027 + 0.160 + 0.347 + 0.333 + 0.133 = 1.000 (allowing for a little rounding). This makes sense because every player ends up with exactly one of these five values of X. The five values cover every possibility and never overlap, so their probabilities have to add up to 1.</p>
+  </div>
+
+  <h2>The probability distribution chart</h2>
+  <p>Plotting these probability values against the values of X gives the probability distribution chart (Figure 2):</p>
+
+  <div class="chart-wrap">
+    <svg class="chart-svg" viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
+      <line x1="20" y1="200" x2="380" y2="200" stroke="#D9D2C3" stroke-width="1"/>
+      <rect x="35" y="187.7" width="50" height="12.3" fill="#8C3A2E" rx="2"/>
+      <text x="60" y="181" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="#1E1B16">0.027</text>
+      <text x="60" y="220" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#5B5548">0</text>
+
+      <rect x="105" y="126.2" width="50" height="73.8" fill="#8C3A2E" rx="2"/>
+      <text x="130" y="119" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="#1E1B16">0.160</text>
+      <text x="130" y="220" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#5B5548">1</text>
+
+      <rect x="175" y="40" width="50" height="160" fill="#8C3A2E" rx="2"/>
+      <text x="200" y="33" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="#1E1B16">0.347</text>
+      <text x="200" y="220" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#5B5548">2</text>
+
+      <rect x="245" y="46.2" width="50" height="153.8" fill="#8C3A2E" rx="2"/>
+      <text x="270" y="39" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="#1E1B16">0.333</text>
+      <text x="270" y="220" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#5B5548">3</text>
+
+      <rect x="315" y="138.5" width="50" height="61.5" fill="#8C3A2E" rx="2"/>
+      <text x="340" y="131" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="#1E1B16">0.133</text>
+      <text x="340" y="220" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#5B5548">4</text>
+
+      <text x="200" y="240" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#5B5548">X (number of red balls)</text>
+    </svg>
+    <p class="chart-axis-label"><span class="fig-label">Figure 2.</span> Bar height is now the probability, between 0 and 1.</p>
+  </div>
+
+  <p>Notice the bars are exactly the same shape as the histogram earlier. Only the scale on the vertical axis has changed, from raw counts of people up to 26, to probabilities between 0 and 1. Because a chart makes it easier to see how likely each value is at a glance, this bar chart form is the one most commonly used to show a probability distribution.</p>
+
+  <p>With this distribution in hand, we know how likely each value of X is. That is exactly what step 3 will use, to work out whether the game makes money, loses money, or breaks even for the house in the long run. Before we get there, let's look at probability distributions more generally.</p>
+
+  <h2>Different ways to show a probability distribution</h2>
+  <p>A probability distribution is any form of representation that tells us the probability for every possible value of X. It can be shown as a table, a chart, or an equation. All three show exactly the same information.</p>
+  <p>For example, take a variable X that can be 1, 2, 3, 4, 5, or 6, where P(x) = x &divide; 21 for each of those values. (A quick notation note: capital X is the random variable itself, and lowercase x stands for one specific value it can take, this is why you will see both used together.) As a table:</p>
+
+  <table class="prob-table">
+    <thead>
+      <tr><th scope="col">x</th><th scope="col">1</th><th scope="col">2</th><th scope="col">3</th><th scope="col">4</th><th scope="col">5</th><th scope="col">6</th></tr>
+    </thead>
+    <tbody>
+      <tr><th scope="row">P(x)</th><td>1/21</td><td>2/21</td><td>3/21</td><td>4/21</td><td>5/21</td><td>6/21</td></tr>
+    </tbody>
+  </table>
+
+  <p>As a chart, using the decimal value of each fraction (Figure 3):</p>
+  <div class="chart-wrap">
+    <svg class="chart-svg" viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
+      <line x1="20" y1="200" x2="380" y2="200" stroke="#D9D2C3" stroke-width="1"/>
+      <rect x="30" y="173" width="40" height="27" fill="#8C3A2E" rx="2"/>
+      <text x="50" y="166" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="#1E1B16">0.048</text>
+      <text x="50" y="220" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#5B5548">1</text>
+
+      <rect x="90" y="147" width="40" height="53" fill="#8C3A2E" rx="2"/>
+      <text x="110" y="140" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="#1E1B16">0.095</text>
+      <text x="110" y="220" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#5B5548">2</text>
+
+      <rect x="150" y="120" width="40" height="80" fill="#8C3A2E" rx="2"/>
+      <text x="170" y="113" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="#1E1B16">0.143</text>
+      <text x="170" y="220" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#5B5548">3</text>
+
+      <rect x="210" y="94" width="40" height="106" fill="#8C3A2E" rx="2"/>
+      <text x="230" y="87" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="#1E1B16">0.190</text>
+      <text x="230" y="220" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#5B5548">4</text>
+
+      <rect x="270" y="67" width="40" height="133" fill="#8C3A2E" rx="2"/>
+      <text x="290" y="60" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="#1E1B16">0.238</text>
+      <text x="290" y="220" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#5B5548">5</text>
+
+      <rect x="330" y="40" width="40" height="160" fill="#8C3A2E" rx="2"/>
+      <text x="350" y="33" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="#1E1B16">0.286</text>
+      <text x="350" y="220" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#5B5548">6</text>
+
+      <text x="200" y="240" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#5B5548">x</text>
+    </svg>
+    <p class="chart-axis-label"><span class="fig-label">Figure 3.</span> The distribution P(x) = x &divide; 21, x = 1 through 6, plotted as a bar chart.</p>
+  </div>
+
+  <p>And as an equation:</p>
+  <div class="formula"><span>P(x) = x &divide; 21, for x = 1, 2, 3, 4, 5, and 6</span></div>
+
+  <div class="ex">
+    <p class="q">Using the equation P(x) = x &divide; 21, check that it agrees with the table and chart for x = 4.</p>
+    <p class="a">Put x = 4 into the equation:</p>
+    <div class="calc">
+      <span>P(4)</span><span class="eq">=</span>
+      <span class="frac"><span class="num">4</span><span class="den">21</span></span><span class="eq">is about</span>
+      <span class="result">0.190</span>
+    </div>
+    <p class="a">This matches 4/21 in the table, and the 0.190 bar in the chart (Figure 3). All three forms are just different views of the same numbers.</p>
+  </div>
+
+  <h2>What makes a probability distribution valid?</h2>
+  <p>A valid, complete probability distribution follows two rules, and both come straight from the basic definition of probability:</p>
+  <ul>
+    <li>No probability value can be negative.</li>
+    <li>All the probability values must add up to 1.</li>
+  </ul>
+
+  <div class="ex">
+    <p class="q">Check the distribution P(x) = x &divide; 21 for x = 1 through 6 against both rules. Is it a valid probability distribution?</p>
+    <p class="a">Every value of x is positive, so every P(x) is positive too, no negatives. Adding all six values:</p>
+    <div class="calc">
+      <span class="frac"><span class="num">1</span><span class="den">21</span></span><span class="eq">+</span>
+      <span class="frac"><span class="num">2</span><span class="den">21</span></span><span class="eq">+</span>
+      <span class="frac"><span class="num">3</span><span class="den">21</span></span><span class="eq">+</span>
+      <span class="frac"><span class="num">4</span><span class="den">21</span></span><span class="eq">+</span>
+      <span class="frac"><span class="num">5</span><span class="den">21</span></span><span class="eq">+</span>
+      <span class="frac"><span class="num">6</span><span class="den">21</span></span><span class="eq">=</span>
+      <span class="frac result"><span class="num">21</span><span class="den">21</span></span><span class="eq">= 1</span>
+    </div>
+    <p class="a">Both rules hold, so yes, this is a valid probability distribution.</p>
+  </div>
+
+  <p>As we saw earlier with the bag game, a probability distribution and the frequency distribution (histogram) it comes from are exactly the same shape. Only the scale on the vertical axis changes, from raw counts to probabilities between 0 and 1.</p>
+
+  <h2 id="business-example">A business example: will the project make a profit?</h2>
+  <p>A company's management is deciding whether to invest in a project. Whether the project makes a profit depends on the economic cycle at the time, such as a recession, a normal economy, or a boom. Based on expert opinions, here is the probability of each economic cycle:</p>
+
+  <table class="prob-table">
+    <thead>
+      <tr><th scope="col">Economic cycle</th><th scope="col" class="tot">Probability</th></tr>
+    </thead>
+    <tbody>
+      <tr><th scope="row">Recession</th><td class="tot">0.1</td></tr>
+      <tr><th scope="row">Normal</th><td class="tot">0.7</td></tr>
+      <tr><th scope="row">Boom</th><td class="tot">0.2</td></tr>
+    </tbody>
+  </table>
+
+  <p>As an analyst, you are asked: can the company expect to make a profit? Should it invest? In this form, the table does not answer that, since "Recession", "Normal", and "Boom" are just labels, not numbers. So you quantify it with a random variable. Since profit is what you care about, define X as the net revenue of the project.</p>
+  <p>A colleague works out the net revenue for each economic cycle, and builds this probability distribution for X:</p>
+
+  <table class="prob-table">
+    <thead>
+      <tr><th scope="col">X (net revenue, &#8377; crores)</th><th scope="col" class="tot">P(x)</th></tr>
+    </thead>
+    <tbody>
+      <tr><th scope="row">&minus;305</th><td class="tot">0.1</td></tr>
+      <tr><th scope="row">+15</th><td class="tot">0.7</td></tr>
+      <tr><th scope="row">+95</th><td class="tot">0.2</td></tr>
+    </tbody>
+  </table>
+
+  <div class="ex">
+    <p class="q">According to the experts' table, what is the probability the economy is in a boom?</p>
+    <p class="a">Read it straight off the table: <b>0.2</b>.</p>
+  </div>
+  <div class="ex">
+    <p class="q">If the economy turns out to be a recession, what value does X (the net revenue) take, and with what probability?</p>
+    <p class="a">A recession has probability 0.1 in the first table. That same 0.1 lines up with X = &minus;305 in the net revenue table, since a recession is what causes that loss. So X = &minus;&#8377;305 crore, with probability 0.1.</p>
+  </div>
+  <div class="ex">
+    <p class="q">Check the net revenue distribution against the two rules for a valid probability distribution. Does it hold up?</p>
+    <p class="a">No probability is negative (0.1, 0.7, and 0.2 are all positive, even though one of the X values, &minus;305, is negative). Adding the probabilities: 0.1 + 0.7 + 0.2 = 1. Both rules hold, so this is a valid probability distribution.</p>
+  </div>
+
+  <p>Now you have a full probability distribution for X, the net revenue of the project. To finally answer whether the company should expect a profit or a loss, you need one more idea: expected value. That is what comes next.</p>
+
+</main>
+<footer>Notes by @Ankit Surana</footer>
+</body>
+</html>

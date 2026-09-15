@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Loading...</title>
+<style>
+  :root{
+    --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text',
+                 'Helvetica Neue', 'Segoe UI', Roboto, Ubuntu, sans-serif;
+    --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  body{
+    font-family:var(--font-sans);
+    -webkit-font-smoothing:antialiased;
+    letter-spacing:-0.011em;
+    background:#FAF7F2;
+    color:#1E1B16;
+    padding:2rem;
+    max-width:1000px;
+    margin:0 auto;
+  }
+  h1{ font-size:1.35rem; font-weight:700; letter-spacing:-0.02em; }
+  h2{ font-weight:600; letter-spacing:-0.01em; }
+  table{ width:100%; border-collapse:collapse; margin-top:1rem; font-size:.88rem; }
+  th, td{ text-align:left; padding:.55rem .6rem; border-bottom:1px solid #D9D2C3; }
+  th{ color:#5B5548; font-weight:600; font-size:.76rem; text-transform:uppercase; letter-spacing:.02em; }
+  input[type=text], input[type=date]{
+    padding:.38rem .5rem;
+    border:1px solid rgba(0,0,0,.12);
+    border-radius:8px;
+    font-size:.85rem;
+    font-family:inherit;
+    width:100%;
+    box-sizing:border-box;
+    transition:border-color 180ms var(--ease-out), box-shadow 180ms var(--ease-out);
+  }
+  input[type=text]:focus, input[type=date]:focus{
+    outline:none;
+    border-color:#1F2A44;
+    box-shadow:0 0 0 3px rgba(31,42,68,.1);
+  }
+  button{
+    padding:.4rem .8rem;
+    border:none;
+    border-radius:8px;
+    background:#1F2A44;
+    color:#fff;
+    cursor:pointer;
+    font-size:.8rem;
+    font-weight:500;
+    font-family:inherit;
+    transition:background-color 180ms var(--ease-out), transform 150ms var(--ease-spring);
+  }
+  button:hover{ background:#2C3A5C; }
+  button:active{ transform:scale(0.95); }
+  button.danger{ background:#8C3A2E; }
+  button.danger:hover{ background:#A9491F; }
+  button.ghost{ background:#F1ECE2; color:#1E1B16; }
+  button.ghost:hover{ background:#E5DFD1; }
+  #new-user-form{ background:#fff; border:1px solid rgba(0,0,0,.07); border-radius:14px; padding:1.3rem; margin-top:1.5rem; box-shadow:0 1px 2px rgba(0,0,0,.03), 0 8px 24px -8px rgba(0,0,0,.08); }
+  #new-user-form label{ display:block; font-size:.78rem; color:#5B5548; margin:.5rem 0 .2rem; }
+  .pw-reveal{ background:#F1ECE2; border:1px solid #D9D2C3; border-radius:8px; padding:.6rem .8rem; margin-top:.6rem; font-family:'SF Mono', ui-monospace, monospace; font-size:.85rem; display:none; }
+  .toggle{ cursor:pointer; }
+  .pw-cell{ display:flex; align-items:center; gap:.35rem; }
+  .pw-text{ font-family:'SF Mono', ui-monospace, monospace; font-size:.82rem; color:#1E1B16; letter-spacing:0.02em; min-width:5.5rem; }
+  .pw-text.hidden{ letter-spacing:.15em; color:#5B5548; }
+  .pw-text.empty{ color:#9A9384; font-style:italic; font-family:inherit; letter-spacing:normal; }
+  .pw-eye{
+    background:none;
+    border:none;
+    padding:.2rem;
+    cursor:pointer;
+    color:#5B5548;
+    display:flex;
+    align-items:center;
+    border-radius:6px;
+    transition:background-color 150ms var(--ease-out), color 150ms var(--ease-out);
+  }
+  .pw-eye:hover{ background:#F1ECE2; color:#1E1B16; }
+  .pw-eye[disabled]{ opacity:.35; cursor:not-allowed; }
+  .pw-eye[disabled]:hover{ background:none; color:#5B5548; }
+  .pw-copy{
+    background:none;
+    border:none;
+    padding:.2rem;
+    cursor:pointer;
+    color:#5B5548;
+    display:flex;
+    align-items:center;
+    border-radius:6px;
+    font-size:.72rem;
+    transition:background-color 150ms var(--ease-out), color 150ms var(--ease-out);
+  }
+  .pw-copy:hover{ background:#F1ECE2; color:#1E1B16; }
+  .pw-copy[disabled]{ opacity:.35; cursor:not-allowed; }
+  .pw-copy[disabled]:hover{ background:none; color:#5B5548; }
+  @media (prefers-reduced-motion: reduce){
+    *{ transition-duration:1ms !important; }
+  }
+</style>
+</head>
+<body>
+  <div style="display:flex; align-items:baseline; justify-content:space-between; gap:1rem; flex-wrap:wrap;">
+    <h1><span id="app-title"></span> - Manage students</h1>
+    <a href="/app" style="font-size:.85rem; color:#5B5548; text-decoration:none;">&larr; Back to app</a>
+  </div>
+
+  <h2 style="font-size:1.05rem; margin:1.6rem 0 .3rem;">Batches</h2>
+  <p style="font-size:.85rem; color:#5B5548; margin:0 0 .5rem;">
+    Set an expiry once per batch and it applies to every student in that
+    batch immediately. A student's own "Expiry override" (in the table
+    below) only matters if you need to special-case one person, it takes
+    priority over their batch's expiry when set.
+  </p>
+  <table id="batches-table">
+    <thead>
+      <tr><th>Batch name</th><th>Expires</th><th></th></tr>
+    </thead>
+    <tbody id="batches-body"></tbody>
+  </table>
+  <div style="margin-top:.8rem; display:flex; gap:.5rem; align-items:flex-end;">
+    <div style="flex:1;">
+      <label style="display:block; font-size:.78rem; color:#5B5548; margin-bottom:.2rem;">New batch name</label>
+      <input type="text" id="new-batch-name" placeholder="e.g. batch-2026-a">
+    </div>
+    <div style="flex:1;">
+      <label style="display:block; font-size:.78rem; color:#5B5548; margin-bottom:.2rem;">Expiry (optional)</label>
+      <input type="date" id="new-batch-expiry">
+    </div>
+    <button onclick="createBatch()">Add batch</button>
+  </div>
+
+  <h2 style="font-size:1.05rem; margin:2.2rem 0 .3rem;">Students</h2>
+  <div style="margin-bottom:.6rem;">
+    <label style="font-size:.78rem; color:#5B5548; margin-right:.5rem;">Filter by batch:</label>
+    <select id="batch-filter" onchange="loadUsers()">
+      <option value="">All batches</option>
+    </select>
+  </div>
+  <table id="users-table">
+    <thead>
+      <tr>
+        <th>Username</th><th>Name</th><th>Batch</th><th>Expiry override</th><th>Applies to them</th><th>Access</th><th>Password</th><th>Session</th><th></th>
+      </tr>
+    </thead>
+    <tbody id="users-body"></tbody>
+  </table>
+
+  <div id="new-user-form">
+    <h3 style="margin:0;">Add a new student</h3>
+    <label>Username (you choose this, not their email)</label>
+    <input type="text" id="new-username" placeholder="e.g. student047">
+    <label>Display name</label>
+    <input type="text" id="new-name" placeholder="e.g. Ananya Sharma">
+    <label>Batch</label>
+    <input type="text" id="new-batch" placeholder="e.g. batch-2026-a" required>
+    <label>Individual expiry override (optional, leave blank to just use the batch's expiry)</label>
+    <input type="date" id="new-expiry">
+    <div style="margin-top:1rem;"><button onclick="createUser()">Create student</button></div>
+    <div class="pw-reveal" id="new-pw-reveal"></div>
+  </div>
+
+  <script>
+    async function loadBatches() {
+      const res = await fetch('/api/admin/batches');
+      const batches = await res.json();
+      const tbody = document.getElementById('batches-body');
+      tbody.innerHTML = '';
+
+      // Also populate the "filter by batch" dropdown on the students
+      // table below, keeping whichever option was already selected.
+      const filterEl = document.getElementById('batch-filter');
+      const previousSelection = filterEl.value;
+      filterEl.innerHTML = '<option value="">All batches</option>';
+      batches.forEach((b) => {
+        const opt = document.createElement('option');
+        opt.value = b.name;
+        opt.textContent = b.name;
+        filterEl.appendChild(opt);
+      });
+      filterEl.value = previousSelection;
+
+      if (!batches.length) {
+        tbody.innerHTML = '<tr><td colspan="3" style="color:#5B5548;">No batches yet. Add one below, or one gets created automatically the first time you type a new batch name for a student.</td></tr>';
+        return;
+      }
+      batches.forEach((b) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${b.name}</td>
+          <td><input type="date" value="${b.expires_at ? b.expires_at.slice(0,10) : ''}" onchange="updateBatchExpiry('${b.name}', this.value)"></td>
+          <td><button class="danger" onclick="removeBatch('${b.name}')">Delete</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function updateBatchExpiry(name, value) {
+      await fetch('/api/admin/batches', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, expires_at: value || null }),
+      });
+      loadUsers(); // "Applies to them" column depends on batch expiry -- refresh it too
+    }
+
+    async function createBatch() {
+      const name = document.getElementById('new-batch-name').value.trim();
+      const expires_at = document.getElementById('new-batch-expiry').value || null;
+      if (!name) { alert('Batch name is required.'); return; }
+      await fetch('/api/admin/batches', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, expires_at }),
+      });
+      document.getElementById('new-batch-name').value = '';
+      document.getElementById('new-batch-expiry').value = '';
+      loadBatches();
+    }
+
+    async function removeBatch(name) {
+      if (!confirm(`Delete batch "${name}"? Students already assigned to it keep that batch name, but it will have no expiry of its own until you re-add it.`)) return;
+      await fetch('/api/admin/batches/' + encodeURIComponent(name), { method: 'DELETE' });
+      loadBatches();
+      loadUsers();
+    }
+
+    async function loadUsers() {
+      const res = await fetch('/api/admin/users');
+      let users = await res.json();
+
+      const filterValue = document.getElementById('batch-filter').value;
+      if (filterValue) {
+        users = users.filter((u) => u.batch === filterValue);
+      }
+
+      const tbody = document.getElementById('users-body');
+      tbody.innerHTML = '';
+      if (!users.length) {
+        tbody.innerHTML = '<tr><td colspan="9" style="color:#5B5548;">No students in this batch.</td></tr>';
+        return;
+      }
+      users.forEach((u) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${escapeAttr(u.username)}</td>
+          <td><input type="text" value="${escapeAttr(u.display_name)}" onchange="updateField(${u.id}, 'display_name', this.value)"></td>
+          <td><input type="text" value="${escapeAttr(u.batch || '')}" onchange="updateField(${u.id}, 'batch', this.value)"></td>
+          <td><input type="date" value="${u.expires_at ? u.expires_at.slice(0,10) : ''}" onchange="updateField(${u.id}, 'expires_at', this.value)"></td>
+          <td style="color:#5B5548; font-size:.8rem;">${u.effective_expires_at ? u.effective_expires_at.slice(0,10) : 'Never'}</td>
+          <td><input type="checkbox" class="toggle" ${u.access_enabled ? 'checked' : ''} onchange="updateField(${u.id}, 'access_enabled', this.checked)"></td>
+          <td>${renderPasswordCell(u.id, u.initial_password)}</td>
+          <td>${u.has_active_session ? 'Active' : '—'}</td>
+          <td><button class="ghost" onclick="resetPassword(${u.id})">Reset password</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Small helper: never interpolate raw user-supplied text into an
+    // attribute value directly -- a quote or angle bracket in a display
+    // name or batch would otherwise break the HTML.
+    function escapeAttr(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    // Renders the "Password" cell for one student. The plaintext (if we
+    // have it -- only rows created or reset via the admin panel do, unless
+    // you've run the migration in supabase/04_migration_initial_password.sql
+    // to backfill the seed accounts) is stored in a data-* attribute on
+    // the cell and only rendered into the visible span when the eye is
+    // toggled. That means it's never in the DOM as visible text on load,
+    // and a casual over-the-shoulder look at the admin page shows nothing.
+    function renderPasswordCell(id, password) {
+      if (!password) {
+        return `<div class="pw-cell">
+          <span class="pw-text empty">not stored</span>
+          <button class="pw-eye" disabled title="Reset the password to make it visible here">${EYE_ICON}</button>
+          <button class="pw-copy" disabled title="Nothing to copy">${COPY_ICON}</button>
+        </div>`;
+      }
+      return `<div class="pw-cell" data-password="${escapeAttr(password)}" data-visible="0">
+        <span class="pw-text hidden">${'•'.repeat(Math.min(password.length, 10))}</span>
+        <button class="pw-eye" title="Show password" onclick="togglePassword(this)">${EYE_ICON}</button>
+        <button class="pw-copy" title="Copy password" onclick="copyPassword(this)">${COPY_ICON}</button>
+      </div>`;
+    }
+
+    const EYE_ICON = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+    const EYE_OFF_ICON = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a19.55 19.55 0 0 1 4.24-5.42"/><path d="M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a19.52 19.52 0 0 1-2.16 3.19"/><path d="M14.12 14.12A3 3 0 0 1 9.88 9.88"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+    const COPY_ICON = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+
+    function togglePassword(btn) {
+      const cell = btn.closest('.pw-cell');
+      const span = cell.querySelector('.pw-text');
+      const password = cell.dataset.password || '';
+      const visible = cell.dataset.visible === '1';
+      if (visible) {
+        span.textContent = '•'.repeat(Math.min(password.length, 10));
+        span.classList.add('hidden');
+        cell.dataset.visible = '0';
+        btn.title = 'Show password';
+        btn.innerHTML = EYE_ICON;
+      } else {
+        span.textContent = password;
+        span.classList.remove('hidden');
+        cell.dataset.visible = '1';
+        btn.title = 'Hide password';
+        btn.innerHTML = EYE_OFF_ICON;
+      }
+    }
+
+    async function copyPassword(btn) {
+      const cell = btn.closest('.pw-cell');
+      const password = cell.dataset.password || '';
+      if (!password) return;
+      try {
+        await navigator.clipboard.writeText(password);
+        const original = btn.innerHTML;
+        btn.innerHTML = '<span style="font-size:.7rem; font-weight:600;">copied</span>';
+        setTimeout(() => { btn.innerHTML = original; }, 1200);
+      } catch (e) {
+        // Clipboard API is HTTPS-only and can be blocked -- fall back to
+        // just revealing the password so the admin can select it by hand.
+        const eye = cell.querySelector('.pw-eye');
+        if (cell.dataset.visible !== '1' && eye) togglePassword(eye);
+      }
+    }
+
+    async function updateField(id, field, value) {
+      const res = await fetch('/api/admin/users/' + id, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ [field]: value }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        alert(data.error || 'That change could not be saved.');
+      }
+      loadUsers(); // refresh either way -- on success to reflect it, on failure to revert the input back to the real saved value
+    }
+
+    async function createUser() {
+      const username = document.getElementById('new-username').value.trim();
+      const display_name = document.getElementById('new-name').value.trim();
+      const batch = document.getElementById('new-batch').value.trim();
+      const expires_at = document.getElementById('new-expiry').value || null;
+      if (!username || !display_name) { alert('Username and display name are required.'); return; }
+
+      const res = await fetch('/api/admin/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, display_name, batch, expires_at }),
+      });
+      const data = await res.json();
+      if (data.error) { alert(data.error); return; }
+
+      const reveal = document.getElementById('new-pw-reveal');
+      reveal.style.display = 'block';
+      reveal.textContent = `Username: ${data.username}   Password: ${data.password}   (also visible later in the "Password" column below)`;
+      loadUsers();
+    }
+
+    async function resetPassword(id) {
+      const res = await fetch('/api/admin/users/' + id + '/reset-password', { method: 'POST' });
+      const data = await res.json();
+      alert(`New password for ${data.username}: ${data.password}\n\nThe new password is also visible in the "Password" column, reveal it with the eye icon.`);
+      loadUsers();
+    }
+
+    // App name comes from /api/config -- see config.json to change it
+    // anywhere it appears in this app. Nothing here is hardcoded.
+    fetch('/api/config')
+      .then((r) => r.json())
+      .then((cfg) => {
+        document.title = cfg.appName + ' Admin';
+        document.getElementById('app-title').textContent = cfg.appName;
+      })
+      .catch(() => {
+        document.getElementById('app-title').textContent = 'Admin';
+      });
+
+    loadBatches();
+    loadUsers();
+  </script>
+</body>
+</html>
