@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Probability Density Functions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FAF7F2;
+    --paper-dim:#F1ECE2;
+    --ink:#1E1B16;
+    --ink-soft:#5B5548;
+    --navy:#1F2A44;
+    --navy-soft:#2C3A5C;
+    --brass:#A9793D;
+    --rule:#D9D2C3;
+    --serif:'Spectral', Georgia, serif;
+    --sans:'IBM Plex Sans', -apple-system, sans-serif;
+    --mono:'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.6;
+  }
+  main{
+    max-width:680px;
+    margin:0 auto;
+    padding:3.6rem 1.6rem 5rem;
+  }
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:.7rem;
+    color:var(--brass);
+    letter-spacing:.03em;
+    margin:0 0 .6rem;
+  }
+  h1{
+    font-family:var(--serif);
+    font-weight:500;
+    font-size:2.1rem;
+    margin:0 0 .3rem;
+  }
+  .sub{
+    color:var(--ink-soft);
+    font-size:.95rem;
+    margin:0 0 2.2rem;
+    padding-bottom:1.6rem;
+    border-bottom:1px solid var(--rule);
+  }
+  h2{
+    font-family:var(--sans);
+    font-weight:600;
+    font-size:.95rem;
+    color:var(--navy-soft);
+    margin:2.1rem 0 .6rem;
+  }
+  h2:first-of-type{ margin-top:0; }
+  p{ margin:.5rem 0; }
+  ul{ margin:.5rem 0; padding-left:1.2rem; }
+  li{ margin:.3rem 0; }
+  b{ color:var(--ink); }
+  a{ color:var(--navy-soft); }
+  .formula{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:.4rem;
+    font-family:var(--mono);
+    font-size:1rem;
+    background:var(--paper-dim);
+    border-left:2px solid var(--brass);
+    padding:.75rem 1rem;
+    margin:.7rem 0;
+  }
+  .formula .eq{ margin:0 .15rem; color:var(--ink-soft); }
+
+  .calc{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:.55rem;
+    font-family:var(--mono);
+    font-size:.92rem;
+    color:var(--ink);
+    background:var(--paper);
+    border:1px solid var(--rule);
+    border-radius:2px;
+    padding:.6rem .8rem;
+    margin:.55rem 0 .1rem;
+  }
+  .calc .eq{ color:var(--ink-soft); }
+  .calc .result{ color:var(--brass); font-weight:600; }
+
+  table.prob-table{
+    border-collapse:collapse;
+    width:100%;
+    margin:.9rem 0 1.3rem;
+    font-family:var(--mono);
+    font-size:.85rem;
+  }
+  table.prob-table th, table.prob-table td{
+    border:1px solid var(--rule);
+    padding:.55rem .8rem;
+    text-align:center;
+  }
+  table.prob-table thead th{
+    background:var(--paper-dim);
+    color:var(--navy-soft);
+    font-weight:600;
+  }
+  table.prob-table th[scope="row"]{
+    background:var(--paper-dim);
+    color:var(--navy-soft);
+    font-weight:600;
+    text-align:center;
+  }
+  table.prob-table .tot{ color:var(--brass); font-weight:600; }
+  .table-caption{
+    font-family:var(--sans);
+    font-size:.82rem;
+    color:var(--ink-soft);
+    margin:-.6rem 0 .8rem;
+  }
+  .ex{
+    background:var(--paper-dim);
+    border:1px solid var(--rule);
+    border-radius:2px;
+    padding:.8rem 1rem;
+    margin:.7rem 0;
+  }
+  .ex .q{ font-weight:600; font-size:.9rem; }
+  .ex .a{ font-size:.88rem; color:var(--ink-soft); margin-top:.2rem; }
+
+  .chart-wrap{ margin:1.1rem 0 .3rem; }
+  .chart-svg{ width:100%; height:auto; display:block; }
+  .chart-axis-label{
+    text-align:center;
+    font-size:.8rem;
+    color:var(--ink-soft);
+    margin-top:.5rem;
+  }
+  .fig-label{
+    font-family:var(--mono);
+    font-weight:600;
+    color:var(--brass);
+  }
+
+  footer{
+    max-width:680px;
+    margin:0 auto;
+    padding:0 1.6rem 3rem;
+    font-size:.76rem;
+    color:var(--ink-soft);
+  }
+</style>
+</head>
+<body>
+<main>
+
+  <p class="eyebrow">CHAPTER 14 &middot; LESSON NOTES</p>
+  <h1>Probability Density Functions</h1>
+  <p class="sub">Why exact-value probability does not work for continuous variables, how the cumulative distribution function looks for one, and how the probability density function tells the same story as an area.</p>
+
+  <h2>The problem: a continuous variable</h2>
+  <p>Imagine you work at a company with 3000 employees in the local office, and you want to study each employee's <b>daily commute time</b>: how long, in minutes, it takes them to get to work. Unlike the number of red balls in the bag game from earlier chapters, commute time is a <b>continuous</b> random variable. It can be 32 minutes, or 32.4 minutes, or 32.417 minutes, and there is no reason to stop at any particular number of decimal places.</p>
+
+  <div class="ex">
+    <p class="q">What is the probability that an employee's commute time is exactly 35 minutes?</p>
+    <p class="a">Very close to 0. Because commute time is continuous, there are effectively infinite possible values a single measurement can land on: 35.00, 35.01, 35.001, 35.0001, and so on. The chance of landing on any one exact value out of an infinite list is essentially 0.</p>
+  </div>
+
+  <p>This is the first thing to understand about continuous random variables: asking for the probability of an <b>exact</b> value is not useful, because that probability is always effectively 0. So why talk about probability for continuous variables at all?</p>
+
+  <h2>Talk about ranges, not exact values</h2>
+  <p>The fix is simple: instead of asking for the probability of an exact value, ask for the probability of a <b>range</b> of values. "What is the probability that the commute time is between 35 and 40 minutes?" is a meaningful question, even though "exactly 35 minutes" is not.</p>
+
+  <p>Suppose the company has done a study and produced this table for its 3000 employees, showing the probability of the commute time falling in each 5-minute range:</p>
+
+  <table class="prob-table">
+    <thead>
+      <tr><th scope="col">Commute time (minutes)</th><th scope="col" class="tot">Probability</th></tr>
+    </thead>
+    <tbody>
+      <tr><th scope="row">20 to 25</th><td class="tot">0.15</td></tr>
+      <tr><th scope="row">25 to 30</th><td class="tot">0.20</td></tr>
+      <tr><th scope="row">30 to 35</th><td class="tot">0.30</td></tr>
+      <tr><th scope="row">35 to 40</th><td class="tot">0.20</td></tr>
+      <tr><th scope="row">40 to 45</th><td class="tot">0.15</td></tr>
+    </tbody>
+  </table>
+  <p class="table-caption">The five range probabilities add up to 0.15 + 0.20 + 0.30 + 0.20 + 0.15 = 1.00, as they must, since every employee's commute time falls into exactly one of these ranges.</p>
+
+  <h2 id="cumulative-from-table">Building the cumulative probabilities</h2>
+  <p>Recall from Chapter 11, Cumulative Probability Distributions, in the <a class="chapter-ref-link" onclick="parent.navigateToReference('s2','11','defining-cumulative-probability')" href="javascript:void(0)">"Defining cumulative probability" section</a>, that the cumulative probability F(x) is P(X &le; x), the probability that X takes any value up to and including x.</p>
+
+  <p>Using the table above, we can find the cumulative probability at the top of each range. The probability of the commute time being 25 or less is just the first row (nothing smaller in the table):</p>
+  <div class="calc">
+    <span>F(25) = 0.15</span>
+  </div>
+
+  <p>For 30 or less, add the first two rows:</p>
+  <div class="calc">
+    <span>F(30) = 0.15 + 0.20</span><span class="eq">=</span><span class="result">0.35</span>
+  </div>
+
+  <div class="ex">
+    <p class="q">Using the same method, find F(35), the probability that the commute time is 35 minutes or less.</p>
+    <p class="a">Add the first three rows of the table:</p>
+    <div class="calc">
+      <span>F(35) = 0.15 + 0.20 + 0.30</span><span class="eq">=</span><span class="result">0.65</span>
+    </div>
+    <p class="a">So there is a 65% chance that a randomly picked employee's commute is 35 minutes or less.</p>
+  </div>
+
+  <p>Continuing the same way for 40 and 45:</p>
+  <div class="calc">
+    <span>F(40) = 0.15 + 0.20 + 0.30 + 0.20</span><span class="eq">=</span><span class="result">0.85</span>
+  </div>
+  <div class="calc">
+    <span>F(45) = 0.15 + 0.20 + 0.30 + 0.20 + 0.15</span><span class="eq">=</span><span class="result">1.00</span>
+  </div>
+
+  <p>The full set of cumulative probability values:</p>
+  <table class="prob-table">
+    <thead>
+      <tr><th scope="col">x</th><th scope="col">20</th><th scope="col">25</th><th scope="col">30</th><th scope="col">35</th><th scope="col">40</th><th scope="col">45</th></tr>
+    </thead>
+    <tbody>
+      <tr><th scope="row">F(x) = P(X &le; x)</th><td>0</td><td>0.15</td><td>0.35</td><td>0.65</td><td>0.85</td><td class="tot">1.00</td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="cdf-curve">The CDF as a smooth curve</h2>
+  <p>Plotting these cumulative probabilities against x gives the <b>cumulative distribution function</b>, or <b>CDF</b>, shown in Figure 1. For a continuous variable, the plot is a smooth curve, not a bar chart. This is because the commute time can take any value between 20 and 45, not just the six values in the table above. The dots mark the six values we calculated, and the curve smoothly connects them.</p>
+
+  <div class="chart-wrap">
+    <svg class="chart-svg" viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="CDF curve for daily commute time">
+      <!-- axes -->
+      <line x1="52" y1="220" x2="380" y2="220" stroke="#5B5548" stroke-width="1"/>
+      <line x1="52" y1="20" x2="52" y2="220" stroke="#5B5548" stroke-width="1"/>
+
+      <!-- x tick labels: 15, 20, 25, 30, 35, 40, 45, 50 -->
+      <g font-family="IBM Plex Mono, monospace" font-size="10" fill="#5B5548">
+        <text x="52" y="235" text-anchor="middle">15</text>
+        <text x="94" y="235" text-anchor="middle">20</text>
+        <text x="136" y="235" text-anchor="middle">25</text>
+        <text x="178" y="235" text-anchor="middle">30</text>
+        <text x="220" y="235" text-anchor="middle">35</text>
+        <text x="262" y="235" text-anchor="middle">40</text>
+        <text x="304" y="235" text-anchor="middle">45</text>
+        <text x="346" y="235" text-anchor="middle">50</text>
+      </g>
+
+      <!-- y tick labels: 0 to 1 in 0.1 steps -->
+      <g font-family="IBM Plex Mono, monospace" font-size="10" fill="#5B5548">
+        <text x="46" y="223" text-anchor="end">0</text>
+        <text x="46" y="203" text-anchor="end">0.1</text>
+        <text x="46" y="183" text-anchor="end">0.2</text>
+        <text x="46" y="163" text-anchor="end">0.3</text>
+        <text x="46" y="143" text-anchor="end">0.4</text>
+        <text x="46" y="123" text-anchor="end">0.5</text>
+        <text x="46" y="103" text-anchor="end">0.6</text>
+        <text x="46" y="83" text-anchor="end">0.7</text>
+        <text x="46" y="63" text-anchor="end">0.8</text>
+        <text x="46" y="43" text-anchor="end">0.9</text>
+        <text x="46" y="23" text-anchor="end">1</text>
+      </g>
+
+      <!-- CDF curve through (20,0), (25,0.15), (30,0.35), (35,0.65), (40,0.85), (45,1) -->
+      <!-- Point positions: x = 52 + (val-15)*8.4;  y = 220 - val*200 -->
+      <!-- (20,0)   -> (94, 220) -->
+      <!-- (25,.15) -> (136, 190) -->
+      <!-- (30,.35) -> (178, 150) -->
+      <!-- (35,.65) -> (220, 90)  -->
+      <!-- (40,.85) -> (262, 50)  -->
+      <!-- (45,1)   -> (304, 20)  -->
+      <!-- Smooth CDF curve : 51 PCHIP-interpolated points through the 6 anchors (20,0),(25,0.15),(30,0.35),(35,0.65),(40,0.85),(45,1) -->
+      <path d="M 94.0 220.0 L 98.2 217.44 L 102.4 214.78 L 106.6 212.0 L 110.8 209.13 L 115.0 206.16 L 119.2 203.1 L 123.4 199.94 L 127.6 196.71 L 131.8 193.39 L 136.0 190.0 L 140.2 186.53 L 144.4 182.99 L 148.6 179.34 L 152.8 175.59 L 157.0 171.71 L 161.2 167.7 L 165.4 163.54 L 169.6 159.21 L 173.8 154.7 L 178.0 150.0 L 182.2 144.86 L 186.4 139.15 L 190.6 133.01 L 194.8 126.58 L 199.0 120.0 L 203.2 113.42 L 207.4 106.99 L 211.6 100.85 L 215.8 95.14 L 220.0 90.0 L 224.2 85.3 L 228.4 80.79 L 232.6 76.46 L 236.8 72.3 L 241.0 68.29 L 245.2 64.41 L 249.4 60.66 L 253.6 57.01 L 257.8 53.47 L 262.0 50.0 L 266.2 46.61 L 270.4 43.29 L 274.6 40.06 L 278.8 36.9 L 283.0 33.84 L 287.2 30.87 L 291.4 28.0 L 295.6 25.22 L 299.8 22.56 L 304.0 20.0"
+            fill="none" stroke="#1F2A44" stroke-width="1.8"/>
+
+      <!-- data points -->
+      <g fill="#5B5548">
+        <circle cx="94" cy="220" r="3.2"/>
+        <circle cx="136" cy="190" r="3.2"/>
+        <circle cx="178" cy="150" r="3.2"/>
+        <circle cx="220" cy="90" r="3.2"/>
+        <circle cx="262" cy="50" r="3.2"/>
+        <circle cx="304" cy="20" r="3.2"/>
+      </g>
+
+      <!-- axis titles -->
+      <text x="216" y="252" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#5B5548">X (commute time, minutes)</text>
+      <text x="14" y="120" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#5B5548" transform="rotate(-90 14 120)">Cumulative probability</text>
+    </svg>
+    <p class="chart-axis-label"><span class="fig-label">Figure 1.</span> The CDF for the commute time. The curve is smooth because commute time is continuous: every value between 20 and 45 has some cumulative probability, not just the six we calculated.</p>
+  </div>
+
+  <h2>Two properties of any CDF</h2>
+  <p>Two things are worth noticing about the curve in Figure 1:</p>
+  <ol>
+    <li><b>It never decreases.</b> Moving from left to right, the curve either stays flat or goes up. This is because F(x) is a cumulative sum of probabilities, and probabilities are never negative, so adding more of them can only grow the total or leave it unchanged. Formally, a CDF is a <b>monotonically non-decreasing</b> function.</li>
+    <li><b>It approaches 1 at the far right.</b> Once x is large enough to cover every possible value the variable can take, F(x) equals 1, because "X is that value or less" is then guaranteed. On this chart, F(45) = 1 exactly, since no employee has a commute longer than 45 minutes in this study.</li>
+  </ol>
+
+  <h2 id="pdf-intro">The probability density function</h2>
+  <p>The CDF gives one way to answer "what is the probability that X is at most x?" There is a second, closely related function that answers the same question but in a different visual form: the <b>probability density function</b>, or <b>PDF</b>.</p>
+
+  <p>A PDF is a curve where the <b>area under the curve</b>, between two values on the horizontal axis, equals the probability that the variable falls in that range. So if you want the cumulative probability F(x), which is P(X &le; x), you find the area under the PDF from the smallest possible value of X up to x.</p>
+
+  <h2>How the PDF is built from the interval table</h2>
+  <p>Before drawing the PDF, we need to know its height at each x. That height is called the <b>probability density</b> at x. It is not a probability by itself, it is a probability <b>per unit of x</b>. In one line:</p>
+  <div class="formula">
+    <span>probability density = probability in a range &divide; width of that range</span>
+  </div>
+  <p>Applied to the interval table earlier in this chapter, each of the five 5-minute bins gives its own density: just divide the bin's probability by its width (5 minutes):</p>
+
+  <table class="prob-table">
+    <thead>
+      <tr><th scope="col">Bin (minutes)</th><th scope="col">Probability</th><th scope="col" class="tot">Density = probability &divide; 5</th></tr>
+    </thead>
+    <tbody>
+      <tr><th scope="row">20 to 25</th><td>0.15</td><td class="tot">0.15 &divide; 5 = 0.030</td></tr>
+      <tr><th scope="row">25 to 30</th><td>0.20</td><td class="tot">0.20 &divide; 5 = 0.040</td></tr>
+      <tr><th scope="row">30 to 35</th><td>0.30</td><td class="tot">0.30 &divide; 5 = 0.060</td></tr>
+      <tr><th scope="row">35 to 40</th><td>0.20</td><td class="tot">0.20 &divide; 5 = 0.040</td></tr>
+      <tr><th scope="row">40 to 45</th><td>0.15</td><td class="tot">0.15 &divide; 5 = 0.030</td></tr>
+    </tbody>
+  </table>
+  <p class="table-caption">Each row's density is just the row above's probability divided by its 5-minute width. Notice the density is highest in the middle (0.060 for 30 to 35 minutes) and lower at the tails: this is what makes the PDF bell-shaped.</p>
+
+  <p>To turn these five density values into a smooth PDF curve, plot each one at the middle of its bin (22.5, 27.5, 32.5, 37.5, 42.5) and connect them with a smooth line that tapers to 0 at 20 and 45 (the smallest and largest commute times). The resulting curve is what a real, continuous distribution would look like if the company had collected finer-grained data than 5-minute bins.</p>
+
+  <p>Two sanity checks about the shape:</p>
+  <ol>
+    <li><b>The peak sits over the biggest-probability bin.</b> Since 30 to 35 is the most likely range (0.30), the density there is highest (0.060), and the curve peaks around x = 32.5.</li>
+    <li><b>The total area under the curve is 1.</b> Every 5-minute strip has area = density &times; 5 = original probability, and those five probabilities add up to 0.15 + 0.20 + 0.30 + 0.20 + 0.15 = 1.00.</li>
+  </ol>
+
+  <p>Now take the commute-time example we already used for the CDF. Say we want the cumulative probability at x = 28, in other words F(28). Figure 2 shows both ways to find it side by side: read the shaded area under the PDF (left), or read the y-value off the CDF (right). Both give the same answer, about 0.28.</p>
+
+  <div class="chart-wrap">
+    <svg class="chart-svg" viewBox="0 0 800 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Side by side PDF and CDF for commute time, with area under PDF from 20 to 28 equal to F(28) from CDF">
+      <!-- Divider line between the two subplots -->
+      <line x1="400" y1="20" x2="400" y2="255" stroke="#D9D2C3" stroke-width="1"/>
+
+      <!-- Subplot titles -->
+      <text x="200" y="18" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#5B5548">PDF</text>
+      <text x="600" y="18" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#5B5548">CDF</text>
+
+      <!-- LEFT SUBPLOT: PDF -->
+      <line x1="50" y1="240" x2="380" y2="240" stroke="#5B5548" stroke-width="1"/>
+      <line x1="50" y1="40" x2="50" y2="240" stroke="#5B5548" stroke-width="1"/>
+
+      <!-- Y-ticks for PDF (0, 0.02, 0.04, 0.06) at screen y 240, 180, 120, 60 -->
+      <g font-family="IBM Plex Mono, monospace" font-size="10" fill="#5B5548">
+        <text x="44" y="243" text-anchor="end">0.00</text>
+        <text x="44" y="183" text-anchor="end">0.02</text>
+        <text x="44" y="123" text-anchor="end">0.04</text>
+        <text x="44" y="63" text-anchor="end">0.06</text>
+      </g>
+      <!-- X-ticks 15, 20, 25, 30, 35, 40, 45, 50 -->
+      <g font-family="IBM Plex Mono, monospace" font-size="10" fill="#5B5548">
+        <text x="50" y="255" text-anchor="middle">15</text>
+        <text x="140" y="255" text-anchor="middle">25</text>
+        <text x="185" y="255" text-anchor="middle">30</text>
+        <text x="230" y="255" text-anchor="middle">35</text>
+        <text x="275" y="255" text-anchor="middle">40</text>
+        <text x="320" y="255" text-anchor="middle">45</text>
+        <text x="365" y="255" text-anchor="middle">50</text>
+      </g>
+
+      <!-- Shaded region under PDF from x=20 to x=28 -->
+      <path d="M 95 240 L 95.0 240.0 L 99.5 216.81 L 104.0 194.44 L 108.5 174.66 L 113.0 159.26 L 117.5 150.0 L 122.0 145.0 L 126.5 141.01 L 131.0 137.83 L 135.5 135.24 L 140.0 133.02 L 144.5 130.96 L 149.0 128.84 L 153.5 126.45 L 158.0 123.58 L 162.5 120.0 L 167.0 115.08 L 167 115.08 L 167 240 Z"
+            fill="#8C3A2E" fill-opacity="0.22" stroke="none"/>
+
+      <!-- Smooth PDF outline (PCHIP polyline through 7 anchors including 0 at endpoints for clean bell shape) -->
+      <path d="M 95.0 240.0 L 99.5 216.81 L 104.0 194.44 L 108.5 174.66 L 113.0 159.26 L 117.5 150.0 L 122.0 145.0 L 126.5 141.01 L 131.0 137.83 L 135.5 135.24 L 140.0 133.02 L 144.5 130.96 L 149.0 128.84 L 153.5 126.45 L 158.0 123.58 L 162.5 120.0 L 167.0 115.08 L 171.5 108.64 L 176.0 101.16 L 180.5 93.12 L 185.0 85.0 L 189.5 77.28 L 194.0 70.44 L 198.5 64.96 L 203.0 61.32 L 207.5 60.0 L 212.0 61.32 L 216.5 64.96 L 221.0 70.44 L 225.5 77.28 L 230.0 85.0 L 234.5 93.12 L 239.0 101.16 L 243.5 108.64 L 248.0 115.08 L 252.5 120.0 L 257.0 123.58 L 261.5 126.45 L 266.0 128.84 L 270.5 130.96 L 275.0 133.02 L 279.5 135.24 L 284.0 137.83 L 288.5 141.01 L 293.0 145.0 L 297.5 150.0 L 302.0 159.26 L 306.5 174.66 L 311.0 194.44 L 315.5 216.81 L 320.0 240.0"
+            fill="none" stroke="#1F2A44" stroke-width="1.8"/>
+
+      <!-- Vertical marker at x=28 (screen 167). At x=20 the PDF is 0 so no left marker needed. -->
+      <line x1="167" y1="240" x2="167" y2="115" stroke="#8C3A2E" stroke-width="1.6"/>
+      <!-- Red tick labels -->
+      <text x="95" y="255" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="600" fill="#8C3A2E">20</text>
+      <text x="167" y="255" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="600" fill="#8C3A2E">28</text>
+
+      <!-- Callout inside plot: area = 0.28 -->
+      <text x="240" y="180" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#5B5548">Area under</text>
+      <text x="240" y="195" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#5B5548">the curve</text>
+      <text x="240" y="210" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="600" fill="#8C3A2E">= 0.28</text>
+      <line x1="235" y1="188" x2="180" y2="170" stroke="#5B5548" stroke-width="1"/>
+
+      <text x="212" y="273" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#5B5548">X (commute time, minutes)</text>
+      <text x="16" y="140" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#5B5548" transform="rotate(-90 16 140)">Probability density</text>
+
+      <!-- RIGHT SUBPLOT: CDF -->
+      <line x1="450" y1="240" x2="780" y2="240" stroke="#5B5548" stroke-width="1"/>
+      <line x1="450" y1="40" x2="450" y2="240" stroke="#5B5548" stroke-width="1"/>
+
+      <!-- Y-ticks for CDF (0, 0.2, 0.4, 0.6, 0.8, 1) -->
+      <g font-family="IBM Plex Mono, monospace" font-size="10" fill="#5B5548">
+        <text x="444" y="243" text-anchor="end">0</text>
+        <text x="444" y="203" text-anchor="end">0.2</text>
+        <text x="444" y="163" text-anchor="end">0.4</text>
+        <text x="444" y="123" text-anchor="end">0.6</text>
+        <text x="444" y="83" text-anchor="end">0.8</text>
+        <text x="444" y="43" text-anchor="end">1</text>
+      </g>
+      <!-- X-ticks -->
+      <g font-family="IBM Plex Mono, monospace" font-size="10" fill="#5B5548">
+        <text x="450" y="255" text-anchor="middle">15</text>
+        <text x="495" y="255" text-anchor="middle">20</text>
+        <text x="540" y="255" text-anchor="middle">25</text>
+        <text x="585" y="255" text-anchor="middle">30</text>
+        <text x="630" y="255" text-anchor="middle">35</text>
+        <text x="675" y="255" text-anchor="middle">40</text>
+        <text x="720" y="255" text-anchor="middle">45</text>
+        <text x="765" y="255" text-anchor="middle">50</text>
+      </g>
+
+      <!-- Smooth CDF outline (PCHIP polyline through 6 anchors) -->
+      <path d="M 495.0 240.0 L 499.5 237.44 L 504.0 234.78 L 508.5 232.0 L 513.0 229.13 L 517.5 226.16 L 522.0 223.1 L 526.5 219.94 L 531.0 216.71 L 535.5 213.39 L 540.0 210.0 L 544.5 206.53 L 549.0 202.99 L 553.5 199.34 L 558.0 195.59 L 562.5 191.71 L 567.0 187.7 L 571.5 183.54 L 576.0 179.21 L 580.5 174.7 L 585.0 170.0 L 589.5 164.86 L 594.0 159.15 L 598.5 153.01 L 603.0 146.58 L 607.5 140.0 L 612.0 133.42 L 616.5 126.99 L 621.0 120.85 L 625.5 115.14 L 630.0 110.0 L 634.5 105.3 L 639.0 100.79 L 643.5 96.46 L 648.0 92.3 L 652.5 88.29 L 657.0 84.41 L 661.5 80.66 L 666.0 77.01 L 670.5 73.47 L 675.0 70.0 L 679.5 66.61 L 684.0 63.29 L 688.5 60.06 L 693.0 56.9 L 697.5 53.84 L 702.0 50.87 L 706.5 48.0 L 711.0 45.22 L 715.5 42.56 L 720.0 40.0"
+            fill="none" stroke="#1F2A44" stroke-width="1.8"/>
+
+      <!-- Data dots on the CDF (6 anchor points) -->
+      <g fill="#5B5548">
+        <circle cx="495" cy="240" r="3"/>
+        <circle cx="540" cy="210" r="3"/>
+        <circle cx="585" cy="170" r="3"/>
+        <circle cx="630" cy="110" r="3"/>
+        <circle cx="675" cy="70" r="3"/>
+        <circle cx="720" cy="40" r="3"/>
+      </g>
+
+      <!-- Marker at x=28. Screen x = 450 + (28-15)*9 = 567. F(28) approx 0.28: screen y = 240 - 0.28*200 = 184. -->
+      <line x1="567" y1="240" x2="567" y2="184" stroke="#8C3A2E" stroke-width="1.6"/>
+      <line x1="450" y1="184" x2="567" y2="184" stroke="#8C3A2E" stroke-width="1.6"/>
+      <circle cx="567" cy="184" r="3.5" fill="#8C3A2E"/>
+      <text x="567" y="255" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="600" fill="#8C3A2E">28</text>
+      <text x="495" y="179" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="#8C3A2E">0.28</text>
+
+      <text x="612" y="273" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#5B5548">X (commute time, minutes)</text>
+      <text x="416" y="140" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#5B5548" transform="rotate(-90 416 140)">Cumulative probability</text>
+    </svg>
+    <p class="chart-axis-label"><span class="fig-label">Figure 2.</span> The same commute-time distribution shown two ways. Left: the PDF, where the shaded area from 20 to 28 equals the cumulative probability F(28). Right: the CDF, where F(28) is just the y-value at x = 28. Both read as about 0.28.</p>
+  </div>
+
+  <p>Two visual forms of the same information: the CDF shows the cumulative probability as a y-value, and the PDF shows it as an area under the curve.</p>
+
+  <div class="ex">
+    <p class="q">Using the PDF in Figure 2, how would you find the probability that a randomly picked employee's commute time is between 30 and 35 minutes?</p>
+    <p class="a">Find the area under the PDF curve between x = 30 and x = 35. From the table earlier in this chapter, that area is 0.30, matching the "30 to 35" row directly.</p>
+    <p class="a">The same range probability can also be read off the CDF as F(35) &minus; F(30) = 0.65 &minus; 0.35 = 0.30, using the <a class="chapter-ref-link" onclick="parent.navigateToReference('s2','11','cumulative-range')" href="javascript:void(0)">range formula from Chapter 11</a>.</p>
+  </div>
+
+  <h2>Why we use CDFs and PDFs for continuous variables</h2>
+  <p>Both the CDF and the PDF describe probability in terms of <b>intervals</b>: F(x) covers everything up to x, and the area under the PDF between two limits covers everything in that range. That is exactly the right fit for a continuous variable, where "the probability of an exact value" is always 0 and only range probabilities carry information.</p>
+
+  <p>For a discrete variable, on the other hand, the exact-value probability P(X = k) is a real, useful number, so a bar chart of those probabilities (one bar per possible value) is the natural way to show the distribution. That is the form we used in Chapter 5, Probability Distributions, and again in Chapter 10, Binomial Distribution.</p>
+
+  <h2 id="continuous-vs-discrete-cdf">Continuous vs discrete CDFs</h2>
+  <p>The CDF exists for discrete variables too, not just continuous ones. But it looks very different: a bar chart, not a smooth curve. Compare Figure 1 above (continuous, smooth curve) to Figure 3 below (discrete, bar chart) for the bag game from Chapter 11:</p>
+
+  <div class="chart-wrap">
+    <svg class="chart-svg" viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Discrete CDF bar chart for the bag game">
+      <line x1="52" y1="220" x2="380" y2="220" stroke="#5B5548" stroke-width="1"/>
+      <line x1="52" y1="20" x2="52" y2="220" stroke="#5B5548" stroke-width="1"/>
+
+      <!-- y ticks: 0, 0.2, 0.4, 0.6, 0.8, 1 -->
+      <g font-family="IBM Plex Mono, monospace" font-size="10" fill="#5B5548">
+        <text x="46" y="223" text-anchor="end">0</text>
+        <text x="46" y="183" text-anchor="end">0.2</text>
+        <text x="46" y="143" text-anchor="end">0.4</text>
+        <text x="46" y="103" text-anchor="end">0.6</text>
+        <text x="46" y="63" text-anchor="end">0.8</text>
+        <text x="46" y="23" text-anchor="end">1</text>
+      </g>
+
+      <!-- Bars for x = 0..4, values 0.0256, 0.1792, 0.5248, 0.8704, 1.0 -->
+      <!-- bar width 40, gap 20. Positions: x=0 at cx=90, then +60 each -->
+      <!-- heights: h = val * 200; y = 220 - h -->
+      <!-- 0.0256 => h=5.12,  y=214.88
+           0.1792 => h=35.84, y=184.16
+           0.5248 => h=104.96,y=115.04
+           0.8704 => h=174.08,y=45.92
+           1.0000 => h=200,   y=20 -->
+      <g fill="#8C3A2E">
+        <rect x="70"  y="214.9" width="40" height="5.1"/>
+        <rect x="130" y="184.2" width="40" height="35.8"/>
+        <rect x="190" y="115.0" width="40" height="105.0"/>
+        <rect x="250" y="45.9"  width="40" height="174.1"/>
+        <rect x="310" y="20"    width="40" height="200"/>
+      </g>
+
+      <!-- Value labels above bars -->
+      <g font-family="IBM Plex Mono, monospace" font-size="10" font-weight="600" fill="#1E1B16">
+        <text x="90"  y="209" text-anchor="middle">0.0256</text>
+        <text x="150" y="178" text-anchor="middle">0.1792</text>
+        <text x="210" y="109" text-anchor="middle">0.5248</text>
+        <text x="270" y="40"  text-anchor="middle">0.8704</text>
+        <text x="330" y="15"  text-anchor="middle">1</text>
+      </g>
+
+      <!-- x tick labels: 0, 1, 2, 3, 4 -->
+      <g font-family="IBM Plex Mono, monospace" font-size="11" fill="#5B5548">
+        <text x="90"  y="238" text-anchor="middle">0</text>
+        <text x="150" y="238" text-anchor="middle">1</text>
+        <text x="210" y="238" text-anchor="middle">2</text>
+        <text x="270" y="238" text-anchor="middle">3</text>
+        <text x="330" y="238" text-anchor="middle">4</text>
+      </g>
+
+      <text x="216" y="253" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#5B5548">X (number of red balls)</text>
+      <text x="14" y="120" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#5B5548" transform="rotate(-90 14 120)">Cumulative probability</text>
+    </svg>
+    <p class="chart-axis-label"><span class="fig-label">Figure 3.</span> The CDF for the discrete bag game from Chapter 11: one bar per possible value of X. Compare with Figure 1's smooth curve.</p>
+  </div>
+
+  <p>The reason the discrete CDF is drawn as a bar chart, and the continuous CDF as a smooth curve, is that the cumulative probability behaves very differently in the two cases.</p>
+
+  <p>In the discrete bag game, X can only take the values 0, 1, 2, 3, or 4. The cumulative probability is <b>flat</b> between any two consecutive values: F(3) = 0.8704, and F(3.5), F(3.999), F(3.9999999) are also all 0.8704, because none of those values are possible outcomes of the game, so nothing new gets added to the running total until you cross the next possible value at x = 4. Drawing this as five discrete bars, one per possible value, captures the fact that only those five values matter.</p>
+
+  <p>In the continuous commute-time case, the situation is different. Every value of x between 20 and 45 corresponds to some cumulative probability, and each nudges the total up a little. F(21) is different from F(21.1), which is different from F(21.2), and so on. A smooth curve is the natural shape for a value that changes at every single x.</p>
+
+  <div class="ex">
+    <p class="q">In the discrete bag game, what is F(2.7)?</p>
+    <p class="a">F(2.7) is P(X &le; 2.7), the probability that X is at most 2.7. Since X can only be 0, 1, 2, 3, or 4, "at most 2.7" is the same as "at most 2", so F(2.7) = F(2) = 0.5248. This is the flatness we described above: F does not change between the possible values.</p>
+  </div>
+
+  <p>Next, we will look at more concrete examples of CDFs and PDFs for continuous random variables, before turning to the most important continuous distribution of all: the normal distribution.</p>
+
+</main>
+<footer>Notes by @Ankit Surana</footer>
+</body>
+</html>

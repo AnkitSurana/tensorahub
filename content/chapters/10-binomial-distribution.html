@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Binomial Distribution</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FAF7F2;
+    --paper-dim:#F1ECE2;
+    --ink:#1E1B16;
+    --ink-soft:#5B5548;
+    --navy:#1F2A44;
+    --navy-soft:#2C3A5C;
+    --brass:#A9793D;
+    --rule:#D9D2C3;
+    --serif:'Spectral', Georgia, serif;
+    --sans:'IBM Plex Sans', -apple-system, sans-serif;
+    --mono:'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.6;
+  }
+  main{
+    max-width:680px;
+    margin:0 auto;
+    padding:3.6rem 1.6rem 5rem;
+  }
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:.7rem;
+    color:var(--brass);
+    letter-spacing:.03em;
+    margin:0 0 .6rem;
+  }
+  h1{
+    font-family:var(--serif);
+    font-weight:500;
+    font-size:2.1rem;
+    margin:0 0 .3rem;
+  }
+  .sub{
+    color:var(--ink-soft);
+    font-size:.95rem;
+    margin:0 0 2.2rem;
+    padding-bottom:1.6rem;
+    border-bottom:1px solid var(--rule);
+  }
+  h2{
+    font-family:var(--sans);
+    font-weight:600;
+    font-size:.95rem;
+    color:var(--navy-soft);
+    margin:2.1rem 0 .6rem;
+  }
+  h2:first-of-type{ margin-top:0; }
+  p{ margin:.5rem 0; }
+  ul{ margin:.5rem 0; padding-left:1.2rem; }
+  li{ margin:.3rem 0; }
+  b{ color:var(--ink); }
+  a{ color:var(--navy-soft); }
+  .formula{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:.4rem;
+    font-family:var(--mono);
+    font-size:1rem;
+    background:var(--paper-dim);
+    border-left:2px solid var(--brass);
+    padding:.75rem 1rem;
+    margin:.7rem 0;
+  }
+  .formula .eq{ margin:0 .15rem; color:var(--ink-soft); }
+
+  .frac{
+    display:inline-flex;
+    flex-direction:column;
+    align-items:center;
+    vertical-align:middle;
+    line-height:1.15;
+  }
+  .frac .num{ padding:0 .35em .16em; border-bottom:1.4px solid currentColor; }
+  .frac .den{ padding:.16em .35em 0; }
+
+  .calc{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:.55rem;
+    font-family:var(--mono);
+    font-size:.92rem;
+    color:var(--ink);
+    background:var(--paper);
+    border:1px solid var(--rule);
+    border-radius:2px;
+    padding:.6rem .8rem;
+    margin:.55rem 0 .1rem;
+  }
+  .calc .eq{ color:var(--ink-soft); }
+  .calc .result{ color:var(--brass); font-weight:600; }
+
+  table.prob-table{
+    border-collapse:collapse;
+    width:100%;
+    margin:.9rem 0 1.3rem;
+    font-family:var(--mono);
+    font-size:.85rem;
+  }
+  table.prob-table th, table.prob-table td{
+    border:1px solid var(--rule);
+    padding:.55rem .8rem;
+    text-align:center;
+  }
+  table.prob-table thead th{
+    background:var(--paper-dim);
+    color:var(--navy-soft);
+    font-weight:600;
+  }
+  table.prob-table th[scope="row"]{
+    background:var(--paper-dim);
+    color:var(--navy-soft);
+    font-weight:600;
+    text-align:center;
+  }
+  table.prob-table .tot{ color:var(--brass); font-weight:600; }
+  .table-caption{
+    font-family:var(--sans);
+    font-size:.82rem;
+    color:var(--ink-soft);
+    margin:-.6rem 0 .8rem;
+  }
+  .chart-wrap{ margin:1.1rem 0 .3rem; }
+  .chart-svg{ width:100%; height:auto; display:block; }
+  .chart-axis-label{
+    text-align:center;
+    font-size:.8rem;
+    color:var(--ink-soft);
+    margin-top:.5rem;
+  }
+  .fig-label{
+    font-family:var(--mono);
+    font-weight:600;
+    color:var(--brass);
+  }
+  .ball-row{
+    display:flex;
+    align-items:center;
+    gap:.6rem;
+    margin:.5rem 0;
+    font-family:var(--mono);
+    font-size:.85rem;
+    color:var(--ink-soft);
+  }
+  .ball{
+    width:22px;
+    height:22px;
+    border-radius:50%;
+    display:inline-block;
+    flex-shrink:0;
+  }
+  .ball.red{ background:#8C3A2E; }
+  .ball.blue{ background:#2C3A5C; }
+  .table-caption{
+    font-family:var(--sans);
+    font-size:.82rem;
+    color:var(--ink-soft);
+    margin:-.6rem 0 .8rem;
+  }
+  .ex{
+    background:var(--paper-dim);
+    border:1px solid var(--rule);
+    border-radius:2px;
+    padding:.8rem 1rem;
+    margin:.7rem 0;
+  }
+  .ex .q{ font-weight:600; font-size:.9rem; }
+  .ex .a{ font-size:.88rem; color:var(--ink-soft); margin-top:.2rem; }
+
+  footer{
+    max-width:680px;
+    margin:0 auto;
+    padding:0 1.6rem 3rem;
+    font-size:.76rem;
+    color:var(--ink-soft);
+  }
+</style>
+</head>
+<body>
+<main>
+
+  <p class="eyebrow">CHAPTER 10 &middot; LESSON NOTES</p>
+  <h1>Binomial Distribution</h1>
+  <p class="sub">The binomial distribution: what it is, when to use it, and the single formula that lets you find the probability of any count of "successes" in a fixed number of yes-or-no trials, without ever running the experiment.</p>
+
+  <h2>What the binomial distribution is</h2>
+  <p>A <b>binomial distribution</b> is the probability distribution of the number of successes in a fixed number of independent yes-or-no trials, when the probability of success is the same on every trial. In plain terms: if you do the same yes-or-no experiment several times in a row, and count how many of them come up "yes", the resulting count follows a binomial distribution.</p>
+  <p>Examples of what "the count of yeses" can be:</p>
+  <ul>
+    <li>The number of heads in 20 coin tosses.</li>
+    <li>The number of red balls in 4 draws from our bag (the game from Chapter 4 onwards).</li>
+    <li>The number of defective items in a batch of 100.</li>
+    <li>The number of customers, out of 50 surveyed, who say they would buy a new product.</li>
+  </ul>
+  <p>All of these have the same shape: fixed number of trials, each trial is yes or no, and every trial has the same chance of "yes". The rest of this chapter builds the exact formula for the binomial distribution from scratch, using only the addition and multiplication rules from Chapter 2. By the end, you will be able to write down the probability of "exactly R successes in N trials" without any experiment at all.</p>
+
+  <h2>Generalizing the probability of red</h2>
+  <p>So far, we always used P(red) = 0.6. That number came from our bag: 3 red balls and 2 blue balls out of 5. But what if the bag was different? Say it had 2 red and 3 blue balls, or 1 red and 4 blue balls. Doing the whole calculation again by hand, every single time, would take a lot of work.</p>
+  <p>Instead, use a general letter, P, for "the probability of red on one draw." P can be any number between 0 and 1. It depends on the bag. Since a ball is either red or blue, the probability of blue is just 1 &minus; P.</p>
+
+  <h2>Probability of all 4 red (X = 4)</h2>
+  <p>Using the <a class="chapter-ref-link" onclick="parent.navigateToReference('s1','02','multiplication-rule')" href="javascript:void(0)">multiplication rule from Chapter 2, Probability Recap</a>, since the 4 draws are independent:</p>
+  <div class="formula">
+    <span>P(X = 4) = P &times; P &times; P &times; P = P<sup>4</sup></span>
+  </div>
+  <p>P<sup>4</sup> just means "P multiplied by itself 4 times". It is the same shorthand used for any repeated multiplication.</p>
+
+  <h2>Probability of exactly 3 red (X = 3)</h2>
+  <p>Recall from <a class="chapter-ref-link" onclick="parent.navigateToReference('s1','04','listing-all-outcomes')" href="javascript:void(0)">Chapter 4, Random Variables</a>, that there are 4 arrangements with exactly 3 red and 1 blue: BRRR, RBRR, RRBR, and RRRB. Here they are as a picture (Figure 1), one blue ball moving to a different position in each row:</p>
+
+  <div class="ball-row"><span class="ball blue"></span><span class="ball red"></span><span class="ball red"></span><span class="ball red"></span><span>BRRR</span></div>
+  <div class="ball-row"><span class="ball red"></span><span class="ball blue"></span><span class="ball red"></span><span class="ball red"></span><span>RBRR</span></div>
+  <div class="ball-row"><span class="ball red"></span><span class="ball red"></span><span class="ball blue"></span><span class="ball red"></span><span>RRBR</span></div>
+  <div class="ball-row"><span class="ball red"></span><span class="ball red"></span><span class="ball red"></span><span class="ball blue"></span><span>RRRB</span></div>
+  <p class="chart-axis-label" style="text-align:left;"><span class="fig-label">Figure 1.</span> The 4 arrangements for X = 3. Each row is one arrangement, the blue ball takes a different position in each.</p>
+
+  <p>Take BRRR as an example: 1 blue draw and 3 red draws, so its probability is:</p>
+  <div class="formula">
+    <span>(1 &minus; P) &times; P &times; P &times; P = P<sup>3</sup>(1 &minus; P)</span>
+  </div>
+  <p>Every one of the 4 arrangements has P three times and (1 &minus; P) once, just in a different order. Multiplying the same four numbers always gives the same answer, no matter the order, so each arrangement works out to this same P<sup>3</sup>(1 &minus; P). Only one arrangement can happen in a single game, so they are mutually exclusive. Add them together, using the <a class="chapter-ref-link" onclick="parent.navigateToReference('s1','02','addition-rule')" href="javascript:void(0)">addition rule from Chapter 2</a>:</p>
+  <div class="formula">
+    <span>P(X = 3) = 4 &times; P<sup>3</sup>(1 &minus; P)</span>
+  </div>
+
+  <h2 id="full-generalized-formula">The full generalized formula</h2>
+  <p>Working out X = 0, 1, and 2 the same way gives the complete distribution, using only P:</p>
+
+  <table class="prob-table">
+    <thead>
+      <tr><th scope="col">X</th><th scope="col">0</th><th scope="col">1</th><th scope="col">2</th><th scope="col">3</th><th scope="col">4</th></tr>
+    </thead>
+    <tbody>
+      <tr><th scope="row">P(X)</th><td>(1&minus;P)<sup>4</sup></td><td>4P(1&minus;P)<sup>3</sup></td><td>6P<sup>2</sup>(1&minus;P)<sup>2</sup></td><td>4P<sup>3</sup>(1&minus;P)</td><td>P<sup>4</sup></td></tr>
+    </tbody>
+  </table>
+
+  <p>Look for two patterns here. First, the number in front of each term (1, 4, 6, 4, 1) is just the count of arrangements for that value of X, matching <a class="chapter-ref-link" onclick="parent.navigateToReference('s1','04','listing-all-outcomes')" href="javascript:void(0)">Chapter 4</a>. Second, in every term, the small number on P plus the small number on (1 &minus; P) always adds up to 4, the total number of draws. That makes sense: every draw is either red or blue, never both.</p>
+
+  <div class="ex">
+    <p class="q">Our actual bag has P = 0.6. Put that into the general formula and check it against the <a class="chapter-ref-link" onclick="parent.navigateToReference('s2','09','observed-vs-theoretical')" href="javascript:void(0)">theoretical distribution from Chapter 9</a>.</p>
+    <p class="a">Put P = 0.6 into each term. Then 1 &minus; P = 0.4:</p>
+    <div class="calc">
+      <span>(0.4)<sup>4</sup> = 0.0256</span>
+      <span>4(0.6)(0.4)<sup>3</sup> = 0.1536</span>
+      <span>6(0.6)<sup>2</sup>(0.4)<sup>2</sup> = 0.3456</span>
+    </div>
+    <div class="calc">
+      <span>4(0.6)<sup>3</sup>(0.4) = 0.3456</span>
+      <span>(0.6)<sup>4</sup> = 0.1296</span>
+    </div>
+    <p class="a">These are the same 5 numbers <a class="chapter-ref-link" onclick="parent.navigateToReference('s2','09','observed-vs-theoretical')" href="javascript:void(0)">Chapter 9 found</a> by working directly with 0.6: 0.0256, 0.1536, 0.3456, 0.3456, 0.1296. The general formula gives the same answer. It just also works for any other value of P, not only 0.6.</p>
+  </div>
+
+  <div class="ex">
+    <p class="q">Now try a different bag: 2 red balls and 3 blue balls out of 5, so P = 0.4. What is the full distribution?</p>
+    <p class="a">Put P = 0.4 into each term. Then 1 &minus; P = 0.6:</p>
+    <div class="calc">
+      <span>(0.6)<sup>4</sup> = 0.1296</span>
+      <span>4(0.4)(0.6)<sup>3</sup> = 0.3456</span>
+      <span>6(0.4)<sup>2</sup>(0.6)<sup>2</sup> = 0.3456</span>
+    </div>
+    <div class="calc">
+      <span>4(0.4)<sup>3</sup>(0.6) = 0.1536</span>
+      <span>(0.4)<sup>4</sup> = 0.0256</span>
+    </div>
+    <p class="a">These are the same 5 numbers as before, just in reverse order: 0.1296, 0.3456, 0.3456, 0.1536, 0.0256. That makes sense. Swapping which color is more common just flips the whole distribution around. Getting 4 red balls when red is the common color is just as likely as getting 4 blue balls when blue is the common color. No new experiment was needed, just the formula.</p>
+  </div>
+
+  <h2>Seeing the mirror on a chart</h2>
+  <p>Plotting both distributions side by side on the same chart makes this mirror easy to see (Figure 2):</p>
+  <div class="chart-wrap">
+    <svg class="chart-svg" viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
+      <line x1="20" y1="200" x2="380" y2="200" stroke="#D9D2C3" stroke-width="1"/>
+
+      <rect x="30" y="188.1" width="22" height="11.9" fill="#8C3A2E" rx="2"/>
+      <rect x="54" y="140" width="22" height="60" fill="#2C3A5C" rx="2"/>
+      <text x="53" y="220" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#5B5548">0</text>
+
+      <rect x="100" y="128.9" width="22" height="71.1" fill="#8C3A2E" rx="2"/>
+      <rect x="124" y="40" width="22" height="160" fill="#2C3A5C" rx="2"/>
+      <text x="123" y="220" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#5B5548">1</text>
+
+      <rect x="170" y="40" width="22" height="160" fill="#8C3A2E" rx="2"/>
+      <rect x="194" y="40" width="22" height="160" fill="#2C3A5C" rx="2"/>
+      <text x="193" y="220" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#5B5548">2</text>
+
+      <rect x="240" y="40" width="22" height="160" fill="#8C3A2E" rx="2"/>
+      <rect x="264" y="128.9" width="22" height="71.1" fill="#2C3A5C" rx="2"/>
+      <text x="263" y="220" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#5B5548">3</text>
+
+      <rect x="310" y="140" width="22" height="60" fill="#8C3A2E" rx="2"/>
+      <rect x="334" y="188.1" width="22" height="11.9" fill="#2C3A5C" rx="2"/>
+      <text x="333" y="220" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#5B5548">4</text>
+
+      <text x="200" y="240" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#5B5548">X (number of red balls)</text>
+
+      <rect x="20" y="6" width="12" height="12" fill="#8C3A2E" rx="1"/>
+      <text x="38" y="16" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#5B5548">P = 0.6 (our bag: 3 red, 2 blue)</text>
+      <rect x="20" y="22" width="12" height="12" fill="#2C3A5C" rx="1"/>
+      <text x="38" y="32" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#5B5548">P = 0.4 (2 red, 3 blue)</text>
+    </svg>
+    <p class="chart-axis-label"><span class="fig-label">Figure 2.</span> The P = 0.4 bars are the P = 0.6 bars flipped left to right. X = 2 and X = 3 swap places, and X = 0 and X = 4 swap places too.</p>
+  </div>
+
+  <h2>Generalizing beyond 4 draws</h2>
+  <p>So far, we always drew 4 balls, since that is how our bag game works. But what if you drew N times instead, any number of times? And what if you wanted exactly R red balls, in any order? Can we still find the probability?</p>
+  <p>The idea is the same as before. We just use letters instead of fixed numbers now. Take one arrangement with R red draws and (N &minus; R) blue draws. Its probability is:</p>
+  <div class="formula">
+    <span>P &times; P &times; ... &times; P (R times) &times; (1 &minus; P) &times; (1 &minus; P) &times; ... &times; (1 &minus; P) (N &minus; R times) = P<sup>R</sup>(1 &minus; P)<sup>N&minus;R</sup></span>
+  </div>
+  <p>How many such arrangements are there? This is the same kind of count we did before, just written in general terms now. The number of ways to choose which R of the N draws are red is called <b>"N choose R"</b>. In this course we write it as <sup>N</sup>C<sub>R</sub>. It is also commonly written as C(N, R) or <span style="font-family:var(--mono);">nCr</span>, all meaning the same thing. This is the same combinations idea <a class="chapter-ref-link" onclick="parent.navigateToReference('s2','08','prerequisites')" href="javascript:void(0)">Chapter 8 listed as something you would need</a> for this session, and it has a compact formula:</p>
+  <div class="formula">
+    <span><sup>N</sup>C<sub>R</sub></span><span class="eq">=</span>
+    <span class="frac"><span class="num">N!</span><span class="den">R! &times; (N &minus; R)!</span></span>
+  </div>
+  <p>The exclamation mark means <b>factorial</b>. N! means multiply N by every whole number below it, all the way down to 1. For example, 4! = 4 &times; 3 &times; 2 &times; 1 = 24, and 3! = 3 &times; 2 &times; 1 = 6.</p>
+  <p>Now put the two pieces together: how many arrangements there are, and the probability of one arrangement. These arrangements can never happen at the same time, so add them all up using the addition rule. This gives the full <b>binomial distribution formula</b>:</p>
+  <div class="formula">
+    <span>P(X = R) = <sup>N</sup>C<sub>R</sub> &times; P<sup>R</sup> &times; (1 &minus; P)<sup>N&minus;R</sup></span>
+  </div>
+
+  <div class="ex">
+    <p class="q">Check that this general formula gives the same answer as our own bag game, where N = 4, P = 0.6, and R = 3.</p>
+    <p class="a">First work out C(4, 3), using 4! = 4 &times; 3 &times; 2 &times; 1 = 24, 3! = 3 &times; 2 &times; 1 = 6, and 1! = 1:</p>
+    <div class="calc">
+      <span>C(4, 3)</span><span class="eq">=</span>
+      <span class="frac"><span class="num">4!</span><span class="den">3! &times; 1!</span></span><span class="eq">=</span>
+      <span class="frac"><span class="num">24</span><span class="den">6</span></span><span class="eq">=</span>
+      <span class="result">4</span>
+    </div>
+    <p class="a">This matches the 4 arrangements (BRRR, RBRR, RRBR, RRRB) shown earlier in Figure 1. Now use the full formula:</p>
+    <div class="calc">
+      <span>P(X = 3) = 4 &times; (0.6)<sup>3</sup> &times; (0.4)<sup>1</sup></span><span class="eq">=</span>
+      <span class="result">0.3456</span>
+    </div>
+    <p class="a">Same answer as before. The general formula is not new math. It is the same combinations, multiplication, and addition we already used, just written so it works for any N, P, and R.</p>
+  </div>
+
+  <div class="ex">
+    <p class="q">Now try something the earlier method could not easily do: the same P = 0.6 chance of red, but drawn N = 6 times instead of 4. What is P(X = 3)?</p>
+    <p class="a">First, work out C(6, 3). 6! means 6 &times; 5 &times; 4 &times; 3 &times; 2 &times; 1 = 720. 3! means 3 &times; 2 &times; 1 = 6, used for both the top and bottom parts on the right:</p>
+    <div class="calc">
+      <span>C(6, 3)</span><span class="eq">=</span>
+      <span class="frac"><span class="num">6!</span><span class="den">3! &times; 3!</span></span><span class="eq">=</span>
+      <span class="frac"><span class="num">720</span><span class="den">36</span></span><span class="eq">=</span>
+      <span class="result">20</span>
+    </div>
+    <p class="a">Now use the full formula, with N = 6 and R = 3:</p>
+    <div class="calc">
+      <span>P(X = 3) = 20 &times; (0.6)<sup>3</sup> &times; (0.4)<sup>3</sup></span><span class="eq">=</span>
+      <span>20 &times; 0.216 &times; 0.064</span><span class="eq">=</span>
+      <span class="result">0.276</span>
+    </div>
+    <p class="a">There are 20 ways to arrange 3 reds and 3 blues among 6 draws, far more than the 4 ways we had with only 4 draws. That is exactly why C(N, R) needed to become a real formula, instead of something you could just list by hand and count.</p>
+  </div>
+
+  <h2>When can you use the binomial distribution?</h2>
+  <p>The binomial distribution works whenever three things are all true:</p>
+  <ol>
+    <li>The total number of trials is fixed at N.</li>
+    <li>Each trial has only two possible outcomes, usually called success and failure (here, red and blue).</li>
+    <li>The probability of success, P, stays the same in every trial.</li>
+  </ol>
+  <p>Our bag game meets all three. N = 4 draws are fixed before you start. Each draw is red or blue and nothing else. And since the ball goes back in the bag each time, P = 0.6 stays the same on every draw. That is exactly why the binomial formula worked so well for it.</p>
+
+  <h2>A worked example: even-numbered license plates</h2>
+  <p>Here is the same formula used on a completely different problem. Say you are walking down the street, watching the cars go by. You want the probability that exactly 5 of the next 10 cars have an even-numbered license plate.</p>
+  <p>Check the three conditions first:</p>
+  <ol>
+    <li>The number of trials is fixed: N = 10 cars.</li>
+    <li>Each trial is binary: a plate number is either even or odd, nothing else.</li>
+    <li>The probability of success stays the same: assuming even and odd plates are equally common, P = 0.5 for every car.</li>
+  </ol>
+  <p>All three hold, so the binomial formula applies, with N = 10, P = 0.5, and R = 5. Figure 3 shows one possible set of 10 plates, 5 even and 5 odd:</p>
+
+  <div class="chart-wrap">
+    <svg class="chart-svg" viewBox="0 0 400 70" xmlns="http://www.w3.org/2000/svg">
+      <rect x="12" y="15" width="34" height="34" rx="6" fill="#8C3A2E"/>
+      <text x="29" y="37" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="14" font-weight="600" fill="#fff">24</text>
+      <rect x="50" y="15" width="34" height="34" rx="6" fill="#AEB9CC"/>
+      <text x="67" y="37" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="14" font-weight="600" fill="#1E1B16">17</text>
+      <rect x="88" y="15" width="34" height="34" rx="6" fill="#8C3A2E"/>
+      <text x="105" y="37" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="14" font-weight="600" fill="#fff">88</text>
+      <rect x="126" y="15" width="34" height="34" rx="6" fill="#AEB9CC"/>
+      <text x="143" y="37" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="14" font-weight="600" fill="#1E1B16">3</text>
+      <rect x="164" y="15" width="34" height="34" rx="6" fill="#8C3A2E"/>
+      <text x="181" y="37" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="14" font-weight="600" fill="#fff">46</text>
+      <rect x="202" y="15" width="34" height="34" rx="6" fill="#AEB9CC"/>
+      <text x="219" y="37" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="14" font-weight="600" fill="#1E1B16">51</text>
+      <rect x="240" y="15" width="34" height="34" rx="6" fill="#8C3A2E"/>
+      <text x="257" y="37" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="14" font-weight="600" fill="#fff">12</text>
+      <rect x="278" y="15" width="34" height="34" rx="6" fill="#AEB9CC"/>
+      <text x="295" y="37" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="14" font-weight="600" fill="#1E1B16">79</text>
+      <rect x="316" y="15" width="34" height="34" rx="6" fill="#8C3A2E"/>
+      <text x="333" y="37" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="14" font-weight="600" fill="#fff">60</text>
+      <rect x="354" y="15" width="34" height="34" rx="6" fill="#AEB9CC"/>
+      <text x="371" y="37" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="14" font-weight="600" fill="#1E1B16">33</text>
+    </svg>
+    <p class="chart-axis-label"><span class="fig-label">Figure 3.</span> One possible sequence of 10 plates. Brass squares are even (5 of them), gray squares are odd (5 of them). The binomial formula gives the probability of landing on exactly this split, in any order.</p>
+  </div>
+
+  <div class="ex">
+    <p class="q">What is the probability that exactly 5 of the next 10 cars have an even-numbered plate?</p>
+    <p class="a">First, work out C(10, 5), the number of ways to choose which 5 of the 10 cars are the "even" ones. 10! = 3,628,800 and 5! = 120:</p>
+    <div class="calc">
+      <span>C(10, 5)</span><span class="eq">=</span>
+      <span class="frac"><span class="num">10!</span><span class="den">5! &times; 5!</span></span><span class="eq">=</span>
+      <span class="frac"><span class="num">3,628,800</span><span class="den">120 &times; 120</span></span><span class="eq">=</span>
+      <span class="frac"><span class="num">3,628,800</span><span class="den">14,400</span></span><span class="eq">=</span>
+      <span class="result">252</span>
+    </div>
+    <p class="a">Now use the full formula:</p>
+    <div class="calc">
+      <span>P(X = 5) = 252 &times; (0.5)<sup>5</sup> &times; (0.5)<sup>5</sup></span><span class="eq">=</span>
+      <span class="result">0.246</span>
+    </div>
+    <p class="a">So there is about a 24.6% chance that exactly 5 of the next 10 cars have an even-numbered plate. Same formula, same steps, a completely different situation, cars and plates instead of balls and colors.</p>
+  </div>
+
+  <h2>When does binomial NOT apply?</h2>
+  <p>Checking the three conditions also tells you when you cannot use the binomial distribution. Here are three pairs, one binomial applies, one it does not, to make each condition concrete.</p>
+
+  <table class="prob-table">
+    <thead>
+      <tr><th scope="col">Binomial applies</th><th scope="col">Binomial does not apply</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Toss a coin 20 times, count the tails</td><td>Toss a coin until a heads shows up</td></tr>
+      <tr><td>Ask 200 people if they are older than 21 (yes or no)</td><td>Ask 200 people their exact age</td></tr>
+      <tr><td>Draw 4 balls, replacing each one after drawing it</td><td>Draw 4 balls, without replacing them</td></tr>
+    </tbody>
+  </table>
+
+  <div class="ex">
+    <p class="q">Tossing a coin 20 times to count tails works with the binomial distribution. Tossing a coin until a heads shows up does not. Why not, in terms of the three conditions?</p>
+    <p class="a">Tossing 20 times fixes N = 20 in advance, each toss is heads or tails, and P = 0.5 stays the same every time. All three conditions hold.</p>
+    <p class="a">Tossing "until a heads shows up" breaks the first condition: you do not know in advance how many tosses it will take, so N is not fixed. You could still find the probability of getting the first heads on toss 1, toss 2, toss 3, and so on, just not with the binomial formula, since that formula needs a fixed N.</p>
+  </div>
+
+  <div class="ex">
+    <p class="q">Asking 200 people "are you older than 21?" works with the binomial distribution. Asking 200 people their exact age does not. Why not?</p>
+    <p class="a">"Older than 21?" is binary: yes or no, nothing else. But "what is your exact age?" can have many answers, 5, 20, 47, 81, and so on, not just two. That breaks the second condition, each trial having only two possible outcomes.</p>
+  </div>
+
+  <div class="ex">
+    <p class="q">Drawing 4 balls and replacing each one works with the binomial distribution. Drawing 4 balls without replacing them does not. Use our own bag (3 red, 2 blue, 5 total) to see why, by working out P(RRRB) both ways.</p>
+    <p class="a"><b>With replacement</b> (what we have used everywhere so far): the bag always has 5 balls, 3 red and 2 blue, so P(red) = 0.6 every single draw:</p>
+    <div class="calc">
+      <span>0.6 &times; 0.6 &times; 0.6 &times; 0.4</span><span class="eq">=</span>
+      <span class="result">0.0864</span>
+    </div>
+    <p class="a"><b>Without replacement</b>: once a ball is drawn, it stays out of the bag, so fewer balls are left for the next draw, and the probability of red changes each time. Figure 4 shows the bag shrinking after each draw:</p>
+
+    <div class="chart-wrap">
+      <svg class="chart-svg" viewBox="0 0 490 90" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="28" cy="30" r="8" fill="#8C3A2E"/>
+        <circle cx="50" cy="30" r="8" fill="#8C3A2E"/>
+        <circle cx="72" cy="30" r="8" fill="#8C3A2E"/>
+        <circle cx="94" cy="30" r="8" fill="#2C3A5C"/>
+        <circle cx="116" cy="30" r="8" fill="#2C3A5C"/>
+        <text x="72" y="55" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#5B5548">Draw 1</text>
+        <text x="72" y="70" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="#1E1B16">P(red) = 3/5</text>
+
+        <circle cx="180" cy="30" r="8" fill="#8C3A2E"/>
+        <circle cx="202" cy="30" r="8" fill="#8C3A2E"/>
+        <circle cx="224" cy="30" r="8" fill="#2C3A5C"/>
+        <circle cx="246" cy="30" r="8" fill="#2C3A5C"/>
+        <text x="213" y="55" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#5B5548">Draw 2</text>
+        <text x="213" y="70" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="#1E1B16">P(red) = 2/4</text>
+
+        <circle cx="310" cy="30" r="8" fill="#8C3A2E"/>
+        <circle cx="332" cy="30" r="8" fill="#2C3A5C"/>
+        <circle cx="354" cy="30" r="8" fill="#2C3A5C"/>
+        <text x="332" y="55" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#5B5548">Draw 3</text>
+        <text x="332" y="70" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="#1E1B16">P(red) = 1/3</text>
+
+        <circle cx="418" cy="30" r="8" fill="#2C3A5C"/>
+        <circle cx="440" cy="30" r="8" fill="#2C3A5C"/>
+        <text x="429" y="55" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#5B5548">Draw 4</text>
+        <text x="429" y="70" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="#1E1B16">P(red) = 2/2</text>
+      </svg>
+      <p class="chart-axis-label"><span class="fig-label">Figure 4.</span> Brass dots are red balls, navy dots are blue balls. Each time a red ball is drawn (and kept out), fewer balls remain, so P(red) keeps changing.</p>
+    </div>
+
+    <div class="calc">
+      <span>Draw 1 (red): <span class="frac"><span class="num">3</span><span class="den">5</span></span></span>
+      <span>Draw 2 (red): <span class="frac"><span class="num">2</span><span class="den">4</span></span></span>
+      <span>Draw 3 (red): <span class="frac"><span class="num">1</span><span class="den">3</span></span></span>
+      <span>Draw 4 (blue): <span class="frac"><span class="num">2</span><span class="den">2</span></span></span>
+    </div>
+    <p class="a">After 3 reds are drawn and kept out, only the 2 blue balls are left, so draw 4 is certain to be blue.</p>
+    <div class="calc">
+      <span class="frac"><span class="num">3</span><span class="den">5</span></span><span class="eq">&times;</span>
+      <span class="frac"><span class="num">2</span><span class="den">4</span></span><span class="eq">&times;</span>
+      <span class="frac"><span class="num">1</span><span class="den">3</span></span><span class="eq">&times;</span>
+      <span class="frac"><span class="num">2</span><span class="den">2</span></span><span class="eq">=</span>
+      <span class="result">0.1</span>
+    </div>
+    <p class="a">0.1 is not the same as 0.0864. Without replacement, the probability of red is different on every draw, so the third condition, the same P every trial, breaks, and the binomial formula no longer gives the right answer.</p>
+  </div>
+
+  <p>In short: the binomial distribution works whenever you have a fixed number of yes-or-no questions, and the chance of a "yes" stays the same every time. There are other useful discrete distributions too, such as the uniform distribution, where every outcome is equally likely (like the 1/6 chance for each face of a die).</p>
+
+  <p>So, you now understand that the binomial distribution is a very powerful distribution.</p>
+
+  <h2>Other distributions, for further reading</h2>
+  <p>There are a few more probability distributions that commonly show up for discrete random variables. They are not covered in this course, but if you want to explore them, here are some links:</p>
+  <ul>
+    <li><a href="https://medium.com/@draj0718/poisson-distribution-be3c2d8f0f3e" target="_blank" rel="noopener">Poisson Distribution</a></li>
+    <li><a href="https://medium.com/@abhishekjainindore24/all-about-geometric-distribution-and-exponential-distribution-6dbbed5b5efe" target="_blank" rel="noopener">Geometric Distribution</a></li>
+    <li><a href="https://bookdown.org/kevin_davisross/probsim-book/NegativeBinomial.html#negative-binomial-distributions" target="_blank" rel="noopener">Negative Binomial Distribution</a></li>
+  </ul>
+
+  <p>Next, we will learn about cumulative probability distributions.</p>
+
+</main>
+<footer>Notes by @Ankit Surana</footer>
+</body>
+</html>

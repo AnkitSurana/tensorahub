@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TensorBox</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FAF7F2;
+    --paper-dim:#F1ECE2;
+    --ink:#1E1B16;
+    --ink-soft:#5B5548;
+    --navy:#1F2A44;
+    --navy-soft:#2C3A5C;
+    --brass:#A9793D;
+    --rule:#D9D2C3;
+    --serif:'Spectral', Georgia, serif;
+    --sans:'IBM Plex Sans', -apple-system, sans-serif;
+    --mono:'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.6;
+  }
+  main{
+    max-width:720px;
+    margin:0 auto;
+    padding:3.6rem 1.6rem 5rem;
+  }
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:.7rem;
+    color:var(--brass);
+    letter-spacing:.03em;
+    margin:0 0 .6rem;
+  }
+  h1{
+    font-family:var(--serif);
+    font-weight:500;
+    font-size:2.1rem;
+    margin:0 0 .3rem;
+  }
+  .sub{
+    color:var(--ink-soft);
+    font-size:.95rem;
+    margin:0 0 2.2rem;
+    padding-bottom:1.6rem;
+    border-bottom:1px solid var(--rule);
+  }
+  h2{
+    font-family:var(--sans);
+    font-weight:600;
+    font-size:.95rem;
+    color:var(--navy-soft);
+    margin:2.1rem 0 .6rem;
+  }
+  h2:first-of-type{ margin-top:0; }
+  p{ margin:.5rem 0; }
+  ul{ margin:.5rem 0; padding-left:1.2rem; }
+  li{ margin:.3rem 0; }
+  b{ color:var(--ink); }
+  a{ color:var(--navy-soft); }
+
+  .code-block{
+    background:var(--navy);
+    color:#EDE9DF;
+    font-family:var(--mono);
+    font-size:.82rem;
+    padding:1rem 1.1rem;
+    border-radius:4px;
+    overflow-x:auto;
+    margin:.7rem 0;
+    line-height:1.7;
+  }
+  .code-block .cmt{ color:#8894AC; }
+
+  table.info-table{
+    border-collapse:collapse;
+    width:100%;
+    margin:.9rem 0 1.3rem;
+    font-family:var(--mono);
+    font-size:.85rem;
+  }
+  table.info-table th, table.info-table td{
+    border:1px solid var(--rule);
+    padding:.55rem .8rem;
+    text-align:left;
+  }
+  table.info-table thead th{
+    background:var(--paper-dim);
+    color:var(--navy-soft);
+    font-weight:600;
+    font-family:var(--sans);
+    text-transform:uppercase;
+    font-size:.72rem;
+    letter-spacing:.03em;
+  }
+
+  .stack-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:1rem 1.6rem;
+    margin:.8rem 0 1.4rem;
+  }
+  .stack-grid h3{
+    font-family:var(--sans);
+    font-size:.82rem;
+    font-weight:600;
+    color:var(--ink);
+    margin:0 0 .3rem;
+  }
+  .stack-grid p{ margin:0; font-size:.85rem; color:var(--ink-soft); }
+  @media (max-width:560px){ .stack-grid{ grid-template-columns:1fr; } }
+
+  .note-box{
+    background:var(--paper-dim);
+    border:1px solid var(--rule);
+    border-radius:2px;
+    padding:.9rem 1.1rem;
+    margin:.9rem 0;
+    font-size:.88rem;
+    color:var(--ink-soft);
+  }
+  .note-box b{ color:var(--ink); }
+
+  footer{
+    max-width:720px;
+    margin:0 auto;
+    padding:0 1.6rem 3rem;
+    font-size:.76rem;
+    color:var(--ink-soft);
+  }
+</style>
+</head>
+<body>
+<main>
+
+  <p class="eyebrow">RESOURCES</p>
+  <h1>TensorBox</h1>
+  <p class="sub">An all-in-one production environment for Machine Learning, MLOps, Deep Learning, and LLM Engineering, built and published by Ankit Surana.</p>
+
+  <p>TensorBox is a standardized, multi-architecture container environment covering Machine Learning, Deep Learning, Natural Language Processing, Large Language Models, and MLOps engineering. Instead of installing dozens of libraries and tools yourself, you pull one image and everything is already set up and ready to use.</p>
+
+  <div class="note-box">
+    Full listing and tag history: <a href="https://hub.docker.com/r/ankitsurana/tensorbox" target="_blank" rel="noopener">hub.docker.com/r/ankitsurana/tensorbox</a>
+  </div>
+
+  <h2>System requirements</h2>
+  <ul>
+    <li><b>Supported OS:</b> macOS (Apple Silicon or Intel), Linux (Ubuntu, Debian, RHEL), Windows 10/11 (via WSL2)</li>
+    <li><b>Architecture:</b> linux/amd64 and linux/arm64 (multi-arch, works on both Intel and Apple Silicon)</li>
+    <li><b>Container engine:</b> Docker Engine 20.10+ or Docker Desktop 4.0+</li>
+    <li><b>Hardware:</b> 4 GB RAM minimum (16 GB recommended), 2+ CPU cores, 8 GB free disk space</li>
+    <li><b>GPU acceleration (optional):</b> an NVIDIA GPU with the NVIDIA Container Toolkit installed</li>
+  </ul>
+
+  <h2>Quick start</h2>
+  <p>Pull the image once:</p>
+  <div class="code-block"><span class="cmt"># Pull the container image</span><br>
+docker pull ankitsurana/tensorbox:latest</div>
+
+  <p>Then launch whichever tool you need. JupyterLab:</p>
+  <div class="code-block"><span class="cmt"># Web UI on http://localhost:8888</span><br>
+docker run -d --name tensorbox-jupyter -p 8888:8888 -v $(pwd):/workspace ankitsurana/tensorbox:latest jupyter</div>
+
+  <p>Or VS Code, running in your browser:</p>
+  <div class="code-block"><span class="cmt"># Web UI on http://localhost:8080</span><br>
+docker run -d --name tensorbox-vscode -p 8080:8080 -v $(pwd):/workspace ankitsurana/tensorbox:latest code-server</div>
+
+  <p>Or drop into an interactive terminal with every port mapped at once:</p>
+  <div class="code-block">docker run -it --rm -p 8888:8888 -p 8080:8080 -p 5001:5000 -p 8501:8501 -p 6006:6006 -v $(pwd):/workspace ankitsurana/tensorbox:latest</div>
+  <p class="sub" style="border:none; padding:0; margin:0 0 1rem;">Note the <b>5001:5000</b> mapping in that last command: on macOS, port 5000 is already used by AirPlay Receiver, so the container's port 5000 (FastAPI) is mapped to 5001 on your machine instead, to avoid a conflict.</p>
+
+  <p>In every command, <code>-v $(pwd):/workspace</code> mounts your current folder into the container, so any files you create in <code>/workspace</code> are saved on your own machine, not lost when the container stops.</p>
+
+  <h2>Inside the container: the tensorbox command</h2>
+  <p>Once you're in the interactive terminal, a single command handles everything:</p>
+  <div class="code-block">tensorbox status<span class="cmt">            # Inspect system resources, Python version, and installed libraries</span><br>
+tensorbox jupyter<span class="cmt">           # Start JupyterLab on port 8888</span><br>
+tensorbox code-server<span class="cmt">       # Start VS Code Web on port 8080</span><br>
+tensorbox fastapi [app.py]<span class="cmt">  # Launch FastAPI with Swagger docs on port 5000</span><br>
+tensorbox streamlit [app.py]<span class="cmt"># Launch a Streamlit dashboard on port 8501</span><br>
+tensorbox test<span class="cmt">              # Run the test validation suite</span></div>
+
+  <h2>Pre-installed directories</h2>
+  <p>Reference implementations, production project templates, and datasets are already packaged inside the container under <code>/opt/tensorbox</code>:</p>
+  <ul>
+    <li><b>/opt/tensorbox/notebooks/</b>: worked implementations for Classic ML, Deep Learning, NLP, LLMs, RAG, Time Series, MLOps, and Explainable AI</li>
+    <li><b>/opt/tensorbox/projects/</b>: production-style implementations for Feature Stores, Model Serving APIs, Drift Monitoring, and LoRA/QLoRA Fine-Tuning</li>
+    <li><b>/opt/tensorbox/data/</b>: benchmark datasets ready for immediate experimentation</li>
+  </ul>
+  <p>Copy any of these into your own mounted workspace so they persist outside the container:</p>
+  <div class="code-block">cp -r /opt/tensorbox/notebooks /workspace/<br>
+cp -r /opt/tensorbox/projects /workspace/<br>
+cp -r /opt/tensorbox/data /workspace/</div>
+
+  <h2>What's included</h2>
+  <div class="stack-grid">
+    <div>
+      <h3>Core ML</h3>
+      <p>Python 3.11, PyTorch, Scikit-Learn, LightGBM, XGBoost, CatBoost, Polars, Pandas, NumPy, SciPy</p>
+    </div>
+    <div>
+      <h3>Computer Vision</h3>
+      <p>TorchVision, Albumentations, OpenCV, Timm, TensorBoard</p>
+    </div>
+    <div>
+      <h3>NLP &amp; LLMs</h3>
+      <p>Transformers, Datasets, Tokenizers, PEFT, TRL, SpaCy, LangChain, LlamaIndex</p>
+    </div>
+    <div>
+      <h3>Databases &amp; Vector Search</h3>
+      <p>Qdrant, ChromaDB, FAISS, PostgreSQL client, Redis client, SQLite3</p>
+    </div>
+    <div>
+      <h3>MLOps &amp; Lifecycle</h3>
+      <p>MLflow, Feast Feature Store, Evidently AI, Great Expectations, Optuna</p>
+    </div>
+    <div>
+      <h3>API &amp; Serving</h3>
+      <p>FastAPI, Uvicorn, Streamlit, Pydantic, Gunicorn</p>
+    </div>
+  </div>
+
+  <h2>Port reference</h2>
+  <table class="info-table">
+    <thead>
+      <tr><th>Port</th><th>Service</th><th>URL</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>8888</td><td>JupyterLab</td><td>http://localhost:8888</td></tr>
+      <tr><td>8080</td><td>VS Code Web</td><td>http://localhost:8080</td></tr>
+      <tr><td>5000</td><td>FastAPI Server &amp; Swagger UI</td><td>http://localhost:5000/docs</td></tr>
+      <tr><td>8501</td><td>Streamlit Applications</td><td>http://localhost:8501</td></tr>
+      <tr><td>6006</td><td>TensorBoard Dashboard</td><td>http://localhost:6006</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Maintainer &amp; license</h2>
+  <p>Built and maintained by <b>Ankit Surana</b>. Released under the <b>MIT license</b>. Full details, tags, and updates: <a href="https://hub.docker.com/r/ankitsurana/tensorbox" target="_blank" rel="noopener">hub.docker.com/r/ankitsurana/tensorbox</a></p>
+
+</main>
+<footer>Notes by @Ankit Surana</footer>
+</body>
+</html>

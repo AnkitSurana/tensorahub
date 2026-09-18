@@ -1,0 +1,196 @@
+[
+  {
+    "id": "s1",
+    "title": "Foundations of Probability",
+    "visible": true,
+    "batches": [],
+    "chapters": [
+      {
+        "id": "01",
+        "file": "01-introduction.html",
+        "title": "Introduction",
+        "visible": true,
+        "batches": [
+          "batch-2026-a"
+        ]
+      },
+      {
+        "id": "02",
+        "file": "02-probability-recap.html",
+        "title": "Probability Recap",
+        "visible": true,
+        "batches": [
+          "batch-2026-a"
+        ]
+      },
+      {
+        "id": "03",
+        "file": "03-bayes-theorem.html",
+        "title": "Bayes' Theorem",
+        "visible": true,
+        "batches": [
+          "batch-2026-a"
+        ]
+      },
+      {
+        "id": "04",
+        "file": "04-random-variables.html",
+        "title": "Random Variables",
+        "visible": true,
+        "batches": [
+          "batch-2026-a"
+        ]
+      },
+      {
+        "id": "05",
+        "file": "05-probability-distributions.html",
+        "title": "Probability Distributions",
+        "visible": true,
+        "batches": [
+          "batch-2026-a"
+        ]
+      },
+      {
+        "id": "06",
+        "file": "06-expected-value.html",
+        "title": "Expected Value",
+        "visible": true,
+        "batches": [
+          "batch-2026-a"
+        ]
+      },
+      {
+        "id": "07",
+        "file": "07-summary-random-variables-to-expected-value.html",
+        "title": "Summary: Random Variables to Expected Value",
+        "visible": true,
+        "batches": [
+          "batch-2026-a"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "s2",
+    "title": "Discrete Probability Distributions",
+    "visible": true,
+    "batches": [],
+    "chapters": [
+      {
+        "id": "08",
+        "file": "08-intro-discrete-distributions.html",
+        "title": "Introduction",
+        "visible": true,
+        "batches": [
+          "batch-2026-a"
+        ]
+      },
+      {
+        "id": "09",
+        "file": "09-probability-without-experiment.html",
+        "title": "Probability Without an Experiment",
+        "visible": true,
+        "batches": [
+          "batch-2026-a"
+        ]
+      },
+      {
+        "id": "10",
+        "file": "10-binomial-distribution.html",
+        "title": "Binomial Distribution",
+        "visible": true,
+        "batches": [
+          "batch-2026-a"
+        ]
+      },
+      {
+        "id": "11",
+        "file": "11-cumulative-probability-distributions.html",
+        "title": "Cumulative Probability Distributions",
+        "visible": true,
+        "batches": [
+          "batch-2026-a"
+        ]
+      },
+      {
+        "id": "12",
+        "file": "12-summary-discrete-distributions.html",
+        "title": "Summary: Discrete Probability Distributions",
+        "visible": false,
+        "batches": [
+          "batch-2026-a"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "s3",
+    "title": "Continuous Probability Distributions",
+    "visible": true,
+    "batches": [],
+    "chapters": [
+      {
+        "id": "13",
+        "file": "13-intro-continuous-distributions.html",
+        "title": "Introduction",
+        "visible": false,
+        "batches": [
+          "batch-2026-a"
+        ]
+      },
+      {
+        "id": "14",
+        "file": "14-probability-density-functions.html",
+        "title": "Probability Density Functions",
+        "visible": false,
+        "batches": [
+          "batch-2026-a"
+        ]
+      },
+      {
+        "id": "15",
+        "file": "15-uniform-distribution.html",
+        "title": "Uniform Distribution",
+        "visible": false,
+        "batches": [
+          "batch-2026-a"
+        ]
+      },
+      {
+        "id": "16",
+        "file": "16-normal-distribution.html",
+        "title": "The Normal Distribution",
+        "visible": false,
+        "batches": [
+          "batch-2026-a"
+        ]
+      },
+      {
+        "id": "17",
+        "file": "17-standard-normal-distribution.html",
+        "title": "The Standard Normal Distribution",
+        "visible": false,
+        "batches": [
+          "batch-2026-a"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "s-resources",
+    "title": "Resources",
+    "visible": true,
+    "batches": [],
+    "chapters": [
+      {
+        "id": "tensorbox",
+        "file": "tensorbox.html",
+        "title": "TensorBox",
+        "visible": true,
+        "batches": [
+          "batch-2026-a"
+        ]
+      }
+    ]
+  }
+]

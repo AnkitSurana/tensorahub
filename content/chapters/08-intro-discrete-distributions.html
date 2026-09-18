@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Introduction: Discrete Probability Distributions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FAF7F2;
+    --paper-dim:#F1ECE2;
+    --ink:#1E1B16;
+    --ink-soft:#5B5548;
+    --navy:#1F2A44;
+    --navy-soft:#2C3A5C;
+    --brass:#A9793D;
+    --rule:#D9D2C3;
+    --serif:'Spectral', Georgia, serif;
+    --sans:'IBM Plex Sans', -apple-system, sans-serif;
+    --mono:'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.6;
+  }
+  main{
+    max-width:680px;
+    margin:0 auto;
+    padding:3.6rem 1.6rem 5rem;
+  }
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:.7rem;
+    color:var(--brass);
+    letter-spacing:.03em;
+    margin:0 0 .6rem;
+  }
+  h1{
+    font-family:var(--serif);
+    font-weight:500;
+    font-size:2.1rem;
+    margin:0 0 .3rem;
+  }
+  .sub{
+    color:var(--ink-soft);
+    font-size:.95rem;
+    margin:0 0 2.2rem;
+    padding-bottom:1.6rem;
+    border-bottom:1px solid var(--rule);
+  }
+  h2{
+    font-family:var(--sans);
+    font-weight:600;
+    font-size:.95rem;
+    color:var(--navy-soft);
+    margin:2.1rem 0 .6rem;
+  }
+  h2:first-of-type{ margin-top:0; }
+  p{ margin:.5rem 0; }
+  ul{ margin:.5rem 0; padding-left:1.2rem; }
+  li{ margin:.3rem 0; }
+  b{ color:var(--ink); }
+  a{ color:var(--navy-soft); }
+
+  .note-box{
+    background:var(--paper-dim);
+    border:1px solid var(--rule);
+    border-radius:2px;
+    padding:.9rem 1.1rem;
+    margin:.7rem 0;
+    font-size:.9rem;
+    color:var(--ink-soft);
+  }
+  .note-box b{ color:var(--ink); }
+
+  footer{
+    max-width:680px;
+    margin:0 auto;
+    padding:0 1.6rem 3rem;
+    font-size:.76rem;
+    color:var(--ink-soft);
+  }
+</style>
+</head>
+<body>
+<main>
+
+  <p class="eyebrow">CHAPTER 8 &middot; LESSON NOTES</p>
+  <h1>Introduction: Discrete Probability Distributions</h1>
+  <p class="sub">Starting a new session, building on the basics of probability, random variables, and expected value from before.</p>
+
+  <p>The last session covered the basics: random variables, probability distributions, and expected value. This session builds on those ideas with some slightly more advanced ones.</p>
+
+  <h2>In this session</h2>
+  <p>You will learn about two probability distributions commonly used for discrete random variables:</p>
+  <ul>
+    <li>The <b>binomial probability distribution</b></li>
+    <li>The <b>uniform probability distribution</b></li>
+  </ul>
+  <p>You will also learn about <b>cumulative probability</b>, which will be useful in the next session on continuous probability distributions.</p>
+
+  <h2 id="prerequisites">Prerequisites</h2>
+  <p>This session assumes you already know:</p>
+  <ul>
+    <li>The basic rules of probability, specifically the <b>addition rule</b> and the <b>multiplication rule</b>, both covered in Chapter 2, Probability Recap.</li>
+    <li>Some basic combinatorics, in particular the combinations expression, usually written C(n, r) or "n choose r", for the number of ways to choose r items out of n.</li>
+  </ul>
+
+  <h2>Reference ebook</h2>
+  <div class="note-box"><b>Statistical Inference for Data Science</b> by Brian Caffo. Available at <a href="https://leanpub.com/LittleInferenceBook" target="_blank" rel="noopener">leanpub.com/LittleInferenceBook</a>.</div>
+
+  <p>Next, we start by asking whether probability can be found without running an experiment at all.</p>
+
+</main>
+<footer>Notes by @Ankit Surana</footer>
+</body>
+</html>

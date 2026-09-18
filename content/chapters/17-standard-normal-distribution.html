@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Standard Normal Distribution</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FAF7F2;
+    --paper-dim:#F1ECE2;
+    --ink:#1E1B16;
+    --ink-soft:#5B5548;
+    --navy:#1F2A44;
+    --navy-soft:#2C3A5C;
+    --brass:#A9793D;
+    --rule:#D9D2C3;
+    --serif:'Spectral', Georgia, serif;
+    --sans:'IBM Plex Sans', -apple-system, sans-serif;
+    --mono:'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.6;
+  }
+  main{
+    max-width:680px;
+    margin:0 auto;
+    padding:3.6rem 1.6rem 5rem;
+  }
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:.7rem;
+    color:var(--brass);
+    letter-spacing:.03em;
+    margin:0 0 .6rem;
+  }
+  h1{
+    font-family:var(--serif);
+    font-weight:500;
+    font-size:2.1rem;
+    margin:0 0 .3rem;
+  }
+  .sub{
+    color:var(--ink-soft);
+    font-size:.95rem;
+    margin:0 0 2.2rem;
+    padding-bottom:1.6rem;
+    border-bottom:1px solid var(--rule);
+  }
+  h2{
+    font-family:var(--sans);
+    font-weight:600;
+    font-size:.95rem;
+    color:var(--navy-soft);
+    margin:2.1rem 0 .6rem;
+  }
+  h2:first-of-type{ margin-top:0; }
+  p{ margin:.5rem 0; }
+  ul{ margin:.5rem 0; padding-left:1.2rem; }
+  ol{ margin:.5rem 0; padding-left:1.4rem; }
+  li{ margin:.3rem 0; }
+  b{ color:var(--ink); }
+  a{ color:var(--navy-soft); }
+  .formula{
+    display:flex;
+    align-items:center;
+    flex-wrap:nowrap;
+    gap:.4rem;
+    font-family:var(--mono);
+    font-size:1rem;
+    background:var(--paper-dim);
+    border-left:2px solid var(--brass);
+    padding:.75rem 1rem;
+    margin:.7rem 0;
+    overflow-x:auto;
+  }
+  .formula .eq{ margin:0 .15rem; color:var(--ink-soft); }
+  .formula .frac{
+    display:inline-flex;
+    flex-direction:column;
+    align-items:center;
+    line-height:1;
+    margin:0 .1rem;
+  }
+  .formula .frac .num{ border-bottom:1px solid var(--ink); padding:0 .4rem .1rem; }
+  .formula .frac .den{ padding:.15rem .4rem 0; }
+
+  .calc{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:.55rem;
+    font-family:var(--mono);
+    font-size:.92rem;
+    color:var(--ink);
+    background:var(--paper);
+    border:1px solid var(--rule);
+    border-radius:2px;
+    padding:.6rem .8rem;
+    margin:.55rem 0 .1rem;
+  }
+  .calc .eq{ color:var(--ink-soft); }
+  .calc .result{ color:var(--brass); font-weight:600; }
+  .calc .frac{
+    display:inline-flex;
+    flex-direction:column;
+    align-items:center;
+    line-height:1;
+    margin:0 .1rem;
+  }
+  .calc .frac .num{ border-bottom:1px solid var(--ink); padding:0 .3rem .05rem; }
+  .calc .frac .den{ padding:.1rem .3rem 0; }
+
+  table.prob-table{
+    border-collapse:collapse;
+    width:100%;
+    margin:.9rem 0 1.3rem;
+    font-family:var(--mono);
+    font-size:.85rem;
+  }
+  table.prob-table th, table.prob-table td{
+    border:1px solid var(--rule);
+    padding:.55rem .8rem;
+    text-align:center;
+  }
+  table.prob-table thead th{
+    background:var(--paper-dim);
+    color:var(--navy-soft);
+    font-weight:600;
+  }
+  table.prob-table th[scope="row"]{
+    background:var(--paper-dim);
+    color:var(--navy-soft);
+    font-weight:600;
+    text-align:center;
+  }
+  table.prob-table .tot{ color:var(--brass); font-weight:600; }
+  table.prob-table .z-hit{ background:rgba(169,121,61,0.14); color:var(--brass); font-weight:600; }
+
+  /* Compact Z-table so 11 columns fit in the reading column. */
+  table.z-table{
+    border-collapse:collapse;
+    width:100%;
+    margin:.7rem 0 1rem;
+    font-family:var(--mono);
+    font-size:.72rem;
+    line-height:1.35;
+  }
+  table.z-table th, table.z-table td{
+    border:1px solid var(--rule);
+    padding:.25rem .28rem;
+    text-align:center;
+  }
+  table.z-table thead th{
+    background:var(--paper-dim);
+    color:var(--navy-soft);
+    font-weight:600;
+  }
+  table.z-table th[scope="row"]{
+    background:var(--paper-dim);
+    color:var(--navy-soft);
+    font-weight:600;
+  }
+  table.z-table .z-hit{ background:rgba(169,121,61,0.18); color:var(--brass); font-weight:700; }
+  .table-caption{
+    font-family:var(--sans);
+    font-size:.82rem;
+    color:var(--ink-soft);
+    margin:-.6rem 0 .8rem;
+  }
+  .ex{
+    background:var(--paper-dim);
+    border:1px solid var(--rule);
+    border-radius:2px;
+    padding:.8rem 1rem;
+    margin:.7rem 0;
+  }
+  .ex .q{ font-weight:600; font-size:.9rem; }
+  .ex .a{ font-size:.88rem; color:var(--ink-soft); margin-top:.2rem; }
+
+  .chart-wrap{ margin:1.1rem 0 .3rem; }
+  .chart-svg{ width:100%; height:auto; display:block; }
+  .chart-axis-label{
+    text-align:center;
+    font-size:.8rem;
+    color:var(--ink-soft);
+    margin-top:.5rem;
+  }
+  .fig-label{
+    font-family:var(--mono);
+    font-weight:600;
+    color:var(--brass);
+  }
+
+  footer{
+    max-width:680px;
+    margin:0 auto;
+    padding:0 1.6rem 3rem;
+    font-size:.76rem;
+    color:var(--ink-soft);
+  }
+</style>
+</head>
+<body>
+<main>
+
+  <p class="eyebrow">CHAPTER 17 &middot; LESSON NOTES</p>
+  <h1>The Standard Normal Distribution</h1>
+  <p class="sub">Turning any normal variable into a "how many standard deviations from the mean" Z-score, why that reframing makes any normal probability question look the same, and how to answer any of them with a single reference table.</p>
+
+  <h2>What actually matters: how far from the mean, in units of &sigma;</h2>
+  <p>Recall from Chapter 16, The Normal Distribution, in the <a class="chapter-ref-link" onclick="parent.navigateToReference('s3','16','one-two-three-rule')" href="javascript:void(0)">"The 1-2-3 rule" section</a>, that every probability we found came from measuring how far X was from the mean &mu;, in units of the standard deviation &sigma;. The specific numbers for &mu; and &sigma; never mattered on their own: 25 to 45 with &mu; = 35, &sigma; = 5 gave the same 95% as &mu; &minus; 2&sigma; to &mu; + 2&sigma; would with any other mean and standard deviation.</p>
+
+  <p>So the useful question is not "what is X?" but "how many standard deviations away from the mean is X?" Let us make that a proper number.</p>
+
+  <div class="ex">
+    <p class="q">Take a normal variable with &mu; = 35 and &sigma; = 5. If X = 43.25, how many standard deviations is X above the mean?</p>
+    <p class="a">First find the raw distance from the mean:</p>
+    <div class="calc">
+      <span>X &minus; &mu; = 43.25 &minus; 35</span><span class="eq">=</span>
+      <span class="result">8.25</span>
+    </div>
+    <p class="a">Then divide by &sigma; to express that distance in units of standard deviations:</p>
+    <div class="calc">
+      <span class="frac"><span class="num">8.25</span><span class="den">5</span></span><span class="eq">=</span>
+      <span class="result">1.65</span>
+    </div>
+    <p class="a">So X = 43.25 is 1.65 standard deviations above the mean. This value, 1.65, is called the <b>Z-score</b> of X.</p>
+  </div>
+
+  <h2 id="z-score-formula">The Z-score formula</h2>
+  <p>In general, for any normal variable X with mean &mu; and standard deviation &sigma;, the Z-score is:</p>
+
+  <div class="formula">
+    <span>Z</span><span class="eq">=</span>
+    <span class="frac"><span class="num">X &minus; &mu;</span><span class="den">&sigma;</span></span>
+  </div>
+
+  <p>Read it aloud as "Z equals X minus mu, over sigma". It says: subtract the mean, then measure in units of the standard deviation. Z itself is a new random variable, called the <b>standardized normal variable</b>. It carries all the same information as X but drops the specific &mu; and &sigma; from the picture.</p>
+
+  <h2>What Z looks like: the standard normal distribution</h2>
+  <p>Because Z is just X rescaled, it is also normally distributed. Its own mean is 0 (since Z = 0 when X = &mu;) and its own standard deviation is 1 (since one unit of Z is one &sigma; of X). This particular normal distribution, with mean 0 and standard deviation 1, is called the <b>standard normal distribution</b>. Figure 1 shows it:</p>
+
+  <div class="chart-wrap">
+    <svg class="chart-svg" viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Standard normal distribution centered at 0 with tick marks at integer Z values">
+      <!-- Filled area under standard normal PDF (smooth polyline, 50 points from z=-3.5 to +3.5) -->
+      <path d="M 75.0 240 L 75.0 239.69 L 82.0 239.5 L 89.0 239.2 L 96.0 238.76 L 103.0 238.11 L 110.0 237.18 L 117.0 235.87 L 124.0 234.07 L 131.0 231.64 L 138.0 228.44 L 145.0 224.34 L 152.0 219.2 L 159.0 212.89 L 166.0 205.37 L 173.0 196.61 L 180.0 186.7 L 187.0 175.79 L 194.0 164.15 L 201.0 152.14 L 208.0 140.2 L 215.0 128.84 L 222.0 118.59 L 229.0 109.97 L 236.0 103.44 L 243.0 99.36 L 250.0 97.98 L 257.0 99.36 L 264.0 103.44 L 271.0 109.97 L 278.0 118.59 L 285.0 128.84 L 292.0 140.2 L 299.0 152.14 L 306.0 164.15 L 313.0 175.79 L 320.0 186.7 L 327.0 196.61 L 334.0 205.37 L 341.0 212.89 L 348.0 219.2 L 355.0 224.34 L 362.0 228.44 L 369.0 231.64 L 376.0 234.07 L 383.0 235.87 L 390.0 237.18 L 397.0 238.11 L 404.0 238.76 L 411.0 239.2 L 418.0 239.5 L 418.0 240 Z"
+            fill="#5B5548" fill-opacity="0.08"/>
+      <!-- Bell curve outline -->
+      <path d="M 75.0 239.69 L 82.0 239.5 L 89.0 239.2 L 96.0 238.76 L 103.0 238.11 L 110.0 237.18 L 117.0 235.87 L 124.0 234.07 L 131.0 231.64 L 138.0 228.44 L 145.0 224.34 L 152.0 219.2 L 159.0 212.89 L 166.0 205.37 L 173.0 196.61 L 180.0 186.7 L 187.0 175.79 L 194.0 164.15 L 201.0 152.14 L 208.0 140.2 L 215.0 128.84 L 222.0 118.59 L 229.0 109.97 L 236.0 103.44 L 243.0 99.36 L 250.0 97.98 L 257.0 99.36 L 264.0 103.44 L 271.0 109.97 L 278.0 118.59 L 285.0 128.84 L 292.0 140.2 L 299.0 152.14 L 306.0 164.15 L 313.0 175.79 L 320.0 186.7 L 327.0 196.61 L 334.0 205.37 L 341.0 212.89 L 348.0 219.2 L 355.0 224.34 L 362.0 228.44 L 369.0 231.64 L 376.0 234.07 L 383.0 235.87 L 390.0 237.18 L 397.0 238.11 L 404.0 238.76 L 411.0 239.2 L 418.0 239.5"
+            fill="none" stroke="#1E1B16" stroke-width="1.8"/>
+      <!-- Center line at Z=0 (dashed) -->
+      <line x1="250" y1="98" x2="250" y2="240" stroke="#8C3A2E" stroke-width="1.2" stroke-dasharray="4 3"/>
+
+      <!-- x-axis -->
+      <line x1="30" y1="240" x2="470" y2="240" stroke="#1E1B16" stroke-width="1"/>
+
+      <!-- Z tick labels (integers from -3 to 3) -->
+      <g font-family="IBM Plex Mono, monospace" font-size="11" fill="#5B5548">
+        <text x="100" y="256" text-anchor="middle">-3</text>
+        <text x="150" y="256" text-anchor="middle">-2</text>
+        <text x="200" y="256" text-anchor="middle">-1</text>
+        <text x="250" y="256" text-anchor="middle" font-weight="600" fill="#8C3A2E">0</text>
+        <text x="300" y="256" text-anchor="middle">1</text>
+        <text x="350" y="256" text-anchor="middle">2</text>
+        <text x="400" y="256" text-anchor="middle">3</text>
+      </g>
+
+      <!-- Small vertical tick marks on the axis at each integer Z -->
+      <g stroke="#5B5548" stroke-width="1">
+        <line x1="100" y1="240" x2="100" y2="244"/>
+        <line x1="150" y1="240" x2="150" y2="244"/>
+        <line x1="200" y1="240" x2="200" y2="244"/>
+        <line x1="250" y1="240" x2="250" y2="244"/>
+        <line x1="300" y1="240" x2="300" y2="244"/>
+        <line x1="350" y1="240" x2="350" y2="244"/>
+        <line x1="400" y1="240" x2="400" y2="244"/>
+      </g>
+
+      <text x="250" y="278" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#5B5548">Z</text>
+      <text x="18" y="170" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#5B5548" transform="rotate(-90 18 170)">Probability density</text>
+
+      <!-- Parameter callout: placed inside the plot area (top-right, above the near-zero right tail) so it stays inside the viewBox and does not get clipped. -->
+      <text x="380" y="130" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#5B5548">Mean = 0</text>
+      <text x="380" y="148" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#5B5548">Std Dev = 1</text>
+    </svg>
+    <p class="chart-axis-label"><span class="fig-label">Figure 1.</span> The standard normal distribution: a normal curve with mean 0 and standard deviation 1. The horizontal axis is Z, in units of standard deviations from the mean.</p>
+  </div>
+
+  <h2>Sanity-checking with the 1-2-3 rule</h2>
+  <p>Since Z just rescales X, every 1-2-3 rule probability from Chapter 16 must still hold, just written in Z. Take the three worked examples from the <a class="chapter-ref-link" onclick="parent.navigateToReference('s3','16','worked-examples')" href="javascript:void(0)">"Using the 1-2-3 rule to compute probabilities" section</a> of Chapter 16, and translate each range into Z:</p>
+
+  <table class="prob-table">
+    <thead>
+      <tr><th scope="col">Range in X (&mu; = 35, &sigma; = 5)</th><th scope="col">Same range in Z</th><th scope="col" class="tot">Probability</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>25 &le; X &le; 45</td><td>&minus;2 &le; Z &le; 2</td><td class="tot">95%</td></tr>
+      <tr><td>25 &le; X &le; 50</td><td>&minus;2 &le; Z &le; 3</td><td class="tot">97.35%</td></tr>
+      <tr><td>X &lt; 40</td><td>Z &lt; 1</td><td class="tot">84%</td></tr>
+    </tbody>
+  </table>
+  <p class="table-caption">Each row's Z range comes from applying Z = (X &minus; &mu;)/&sigma; to the endpoints of the X range. The probabilities are unchanged from Chapter 16.</p>
+
+  <p>Notice something important: the middle column (in Z) does not mention 35 or 5 at all. Every probability question about any normal distribution reduces to the same set of questions about Z. That is the payoff of standardising: <b>one table of Z probabilities is enough to handle any normal distribution</b>.</p>
+
+  <h2 id="reading-z">The Z-table</h2>
+  <p>The 1-2-3 rule only covers integer values of Z (1, 2, and 3). What about Z = 0.68, or Z = 1.65? Mathematicians long ago computed the cumulative probability P(Z &le; z) for every value of Z you would want, and organised them into what is called the <b>Z-table</b>. Here it is, for values of Z from 0.0 to 2.9 in steps of 0.01:</p>
+
+  <table class="z-table">
+    <thead>
+      <tr><th scope="col">z</th><th>.00</th><th>.01</th><th>.02</th><th>.03</th><th>.04</th><th>.05</th><th>.06</th><th>.07</th><th>.08</th><th>.09</th></tr>
+    </thead>
+    <tbody>
+      <tr><th scope="row">0.0</th><td>.5000</td><td>.5040</td><td>.5080</td><td>.5120</td><td>.5160</td><td>.5199</td><td>.5239</td><td>.5279</td><td>.5319</td><td>.5359</td></tr>
+      <tr><th scope="row">0.1</th><td>.5398</td><td>.5438</td><td>.5478</td><td>.5517</td><td>.5557</td><td>.5596</td><td>.5636</td><td>.5675</td><td>.5714</td><td>.5753</td></tr>
+      <tr><th scope="row">0.2</th><td>.5793</td><td>.5832</td><td>.5871</td><td>.5910</td><td>.5948</td><td>.5987</td><td>.6026</td><td>.6064</td><td>.6103</td><td>.6141</td></tr>
+      <tr><th scope="row">0.3</th><td>.6179</td><td>.6217</td><td>.6255</td><td>.6293</td><td>.6331</td><td>.6368</td><td>.6406</td><td>.6443</td><td>.6480</td><td>.6517</td></tr>
+      <tr><th scope="row">0.4</th><td>.6554</td><td>.6591</td><td>.6628</td><td>.6664</td><td>.6700</td><td>.6736</td><td>.6772</td><td>.6808</td><td>.6844</td><td>.6879</td></tr>
+      <tr><th scope="row">0.5</th><td>.6915</td><td>.6950</td><td>.6985</td><td>.7019</td><td>.7054</td><td>.7088</td><td>.7123</td><td>.7157</td><td>.7190</td><td>.7224</td></tr>
+      <tr><th scope="row">0.6</th><td>.7257</td><td>.7291</td><td>.7324</td><td>.7357</td><td>.7389</td><td>.7422</td><td>.7454</td><td>.7486</td><td class="z-hit">.7517</td><td>.7549</td></tr>
+      <tr><th scope="row">0.7</th><td>.7580</td><td>.7611</td><td>.7642</td><td>.7673</td><td>.7704</td><td>.7734</td><td>.7764</td><td>.7794</td><td>.7823</td><td>.7852</td></tr>
+      <tr><th scope="row">0.8</th><td>.7881</td><td>.7910</td><td>.7939</td><td>.7967</td><td>.7995</td><td>.8023</td><td>.8051</td><td>.8078</td><td>.8106</td><td>.8133</td></tr>
+      <tr><th scope="row">0.9</th><td>.8159</td><td>.8186</td><td>.8212</td><td>.8238</td><td>.8264</td><td>.8289</td><td>.8315</td><td>.8340</td><td>.8365</td><td>.8389</td></tr>
+      <tr><th scope="row">1.0</th><td>.8413</td><td>.8438</td><td>.8461</td><td>.8485</td><td>.8508</td><td>.8531</td><td>.8554</td><td>.8577</td><td>.8599</td><td>.8621</td></tr>
+      <tr><th scope="row">1.1</th><td>.8643</td><td>.8665</td><td>.8686</td><td>.8708</td><td>.8729</td><td>.8749</td><td>.8770</td><td>.8790</td><td>.8810</td><td>.8830</td></tr>
+      <tr><th scope="row">1.2</th><td>.8849</td><td>.8869</td><td>.8888</td><td>.8907</td><td>.8925</td><td>.8944</td><td>.8962</td><td>.8980</td><td>.8997</td><td>.9015</td></tr>
+      <tr><th scope="row">1.3</th><td>.9032</td><td>.9049</td><td>.9066</td><td>.9082</td><td>.9099</td><td>.9115</td><td>.9131</td><td>.9147</td><td>.9162</td><td>.9177</td></tr>
+      <tr><th scope="row">1.4</th><td>.9192</td><td>.9207</td><td>.9222</td><td>.9236</td><td>.9251</td><td>.9265</td><td>.9279</td><td>.9292</td><td>.9306</td><td>.9319</td></tr>
+      <tr><th scope="row">1.5</th><td>.9332</td><td>.9345</td><td>.9357</td><td>.9370</td><td>.9382</td><td>.9394</td><td>.9406</td><td>.9418</td><td>.9429</td><td>.9441</td></tr>
+      <tr><th scope="row">1.6</th><td>.9452</td><td>.9463</td><td>.9474</td><td>.9484</td><td>.9495</td><td class="z-hit">.9505</td><td>.9515</td><td>.9525</td><td>.9535</td><td>.9545</td></tr>
+      <tr><th scope="row">1.7</th><td>.9554</td><td>.9564</td><td>.9573</td><td>.9582</td><td>.9591</td><td>.9599</td><td>.9608</td><td>.9616</td><td>.9625</td><td>.9633</td></tr>
+      <tr><th scope="row">1.8</th><td>.9641</td><td>.9649</td><td>.9656</td><td>.9664</td><td>.9671</td><td>.9678</td><td>.9686</td><td>.9693</td><td>.9699</td><td>.9706</td></tr>
+      <tr><th scope="row">1.9</th><td>.9713</td><td>.9719</td><td>.9726</td><td>.9732</td><td>.9738</td><td>.9744</td><td class="z-hit">.9750</td><td>.9756</td><td>.9761</td><td>.9767</td></tr>
+      <tr><th scope="row">2.0</th><td>.9772</td><td>.9778</td><td>.9783</td><td>.9788</td><td>.9793</td><td>.9798</td><td>.9803</td><td>.9808</td><td>.9812</td><td>.9817</td></tr>
+      <tr><th scope="row">2.1</th><td>.9821</td><td>.9826</td><td>.9830</td><td>.9834</td><td>.9838</td><td>.9842</td><td>.9846</td><td>.9850</td><td>.9854</td><td>.9857</td></tr>
+      <tr><th scope="row">2.2</th><td>.9861</td><td>.9864</td><td>.9868</td><td>.9871</td><td>.9875</td><td>.9878</td><td>.9881</td><td>.9884</td><td>.9887</td><td>.9890</td></tr>
+      <tr><th scope="row">2.3</th><td>.9893</td><td>.9896</td><td>.9898</td><td>.9901</td><td>.9904</td><td>.9906</td><td>.9909</td><td>.9911</td><td>.9913</td><td>.9916</td></tr>
+      <tr><th scope="row">2.4</th><td>.9918</td><td>.9920</td><td>.9922</td><td>.9925</td><td>.9927</td><td>.9929</td><td>.9931</td><td>.9932</td><td>.9934</td><td>.9936</td></tr>
+      <tr><th scope="row">2.5</th><td>.9938</td><td>.9940</td><td>.9941</td><td>.9943</td><td>.9945</td><td>.9946</td><td>.9948</td><td>.9949</td><td>.9951</td><td>.9952</td></tr>
+      <tr><th scope="row">2.6</th><td>.9953</td><td>.9955</td><td>.9956</td><td>.9957</td><td>.9959</td><td>.9960</td><td>.9961</td><td>.9962</td><td>.9963</td><td>.9964</td></tr>
+      <tr><th scope="row">2.7</th><td>.9965</td><td>.9966</td><td>.9967</td><td>.9968</td><td>.9969</td><td>.9970</td><td>.9971</td><td>.9972</td><td>.9973</td><td>.9974</td></tr>
+      <tr><th scope="row">2.8</th><td>.9974</td><td>.9975</td><td>.9976</td><td>.9977</td><td>.9977</td><td>.9978</td><td>.9979</td><td>.9979</td><td>.9980</td><td>.9981</td></tr>
+      <tr><th scope="row">2.9</th><td>.9981</td><td>.9982</td><td>.9982</td><td>.9983</td><td>.9984</td><td>.9984</td><td>.9985</td><td>.9985</td><td>.9986</td><td>.9986</td></tr>
+    </tbody>
+  </table>
+  <p class="table-caption">Each cell is P(Z &le; z). To look up a Z of, say, 1.65: find the row 1.6, then the column .05, and read off .9505. Cells highlighted in brass are the ones used in the worked examples below. A full-resolution PDF version is at <a href="https://www.math.arizona.edu/~rsims/ma464/standardnormaltable.pdf" target="_blank" rel="noopener">math.arizona.edu/~rsims/ma464/standardnormaltable.pdf</a>.</p>
+
+  <p><b>Negative Z values.</b> This table only lists positive Z. For a negative Z, use the fact that the standard normal is symmetric about 0:</p>
+  <div class="formula">
+    <span>P(Z &le; &minus;z) = 1 &minus; P(Z &le; z)</span>
+  </div>
+  <p>For example, P(Z &le; &minus;1.96) = 1 &minus; P(Z &le; 1.96) = 1 &minus; 0.9750 = 0.0250. This one identity replaces the need for a second table.</p>
+
+  <h2>Reading the Z-table: a first worked example</h2>
+  <div class="ex">
+    <p class="q">Using the Z-table above, find P(Z &le; 0.68).</p>
+    <p class="a">Split 0.68 into two parts: the row is the value up to the first decimal (0.6), and the column is the second decimal (.08). At the intersection of row 0.6 and column .08, read the value <span style="color:var(--brass); font-weight:600;">.7517</span>.</p>
+    <div class="calc">
+      <span>P(Z &le; 0.68)</span><span class="eq">=</span>
+      <span class="result">0.7517</span>
+    </div>
+    <p class="a">So about 75.17% of a standard normal variable falls at or below 0.68.</p>
+  </div>
+
+  <p>Figure 2 shows what P(Z &le; z) actually means: the area under the standard normal PDF from the far left up to z. For z = 0.68, that area is 0.7517.</p>
+
+  <div class="chart-wrap">
+    <svg class="chart-svg" viewBox="0 0 520 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Standard normal curve with area to the left of z equal to 0.68 shaded">
+      <!-- Bell curve fill (background under whole curve, very light) -->
+      <path d="M 75.0 210 L 75.0 209.69 L 82.0 209.5 L 89.0 209.2 L 96.0 208.76 L 103.0 208.11 L 110.0 207.18 L 117.0 205.87 L 124.0 204.07 L 131.0 201.64 L 138.0 198.44 L 145.0 194.34 L 152.0 189.2 L 159.0 182.89 L 166.0 175.37 L 173.0 166.61 L 180.0 156.7 L 187.0 145.79 L 194.0 134.15 L 201.0 122.14 L 208.0 110.2 L 215.0 98.84 L 222.0 88.59 L 229.0 79.97 L 236.0 73.44 L 243.0 69.36 L 250.0 67.98 L 257.0 69.36 L 264.0 73.44 L 271.0 79.97 L 278.0 88.59 L 285.0 98.84 L 292.0 110.2 L 299.0 122.14 L 306.0 134.15 L 313.0 145.79 L 320.0 156.7 L 327.0 166.61 L 334.0 175.37 L 341.0 182.89 L 348.0 189.2 L 355.0 194.34 L 362.0 198.44 L 369.0 201.64 L 376.0 204.07 L 383.0 205.87 L 390.0 207.18 L 397.0 208.11 L 404.0 208.76 L 411.0 209.2 L 418.0 209.5 L 418.0 210 Z"
+            fill="#5B5548" fill-opacity="0.05"/>
+
+      <!-- Shaded area from far-left up to z=0.68 (x=284, y≈97.3). Smooth polyline. -->
+      <path d="M 75.0 210 L 75.0 209.69 L 82.0 209.5 L 89.0 209.2 L 96.0 208.76 L 103.0 208.11 L 110.0 207.18 L 117.0 205.87 L 124.0 204.07 L 131.0 201.64 L 138.0 198.44 L 145.0 194.34 L 152.0 189.2 L 159.0 182.89 L 166.0 175.37 L 173.0 166.61 L 180.0 156.7 L 187.0 145.79 L 194.0 134.15 L 201.0 122.14 L 208.0 110.2 L 215.0 98.84 L 222.0 88.59 L 229.0 79.97 L 236.0 73.44 L 243.0 69.36 L 250.0 67.98 L 257.0 69.36 L 264.0 73.44 L 271.0 79.97 L 278.0 88.59 L 284.0 97.29 L 284.0 210 Z"
+            fill="#8C3A2E" fill-opacity="0.22"/>
+
+      <!-- Bell curve outline drawn on top -->
+      <path d="M 75.0 209.69 L 82.0 209.5 L 89.0 209.2 L 96.0 208.76 L 103.0 208.11 L 110.0 207.18 L 117.0 205.87 L 124.0 204.07 L 131.0 201.64 L 138.0 198.44 L 145.0 194.34 L 152.0 189.2 L 159.0 182.89 L 166.0 175.37 L 173.0 166.61 L 180.0 156.7 L 187.0 145.79 L 194.0 134.15 L 201.0 122.14 L 208.0 110.2 L 215.0 98.84 L 222.0 88.59 L 229.0 79.97 L 236.0 73.44 L 243.0 69.36 L 250.0 67.98 L 257.0 69.36 L 264.0 73.44 L 271.0 79.97 L 278.0 88.59 L 285.0 98.84 L 292.0 110.2 L 299.0 122.14 L 306.0 134.15 L 313.0 145.79 L 320.0 156.7 L 327.0 166.61 L 334.0 175.37 L 341.0 182.89 L 348.0 189.2 L 355.0 194.34 L 362.0 198.44 L 369.0 201.64 L 376.0 204.07 L 383.0 205.87 L 390.0 207.18 L 397.0 208.11 L 404.0 208.76 L 411.0 209.2 L 418.0 209.5"
+            fill="none" stroke="#1E1B16" stroke-width="1.8"/>
+
+      <!-- Vertical line at z=0.68 (screen x=284, top at y=97.29) -->
+      <line x1="284" y1="210" x2="284" y2="97.29" stroke="#8C3A2E" stroke-width="1.5"/>
+
+      <!-- x-axis -->
+      <line x1="30" y1="210" x2="470" y2="210" stroke="#1E1B16" stroke-width="1"/>
+
+      <!-- Z tick labels: -3, -2, -1, 0, 1, 2, 3 plus red 0.68 -->
+      <g font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#5B5548">
+        <text x="100" y="226" text-anchor="middle">-3</text>
+        <text x="150" y="226" text-anchor="middle">-2</text>
+        <text x="200" y="226" text-anchor="middle">-1</text>
+        <text x="250" y="226" text-anchor="middle">0</text>
+        <text x="300" y="226" text-anchor="middle">1</text>
+        <text x="350" y="226" text-anchor="middle">2</text>
+        <text x="400" y="226" text-anchor="middle">3</text>
+      </g>
+      <text x="284" y="226" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="600" fill="#8C3A2E">0.68</text>
+
+      <!-- Area = 0.7517 callout -->
+      <text x="170" y="150" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#5B5548">area = 0.7517</text>
+
+      <text x="250" y="248" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#5B5548">Z</text>
+      <text x="18" y="140" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#5B5548" transform="rotate(-90 18 140)">Probability density</text>
+    </svg>
+    <p class="chart-axis-label"><span class="fig-label">Figure 2.</span> The cumulative probability P(Z &le; 0.68) is the shaded area to the left of Z = 0.68 under the standard normal curve. From the Z-table, that area is 0.7517.</p>
+  </div>
+
+  <h2>Applying it to a real X: commute time</h2>
+  <p>Now put the two pieces together. Suppose the average commute time of an employee is normally distributed with mean 35 minutes and standard deviation 5 minutes. What is the probability that a randomly picked employee's commute is less than 43.25 minutes?</p>
+
+  <div class="ex">
+    <p class="q">With &mu; = 35 and &sigma; = 5, find P(X &lt; 43.25).</p>
+    <p class="a">Step 1. Convert 43.25 into a Z-score using Z = (X &minus; &mu;)/&sigma;:</p>
+    <div class="calc">
+      <span>Z</span><span class="eq">=</span>
+      <span class="frac"><span class="num">43.25 &minus; 35</span><span class="den">5</span></span>
+      <span class="eq">=</span>
+      <span class="frac"><span class="num">8.25</span><span class="den">5</span></span>
+      <span class="eq">=</span>
+      <span class="result">1.65</span>
+    </div>
+    <p class="a">Step 2. Look up P(Z &le; 1.65) in the Z-table above. Row 1.6, column .05, gives .9505.</p>
+    <div class="calc">
+      <span>P(X &lt; 43.25) = P(Z &lt; 1.65)</span><span class="eq">=</span>
+      <span class="result">0.9505</span>
+    </div>
+    <p class="a">So about 95% of employees have a commute time under 43.25 minutes.</p>
+  </div>
+
+  <h2>Applying it to a two-sided range</h2>
+  <p>The same idea handles a range like "between two values". Convert both endpoints to Z, look up each cumulative probability, and subtract.</p>
+
+  <div class="ex">
+    <p class="q">With &mu; = 35 and &sigma; = 5, find P(25.2 &le; X &le; 44.8).</p>
+    <p class="a">Step 1. Convert both endpoints to Z-scores:</p>
+    <div class="calc">
+      <span>lower Z</span><span class="eq">=</span>
+      <span class="frac"><span class="num">25.2 &minus; 35</span><span class="den">5</span></span>
+      <span class="eq">=</span>
+      <span class="frac"><span class="num">&minus;9.8</span><span class="den">5</span></span>
+      <span class="eq">=</span>
+      <span class="result">&minus;1.96</span>
+    </div>
+    <div class="calc">
+      <span>upper Z</span><span class="eq">=</span>
+      <span class="frac"><span class="num">44.8 &minus; 35</span><span class="den">5</span></span>
+      <span class="eq">=</span>
+      <span class="frac"><span class="num">9.8</span><span class="den">5</span></span>
+      <span class="eq">=</span>
+      <span class="result">1.96</span>
+    </div>
+    <p class="a">Step 2. Look up each cumulative probability. For Z = 1.96, row 1.9 column .06 gives .9750:</p>
+    <div class="calc">
+      <span>P(Z &le; 1.96)</span><span class="eq">=</span>
+      <span class="result">0.9750</span>
+    </div>
+    <p class="a">For Z = &minus;1.96, the table only has positive values, so use symmetry:</p>
+    <div class="calc">
+      <span>P(Z &le; &minus;1.96) = 1 &minus; P(Z &le; 1.96) = 1 &minus; 0.9750</span><span class="eq">=</span>
+      <span class="result">0.0250</span>
+    </div>
+    <p class="a">Step 3. Subtract the smaller cumulative from the larger to get the range probability, using the range formula from Chapter 11, Cumulative Probability Distributions, in the <a class="chapter-ref-link" onclick="parent.navigateToReference('s2','11','cumulative-range')" href="javascript:void(0)">"Using cumulative probability to find a range" section</a>:</p>
+    <div class="calc">
+      <span>P(25.2 &le; X &le; 44.8) = 0.9750 &minus; 0.0250</span><span class="eq">=</span>
+      <span class="result">0.95</span>
+    </div>
+    <p class="a">So 95% of commute times fall between 25.2 and 44.8 minutes. Figure 3 shows this as the middle 95% area:</p>
+  </div>
+
+  <div class="chart-wrap">
+    <svg class="chart-svg" viewBox="0 0 520 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Standard normal with the area between minus 1.96 and plus 1.96 shaded">
+      <!-- Bell curve fill (background under whole curve) -->
+      <path d="M 75.0 210 L 75.0 209.69 L 82.0 209.5 L 89.0 209.2 L 96.0 208.76 L 103.0 208.11 L 110.0 207.18 L 117.0 205.87 L 124.0 204.07 L 131.0 201.64 L 138.0 198.44 L 145.0 194.34 L 152.0 189.2 L 159.0 182.89 L 166.0 175.37 L 173.0 166.61 L 180.0 156.7 L 187.0 145.79 L 194.0 134.15 L 201.0 122.14 L 208.0 110.2 L 215.0 98.84 L 222.0 88.59 L 229.0 79.97 L 236.0 73.44 L 243.0 69.36 L 250.0 67.98 L 257.0 69.36 L 264.0 73.44 L 271.0 79.97 L 278.0 88.59 L 285.0 98.84 L 292.0 110.2 L 299.0 122.14 L 306.0 134.15 L 313.0 145.79 L 320.0 156.7 L 327.0 166.61 L 334.0 175.37 L 341.0 182.89 L 348.0 189.2 L 355.0 194.34 L 362.0 198.44 L 369.0 201.64 L 376.0 204.07 L 383.0 205.87 L 390.0 207.18 L 397.0 208.11 L 404.0 208.76 L 411.0 209.2 L 418.0 209.5 L 418.0 210 Z"
+            fill="#5B5548" fill-opacity="0.05"/>
+
+      <!-- Shaded middle area from Z=-1.96 (x=152, y=189.2) to Z=+1.96 (x=348, y=189.2). Uses actual PDF values in between. -->
+      <path d="M 152.0 210 L 152.0 189.2 L 159.0 182.89 L 166.0 175.37 L 173.0 166.61 L 180.0 156.7 L 187.0 145.79 L 194.0 134.15 L 201.0 122.14 L 208.0 110.2 L 215.0 98.84 L 222.0 88.59 L 229.0 79.97 L 236.0 73.44 L 243.0 69.36 L 250.0 67.98 L 257.0 69.36 L 264.0 73.44 L 271.0 79.97 L 278.0 88.59 L 285.0 98.84 L 292.0 110.2 L 299.0 122.14 L 306.0 134.15 L 313.0 145.79 L 320.0 156.7 L 327.0 166.61 L 334.0 175.37 L 341.0 182.89 L 348.0 189.2 L 348.0 210 Z"
+            fill="#8C3A2E" fill-opacity="0.22"/>
+
+      <!-- Bell outline -->
+      <path d="M 75.0 209.69 L 82.0 209.5 L 89.0 209.2 L 96.0 208.76 L 103.0 208.11 L 110.0 207.18 L 117.0 205.87 L 124.0 204.07 L 131.0 201.64 L 138.0 198.44 L 145.0 194.34 L 152.0 189.2 L 159.0 182.89 L 166.0 175.37 L 173.0 166.61 L 180.0 156.7 L 187.0 145.79 L 194.0 134.15 L 201.0 122.14 L 208.0 110.2 L 215.0 98.84 L 222.0 88.59 L 229.0 79.97 L 236.0 73.44 L 243.0 69.36 L 250.0 67.98 L 257.0 69.36 L 264.0 73.44 L 271.0 79.97 L 278.0 88.59 L 285.0 98.84 L 292.0 110.2 L 299.0 122.14 L 306.0 134.15 L 313.0 145.79 L 320.0 156.7 L 327.0 166.61 L 334.0 175.37 L 341.0 182.89 L 348.0 189.2 L 355.0 194.34 L 362.0 198.44 L 369.0 201.64 L 376.0 204.07 L 383.0 205.87 L 390.0 207.18 L 397.0 208.11 L 404.0 208.76 L 411.0 209.2 L 418.0 209.5"
+            fill="none" stroke="#1E1B16" stroke-width="1.8"/>
+
+      <!-- Vertical lines at the range boundaries -->
+      <line x1="152" y1="210" x2="152" y2="189.2" stroke="#8C3A2E" stroke-width="1.5"/>
+      <line x1="348" y1="210" x2="348" y2="189.2" stroke="#8C3A2E" stroke-width="1.5"/>
+
+      <line x1="30" y1="210" x2="470" y2="210" stroke="#1E1B16" stroke-width="1"/>
+
+      <!-- Z ticks: only 0 as a reference; the special values -1.96 and +1.96 are labeled in red -->
+      <g font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#5B5548">
+        <text x="100" y="226" text-anchor="middle">-3</text>
+        <text x="200" y="226" text-anchor="middle">-1</text>
+        <text x="250" y="226" text-anchor="middle">0</text>
+        <text x="300" y="226" text-anchor="middle">1</text>
+        <text x="400" y="226" text-anchor="middle">3</text>
+      </g>
+      <text x="152" y="226" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="600" fill="#8C3A2E">-1.96</text>
+      <text x="348" y="226" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="600" fill="#8C3A2E">1.96</text>
+
+      <text x="250" y="140" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="600" fill="#5B5548">area = 0.95</text>
+
+      <text x="250" y="248" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#5B5548">Z</text>
+      <text x="18" y="140" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#5B5548" transform="rotate(-90 18 140)">Probability density</text>
+    </svg>
+    <p class="chart-axis-label"><span class="fig-label">Figure 3.</span> The middle 95% of the standard normal falls between Z = &minus;1.96 and Z = 1.96. This is a slightly tighter version of the 1-2-3 rule's 2&sigma; band, which gives approximately 95%: 1.96 is the exact Z value corresponding to 95%.</p>
+  </div>
+
+  <p>The workflow for any normal probability question is the same three steps: (1) convert the X endpoints to Z-scores using (X &minus; &mu;)/&sigma;, (2) look each Z up in the table (using symmetry for negative Z), and (3) combine them the same way you would combine any two cumulative probabilities: F(b) &minus; F(a) for a range, 1 &minus; F(a) for "above a", F(a) itself for "below a".</p>
+
+  <p>Next, we will use this workflow on a few more real-world scenarios and see how the standard normal comes up throughout statistics.</p>
+
+</main>
+<footer>Notes by @Ankit Surana</footer>
+</body>
+</html>

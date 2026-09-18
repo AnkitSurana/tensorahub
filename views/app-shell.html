@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loading...</title>
+<script>
+  // Set the dark-mode class before shell.css even finishes loading, so
+  // there's no flash of the wrong theme for a returning student.
+  (function () {
+    try {
+      if (localStorage.getItem('portal_theme') === 'dark') {
+        document.documentElement.classList.add('dark');
+      }
+    } catch (e) {}
+  })();
+</script>
+<link rel="stylesheet" href="/public/shell.css">
+</head>
+<body>
+
+  <!-- No header bar by design -- just sidebar + content, per spec. -->
+
+  <button type="button" id="mobile-menu-btn" title="Menu" aria-label="Open menu"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+  <div id="sidebar-backdrop"></div>
+
+  <div id="top-right-controls">
+    <button type="button" id="theme-toggle" title="Toggle dark mode" aria-label="Toggle dark mode"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg></button>
+    <div id="notif-bell-wrap">
+      <button type="button" id="notif-bell" title="What's new" aria-label="What's new"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></button>
+      <div id="notif-dropdown" hidden></div>
+    </div>
+    <div id="user-badge">
+      <span id="live-clock"></span>
+      <span id="user-name">...</span>
+      <a id="admin-link" href="/admin" title="Manage students" hidden>Manage students</a>
+      <form method="POST" action="/logout" style="display:inline;">
+        <button type="submit" id="logout-btn">Log out</button>
+      </form>
+    </div>
+  </div>
+
+  <aside id="sidebar">
+    <div id="brand"></div>
+    <div id="read-progress"></div>
+    <div id="search-wrap">
+      <input type="text" id="search-input" placeholder="Search chapters..." autocomplete="off">
+    </div>
+    <div id="search-results" hidden></div>
+    <div id="sidebar-list">Loading...</div>
+  </aside>
+
+  <main id="content-pane">
+    <iframe id="content-frame" title="Chapter content"></iframe>
+    <div id="empty-state">Select a chapter from the left to begin.</div>
+  </main>
+
+  <script src="/public/shell.js"></script>
+</body>
+</html>

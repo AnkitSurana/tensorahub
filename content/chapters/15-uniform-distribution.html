@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Uniform Distribution</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FAF7F2;
+    --paper-dim:#F1ECE2;
+    --ink:#1E1B16;
+    --ink-soft:#5B5548;
+    --navy:#1F2A44;
+    --navy-soft:#2C3A5C;
+    --brass:#A9793D;
+    --rule:#D9D2C3;
+    --serif:'Spectral', Georgia, serif;
+    --sans:'IBM Plex Sans', -apple-system, sans-serif;
+    --mono:'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.6;
+  }
+  main{
+    max-width:680px;
+    margin:0 auto;
+    padding:3.6rem 1.6rem 5rem;
+  }
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:.7rem;
+    color:var(--brass);
+    letter-spacing:.03em;
+    margin:0 0 .6rem;
+  }
+  h1{
+    font-family:var(--serif);
+    font-weight:500;
+    font-size:2.1rem;
+    margin:0 0 .3rem;
+  }
+  .sub{
+    color:var(--ink-soft);
+    font-size:.95rem;
+    margin:0 0 2.2rem;
+    padding-bottom:1.6rem;
+    border-bottom:1px solid var(--rule);
+  }
+  h2{
+    font-family:var(--sans);
+    font-weight:600;
+    font-size:.95rem;
+    color:var(--navy-soft);
+    margin:2.1rem 0 .6rem;
+  }
+  h2:first-of-type{ margin-top:0; }
+  p{ margin:.5rem 0; }
+  ul{ margin:.5rem 0; padding-left:1.2rem; }
+  li{ margin:.3rem 0; }
+  b{ color:var(--ink); }
+  a{ color:var(--navy-soft); }
+  .formula{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:.4rem;
+    font-family:var(--mono);
+    font-size:1rem;
+    background:var(--paper-dim);
+    border-left:2px solid var(--brass);
+    padding:.75rem 1rem;
+    margin:.7rem 0;
+  }
+  .formula .eq{ margin:0 .15rem; color:var(--ink-soft); }
+
+  .calc{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:.55rem;
+    font-family:var(--mono);
+    font-size:.92rem;
+    color:var(--ink);
+    background:var(--paper);
+    border:1px solid var(--rule);
+    border-radius:2px;
+    padding:.6rem .8rem;
+    margin:.55rem 0 .1rem;
+  }
+  .calc .eq{ color:var(--ink-soft); }
+  .calc .result{ color:var(--brass); font-weight:600; }
+  .calc .frac{
+    display:inline-flex;
+    flex-direction:column;
+    align-items:center;
+    line-height:1;
+    margin:0 .1rem;
+  }
+  .calc .frac .num{ border-bottom:1px solid var(--ink); padding:0 .3rem .05rem; }
+  .calc .frac .den{ padding:.1rem .3rem 0; }
+
+  .ex{
+    background:var(--paper-dim);
+    border:1px solid var(--rule);
+    border-radius:2px;
+    padding:.8rem 1rem;
+    margin:.7rem 0;
+  }
+  .ex .q{ font-weight:600; font-size:.9rem; }
+  .ex .a{ font-size:.88rem; color:var(--ink-soft); margin-top:.2rem; }
+
+  .chart-wrap{ margin:1.1rem 0 .3rem; }
+  .chart-svg{ width:100%; height:auto; display:block; }
+  .chart-axis-label{
+    text-align:center;
+    font-size:.8rem;
+    color:var(--ink-soft);
+    margin-top:.5rem;
+  }
+  .fig-label{
+    font-family:var(--mono);
+    font-weight:600;
+    color:var(--brass);
+  }
+
+  footer{
+    max-width:680px;
+    margin:0 auto;
+    padding:0 1.6rem 3rem;
+    font-size:.76rem;
+    color:var(--ink-soft);
+  }
+</style>
+</head>
+<body>
+<main>
+
+  <p class="eyebrow">CHAPTER 15 &middot; LESSON NOTES</p>
+  <h1>Uniform Distribution</h1>
+  <p class="sub">The simplest continuous distribution: constant density across a range, why the area-under-PDF rule pins down the exact height, and why the PDF form is usually easier to read than the CDF form for spotting shape.</p>
+
+  <h2>What a uniform distribution looks like</h2>
+  <p>In a <b>uniform</b> continuous distribution, every possible value has the same probability density. No value is more or less likely than another within the range. Figure 1 shows a uniform PDF whose possible values run from 0 to 10:</p>
+
+  <div class="chart-wrap">
+    <svg class="chart-svg" viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Uniform PDF from 0 to 10 with height labeled h">
+      <!-- Reference grid lines (very light) -->
+      <g stroke="#E8E1D0" stroke-width="1">
+        <line x1="45" y1="20" x2="385" y2="20"/>
+        <line x1="45" y1="60" x2="385" y2="60"/>
+        <line x1="45" y1="100" x2="385" y2="100"/>
+        <line x1="45" y1="140" x2="385" y2="140"/>
+      </g>
+      <!-- Axes -->
+      <line x1="45" y1="180" x2="385" y2="180" stroke="#5B5548" stroke-width="1"/>
+      <line x1="45" y1="20" x2="45" y2="180" stroke="#5B5548" stroke-width="1"/>
+
+      <!-- PDF: flat at h=0.1 from x=0 to x=10.
+           Screen x = 45 + (val - (-5)) * 17. So x=-5→45, x=0→130, x=5→215, x=10→300, x=15→385.
+           Height h: rendered visually at screen y=100 (matches "middle grid line") to keep h clearly non-trivial. -->
+      <!-- Filled area under the PDF (the area that equals 1) -->
+      <rect x="130" y="100" width="170" height="80" fill="#1F2A44" fill-opacity="0.08"/>
+      <!-- PDF outline -->
+      <path d="M 45 180 L 130 180 L 130 100 L 300 100 L 300 180 L 385 180"
+            fill="none" stroke="#1F2A44" stroke-width="2"/>
+
+      <!-- Height annotation: vertical arrow-line at x=118, with an "h" label -->
+      <polygon points="118,93 113,103 123,103" fill="#8C3A2E"/>
+      <polygon points="118,187 113,177 123,177" fill="#8C3A2E"/>
+      <line x1="118" y1="103" x2="118" y2="177" stroke="#8C3A2E" stroke-width="1.5"/>
+      <text x="105" y="145" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="14" font-weight="700" fill="#8C3A2E">h</text>
+
+      <!-- "Area = 1" callout inside the shaded rectangle -->
+      <text x="215" y="145" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#5B5548">area = 1</text>
+
+      <!-- x-axis tick labels -->
+      <g font-family="IBM Plex Mono, monospace" font-size="10" fill="#5B5548">
+        <text x="45" y="196" text-anchor="middle">-5</text>
+        <text x="130" y="196" text-anchor="middle">0</text>
+        <text x="215" y="196" text-anchor="middle">5</text>
+        <text x="300" y="196" text-anchor="middle">10</text>
+        <text x="385" y="196" text-anchor="middle">15</text>
+      </g>
+
+      <text x="215" y="213" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#5B5548">X</text>
+      <text x="14" y="100" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#5B5548" transform="rotate(-90 14 100)">Probability density</text>
+    </svg>
+    <p class="chart-axis-label"><span class="fig-label">Figure 1.</span> A uniform PDF over 0 to 10. The height is some fixed value h, and the total area under the curve (the shaded rectangle) must equal 1.</p>
+  </div>
+
+  <h2 id="finding-h">Finding the height h</h2>
+  <p>Recall from Chapter 14, Probability Density Functions, in the <a class="chapter-ref-link" onclick="parent.navigateToReference('s3','14','pdf-intro')" href="javascript:void(0)">"The probability density function" section</a>, that the total area under any PDF must equal 1, since it covers every possible outcome. That fact alone is enough to pin down h.</p>
+
+  <div class="ex">
+    <p class="q">For the uniform PDF in Figure 1, what is the value of the probability density between X = 0 and X = 10?</p>
+    <p class="a">The area under the PDF is the area of a rectangle with width 10 (from 0 to 10) and height h:</p>
+    <div class="calc">
+      <span>area = width &times; height = 10 &times; h</span>
+    </div>
+    <p class="a">Since the area must equal 1:</p>
+    <div class="calc">
+      <span>10 &times; h = 1</span>
+    </div>
+    <p class="a">Divide both sides by 10:</p>
+    <div class="calc">
+      <span>h</span><span class="eq">=</span>
+      <span class="frac"><span class="num">1</span><span class="den">10</span></span>
+      <span class="eq">=</span>
+      <span class="result">0.1</span>
+    </div>
+    <p class="a">So the probability density is 0.1 for every value between 0 and 10, and 0 everywhere else.</p>
+  </div>
+
+  <h2 id="cumulative-from-uniform">Cumulative probability from the uniform PDF</h2>
+  <p>With the height known, we can now find the cumulative probability at any x by measuring the area under the PDF from the smallest possible value (0) up to that x. Figure 2 shows what F(0.5) looks like as an area:</p>
+
+  <div class="chart-wrap">
+    <svg class="chart-svg" viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Uniform PDF from 0 to 10 with the region from 0 to 0.5 shaded">
+      <g stroke="#E8E1D0" stroke-width="1">
+        <line x1="45" y1="20" x2="385" y2="20"/>
+        <line x1="45" y1="60" x2="385" y2="60"/>
+        <line x1="45" y1="100" x2="385" y2="100"/>
+        <line x1="45" y1="140" x2="385" y2="140"/>
+      </g>
+      <line x1="45" y1="180" x2="385" y2="180" stroke="#5B5548" stroke-width="1"/>
+      <line x1="45" y1="20" x2="45" y2="180" stroke="#5B5548" stroke-width="1"/>
+
+      <!-- PDF outline (same geometry as Figure 1) -->
+      <path d="M 45 180 L 130 180 L 130 100 L 300 100 L 300 180 L 385 180"
+            fill="none" stroke="#1F2A44" stroke-width="2"/>
+
+      <!-- Shaded slice from x=0 to x=0.5. Screen: x=0 → 130, x=0.5 → 130 + 0.5*17 = 138.5.
+           Height 80 pixels (from y=100 down to y=180). Highlighted with a darker fill. -->
+      <rect x="130" y="100" width="8.5" height="80" fill="#8C3A2E" fill-opacity="0.55"/>
+
+      <!-- Height label on left: 0.1 with arrows -->
+      <polygon points="118,93 113,103 123,103" fill="#8C3A2E"/>
+      <polygon points="118,187 113,177 123,177" fill="#8C3A2E"/>
+      <line x1="118" y1="103" x2="118" y2="177" stroke="#8C3A2E" stroke-width="1.5"/>
+      <text x="98" y="145" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="700" fill="#8C3A2E">0.1</text>
+
+      <!-- x-axis ticks. Replace the black "0" with a red "0" (since our slice starts at 0). Add a red "0.5" tick between 0 and 5. -->
+      <g font-family="IBM Plex Mono, monospace" font-size="10" fill="#5B5548">
+        <text x="45" y="196" text-anchor="middle">-5</text>
+        <text x="215" y="196" text-anchor="middle">5</text>
+        <text x="300" y="196" text-anchor="middle">10</text>
+        <text x="385" y="196" text-anchor="middle">15</text>
+      </g>
+      <text x="130" y="196" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="600" fill="#8C3A2E">0</text>
+      <text x="150" y="196" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="600" fill="#8C3A2E">0.5</text>
+
+      <text x="215" y="213" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#5B5548">X</text>
+      <text x="14" y="100" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#5B5548" transform="rotate(-90 14 100)">Probability density</text>
+    </svg>
+    <p class="chart-axis-label"><span class="fig-label">Figure 2.</span> The shaded slice from X = 0 to X = 0.5 is F(0.5). It is a thin rectangle of width 0.5 and height 0.1.</p>
+  </div>
+
+  <div class="ex">
+    <p class="q">Using the uniform PDF from Figure 2, find F(0.5), the cumulative probability at X = 0.5.</p>
+    <p class="a">F(0.5) is the area under the PDF from the smallest possible value (0) up to 0.5. That area is a rectangle with width 0.5 and height 0.1:</p>
+    <div class="calc">
+      <span>F(0.5) = width &times; height = 0.5 &times; 0.1</span><span class="eq">=</span>
+      <span class="result">0.05</span>
+    </div>
+    <p class="a">The same reasoning works for any value of x in the range: F(x) is a rectangle of width x and height 0.1, so F(x) = 0.1 &times; x. For example, F(5) = 0.1 &times; 5 = 0.5, exactly halfway, which matches the intuition that half the range covers half the probability.</p>
+  </div>
+
+  <h2>PDF or CDF: which one to use?</h2>
+  <p>Both the PDF and the CDF describe the same variable's distribution. They carry the same information, just in different visual forms. So which one is more useful in practice?</p>
+
+  <p>For spotting the <b>shape</b> of a distribution at a glance, the PDF is usually easier. Compare the PDF and CDF forms of the same uniform distribution in Figure 3:</p>
+
+  <div class="chart-wrap">
+    <svg class="chart-svg" viewBox="0 0 800 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Side by side PDF and CDF of a uniform distribution from -5 to 5">
+      <!-- Divider -->
+      <line x1="400" y1="20" x2="400" y2="220" stroke="#D9D2C3" stroke-width="1"/>
+
+      <!-- LEFT SUBPLOT: PDF -->
+      <text x="200" y="17" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#5B5548">PDF</text>
+      <g stroke="#E8E1D0" stroke-width="1">
+        <line x1="55" y1="40" x2="380" y2="40"/>
+        <line x1="55" y1="100" x2="380" y2="100"/>
+        <line x1="55" y1="160" x2="380" y2="160"/>
+      </g>
+      <line x1="55" y1="220" x2="380" y2="220" stroke="#5B5548" stroke-width="1"/>
+      <line x1="55" y1="40" x2="55" y2="220" stroke="#5B5548" stroke-width="1"/>
+
+      <!-- PDF path: uniform from x=-5 to x=5, h=0.1. Data x range: -8 to 8. Per-unit = (380-55)/16 = 20.3.
+           x=-8 → 55, x=-5 → 116, x=0 → 217.5, x=5 → 319, x=8 → 380
+           y range 0 to 1.2. y=0 → 220, y=1.2 → 40. Per 0.1 = 15. So y=0.1 → 205 (small step). -->
+      <path d="M 55 220 L 116 220 L 116 205 L 319 205 L 319 220 L 380 220"
+            fill="none" stroke="#1F2A44" stroke-width="2"/>
+
+      <!-- y ticks for PDF -->
+      <g font-family="IBM Plex Mono, monospace" font-size="10" fill="#5B5548">
+        <text x="50" y="223" text-anchor="end">0.0</text>
+        <text x="50" y="178" text-anchor="end">0.3</text>
+        <text x="50" y="133" text-anchor="end">0.6</text>
+        <text x="50" y="88" text-anchor="end">0.9</text>
+        <text x="50" y="43" text-anchor="end">1.2</text>
+      </g>
+      <!-- x ticks for PDF -->
+      <g font-family="IBM Plex Mono, monospace" font-size="10" fill="#5B5548">
+        <text x="116" y="236" text-anchor="middle">-5</text>
+        <text x="217" y="236" text-anchor="middle">0</text>
+        <text x="319" y="236" text-anchor="middle">5</text>
+      </g>
+      <text x="18" y="130" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#5B5548" transform="rotate(-90 18 130)">Probability density</text>
+
+      <!-- RIGHT SUBPLOT: CDF -->
+      <text x="600" y="17" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#5B5548">CDF</text>
+      <g stroke="#E8E1D0" stroke-width="1">
+        <line x1="455" y1="40" x2="780" y2="40"/>
+        <line x1="455" y1="100" x2="780" y2="100"/>
+        <line x1="455" y1="160" x2="780" y2="160"/>
+      </g>
+      <line x1="455" y1="220" x2="780" y2="220" stroke="#5B5548" stroke-width="1"/>
+      <line x1="455" y1="40" x2="455" y2="220" stroke="#5B5548" stroke-width="1"/>
+
+      <!-- CDF path: 0 for x <= -5, linear 0 to 1 for -5 <= x <= 5, 1 for x >= 5.
+           Same x scale as PDF, shifted 400 right.
+           x=-8 → 455, x=-5 → 516, x=0 → 617.5, x=5 → 719, x=8 → 780
+           Same y scale: y=0 → 220, y=1 → 70 (per 0.1 = 15 pixels; 1.0 = 150 pixels above axis). -->
+      <path d="M 455 220 L 516 220 L 719 70 L 780 70"
+            fill="none" stroke="#A9793D" stroke-width="2"/>
+
+      <!-- y ticks for CDF -->
+      <g font-family="IBM Plex Mono, monospace" font-size="10" fill="#5B5548">
+        <text x="450" y="223" text-anchor="end">0.0</text>
+        <text x="450" y="178" text-anchor="end">0.3</text>
+        <text x="450" y="133" text-anchor="end">0.6</text>
+        <text x="450" y="88" text-anchor="end">0.9</text>
+        <text x="450" y="43" text-anchor="end">1.2</text>
+      </g>
+      <!-- x ticks for CDF -->
+      <g font-family="IBM Plex Mono, monospace" font-size="10" fill="#5B5548">
+        <text x="516" y="236" text-anchor="middle">-5</text>
+        <text x="617" y="236" text-anchor="middle">0</text>
+        <text x="719" y="236" text-anchor="middle">5</text>
+      </g>
+      <text x="418" y="130" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#5B5548" transform="rotate(-90 418 130)">Cumulative probability</text>
+    </svg>
+    <p class="chart-axis-label"><span class="fig-label">Figure 3.</span> Left: PDF of a uniform distribution from -5 to 5 (a flat line at 0.1). Right: the same distribution's CDF (a straight ramp from 0 to 1). Both carry the same information; the PDF's flat line makes the uniformity easier to spot at a glance.</p>
+  </div>
+
+  <p>The PDF's flat line makes uniformity immediately obvious. The CDF's straight ramp carries the same information, but you have to notice its slope is constant to recognise it as uniform.</p>
+
+  <p>The gap is even wider for a symmetric distribution. Figure 4 shows the PDF and CDF of a symmetric bell-shaped variable:</p>
+
+  <div class="chart-wrap">
+    <svg class="chart-svg" viewBox="0 0 800 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Side by side PDF and CDF of a symmetric bell shaped distribution">
+      <line x1="400" y1="20" x2="400" y2="220" stroke="#D9D2C3" stroke-width="1"/>
+
+      <!-- LEFT SUBPLOT: PDF (bell curve) -->
+      <text x="200" y="17" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#5B5548">PDF</text>
+      <g stroke="#E8E1D0" stroke-width="1">
+        <line x1="55" y1="40" x2="380" y2="40"/>
+        <line x1="55" y1="100" x2="380" y2="100"/>
+        <line x1="55" y1="160" x2="380" y2="160"/>
+      </g>
+      <line x1="55" y1="220" x2="380" y2="220" stroke="#5B5548" stroke-width="1"/>
+      <line x1="55" y1="40" x2="55" y2="220" stroke="#5B5548" stroke-width="1"/>
+
+      <!-- Bell curve. Data x range: -7 to 7 (14 units). Per-unit = (380-55)/14 = 23.2.
+           x=-7 → 55, x=-6 → 78, x=-4 → 125, x=-2 → 171, x=0 → 217, x=2 → 264, x=4 → 310, x=6 → 357, x=7 → 380
+           Y range: 0 to 1.2 (matches right side). Standard normal peak ~0.4 at x=0.
+           y=0.4 → 220 - 0.4*150 = 160
+           y=0.24 → 220 - 0.24*150 = 184
+           y=0.05 → 220 - 0.05*150 = 213
+           y=0.005 ≈ 220 -->
+      <!-- Smooth bell PDF polyline (~100 points, standard normal mapped to viewBox with peak at ~y=160) -->
+      <path d="M 54.53 220.0 L 106.52 220.0 L 132.52 219.92 L 148.76 219.21 L 158.51 217.5 L 168.26 213.4 L 178.01 205.41 L 187.76 192.94 L 197.5 177.95 L 207.25 165.21 L 213.75 160.74 L 217.0 160.16 L 220.25 160.74 L 226.75 165.21 L 236.5 177.95 L 246.24 192.94 L 255.99 205.41 L 265.74 213.4 L 275.49 217.5 L 285.24 219.21 L 301.48 219.92 L 327.48 220.0 L 376.22 220.0"
+            fill="none" stroke="#1F2A44" stroke-width="2"/>
+
+      <g font-family="IBM Plex Mono, monospace" font-size="10" fill="#5B5548">
+        <text x="50" y="223" text-anchor="end">0.0</text>
+        <text x="50" y="178" text-anchor="end">0.3</text>
+        <text x="50" y="133" text-anchor="end">0.6</text>
+        <text x="50" y="88" text-anchor="end">0.9</text>
+        <text x="50" y="43" text-anchor="end">1.2</text>
+      </g>
+      <g font-family="IBM Plex Mono, monospace" font-size="10" fill="#5B5548">
+        <text x="125" y="236" text-anchor="middle">-4</text>
+        <text x="217" y="236" text-anchor="middle">0</text>
+        <text x="310" y="236" text-anchor="middle">4</text>
+      </g>
+      <text x="18" y="130" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#5B5548" transform="rotate(-90 18 130)">Probability density</text>
+
+      <!-- RIGHT SUBPLOT: CDF (S-curve) -->
+      <text x="600" y="17" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#5B5548">CDF</text>
+      <g stroke="#E8E1D0" stroke-width="1">
+        <line x1="455" y1="40" x2="780" y2="40"/>
+        <line x1="455" y1="100" x2="780" y2="100"/>
+        <line x1="455" y1="160" x2="780" y2="160"/>
+      </g>
+      <line x1="455" y1="220" x2="780" y2="220" stroke="#5B5548" stroke-width="1"/>
+      <line x1="455" y1="40" x2="455" y2="220" stroke="#5B5548" stroke-width="1"/>
+
+      <!-- S-curve CDF for the same bell. Same x scale as left, +400 offset.
+           x=-7 → 455, x=-2 → 571, x=0 → 617, x=2 → 664, x=7 → 780
+           Y range 0 to 1.2. CDF at x=-4 ~= 0, x=-2 ~= 0.02, x=0 = 0.5, x=2 ~= 0.98, x=4 ~= 1
+           y=0 → 220, y=0.5 → 145, y=1.0 → 70 -->
+      <!-- Smooth CDF S-curve polyline, matches the PDF above (standard normal CDF integral) -->
+      <path d="M 454.53 220.0 L 519.52 220.0 L 545.51 219.84 L 561.76 218.7 L 571.51 216.25 L 581.26 210.73 L 591.0 200.3 L 600.75 183.71 L 610.5 161.54 L 617.0 145.0 L 626.75 120.59 L 636.5 100.07 L 646.24 85.58 L 655.99 76.97 L 665.74 72.68 L 675.49 70.88 L 685.24 70.25 L 701.48 70.02 L 727.48 70.0 L 776.22 70.0"
+            fill="none" stroke="#A9793D" stroke-width="2"/>
+
+      <g font-family="IBM Plex Mono, monospace" font-size="10" fill="#5B5548">
+        <text x="450" y="223" text-anchor="end">0.0</text>
+        <text x="450" y="178" text-anchor="end">0.3</text>
+        <text x="450" y="133" text-anchor="end">0.6</text>
+        <text x="450" y="88" text-anchor="end">0.9</text>
+        <text x="450" y="43" text-anchor="end">1.2</text>
+      </g>
+      <g font-family="IBM Plex Mono, monospace" font-size="10" fill="#5B5548">
+        <text x="525" y="236" text-anchor="middle">-4</text>
+        <text x="617" y="236" text-anchor="middle">0</text>
+        <text x="710" y="236" text-anchor="middle">4</text>
+      </g>
+      <text x="418" y="130" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#5B5548" transform="rotate(-90 418 130)">Cumulative probability</text>
+    </svg>
+    <p class="chart-axis-label"><span class="fig-label">Figure 4.</span> Left: PDF of a symmetric bell-shaped distribution. Right: its CDF, an S-shaped curve. The bell's symmetry around 0 is obvious in the PDF, less so in the CDF.</p>
+  </div>
+
+  <p>The bell shape and its symmetry around 0 are easy to see in the PDF. The CDF's S shape also encodes the symmetry (as a reflection through its middle point), but that takes more work to notice.</p>
+
+  <p>Because of this, <b>PDFs are used more often than CDFs in practice</b>, especially for exploratory work where you first want to see what shape the distribution has. The CDF still has its uses, most importantly for reading off exact range probabilities using F(b) &minus; F(a), as introduced in Chapter 11, Cumulative Probability Distributions, in the <a class="chapter-ref-link" onclick="parent.navigateToReference('s2','11','cumulative-range')" href="javascript:void(0)">"Using cumulative probability to find a range" section</a>.</p>
+
+  <div class="ex">
+    <p class="q">Using the uniform PDF from earlier (Figures 1 and 2), what is the probability that X falls between 3 and 7?</p>
+    <p class="a">The area under the PDF from 3 to 7 is a rectangle with width 4 (from 3 to 7) and height 0.1:</p>
+    <div class="calc">
+      <span>P(3 &le; X &le; 7) = 4 &times; 0.1</span><span class="eq">=</span>
+      <span class="result">0.4</span>
+    </div>
+    <p class="a">The same range covers 4 out of the 10 total units of width, which is 40% of the whole range, matching the intuition for a uniform distribution: probability is proportional to how much of the range the interval covers.</p>
+  </div>
+
+  <p>Next, we look at the most important continuous distribution of all: the <b>normal distribution</b>, whose bell shape appeared already in Figure 4.</p>
+
+</main>
+<footer>Notes by @Ankit Surana</footer>
+</body>
+</html>

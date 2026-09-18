@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Introduction</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FAF7F2;
+    --paper-dim:#F1ECE2;
+    --ink:#1E1B16;
+    --ink-soft:#5B5548;
+    --navy:#1F2A44;
+    --navy-soft:#2C3A5C;
+    --brass:#A9793D;
+    --rule:#D9D2C3;
+    --serif:'Spectral', Georgia, serif;
+    --sans:'IBM Plex Sans', -apple-system, sans-serif;
+    --mono:'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.6;
+  }
+  main{
+    max-width:680px;
+    margin:0 auto;
+    padding:3.6rem 1.6rem 5rem;
+  }
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:.7rem;
+    color:var(--brass);
+    letter-spacing:.03em;
+    margin:0 0 .6rem;
+  }
+  h1{
+    font-family:var(--serif);
+    font-weight:500;
+    font-size:2.1rem;
+    margin:0 0 .3rem;
+  }
+  .sub{
+    color:var(--ink-soft);
+    font-size:.95rem;
+    margin:0 0 2.2rem;
+    padding-bottom:1.6rem;
+    border-bottom:1px solid var(--rule);
+  }
+  h2{
+    font-family:var(--sans);
+    font-weight:600;
+    font-size:.95rem;
+    color:var(--navy-soft);
+    margin:2.1rem 0 .6rem;
+  }
+  h2:first-of-type{ margin-top:0; }
+  p{ margin:.5rem 0; }
+  ul{ margin:.5rem 0; padding-left:1.2rem; }
+  li{ margin:.3rem 0; }
+  b{ color:var(--ink); }
+
+  .toc{
+    list-style:none;
+    margin:0;
+    padding:0;
+  }
+  .toc li{
+    display:flex;
+    gap:.9rem;
+    padding:.85rem 0;
+    border-bottom:1px solid var(--rule);
+    margin:0;
+  }
+  .toc li:last-child{ border-bottom:none; }
+  .toc .num{
+    font-family:var(--mono);
+    color:var(--brass);
+    font-size:.85rem;
+    flex-shrink:0;
+    padding-top:.15rem;
+  }
+  .toc .name{
+    font-family:var(--serif);
+    font-size:1.02rem;
+    display:block;
+    margin-bottom:.15rem;
+  }
+  .toc .desc{
+    font-size:.85rem;
+    color:var(--ink-soft);
+    margin:0;
+  }
+
+  .note-box{
+    background:var(--paper-dim);
+    border:1px solid var(--rule);
+    border-radius:2px;
+    padding:.9rem 1.1rem;
+    margin:.7rem 0;
+    font-size:.9rem;
+    color:var(--ink-soft);
+  }
+  .note-box b{ color:var(--ink); }
+
+  footer{
+    max-width:680px;
+    margin:0 auto;
+    padding:0 1.6rem 3rem;
+    font-size:.76rem;
+    color:var(--ink-soft);
+  }
+</style>
+</head>
+<body>
+<main>
+
+  <p class="eyebrow">CHAPTER 1 &middot; LESSON NOTES</p>
+  <h1>Introduction</h1>
+  <p class="sub">What this set of notes covers, and how the chapters connect to each other.</p>
+
+  <h2>What this section covers</h2>
+  <p>These notes cover the probability and statistics foundations from the AI &amp; ML coursework: the basic rules of probability, how to update a belief once new evidence comes in, how to turn the outcome of an experiment into something you can compute with, and how to judge an uncertain situation, a game, a bet, or a business decision, using a single number.</p>
+  <p>These ideas come up constantly in machine learning: a spam filter updating its belief once it sees a suspicious word is Bayes' theorem, a model's predicted class is a random variable, and comparing two decisions under uncertainty usually comes down to expected value.</p>
+
+  <h2>The chapters</h2>
+  <ul class="toc">
+    <li>
+      <span class="num">02</span>
+      <span>
+        <span class="name">Probability Recap</span>
+        <p class="desc">The basic vocabulary of probability: experiments, events, and sample spaces, the difference between empirical and theoretical probability, the addition and multiplication rules, and how to read marginal, joint, and conditional probability off a two-way table.</p>
+      </span>
+    </li>
+    <li>
+      <span class="num">03</span>
+      <span>
+        <span class="name">Bayes' Theorem</span>
+        <p class="desc">How a prior belief gets updated into a posterior belief once you see new evidence, derived from the conditional probability rule and worked through fully with a cricket example.</p>
+      </span>
+    </li>
+    <li>
+      <span class="num">04</span>
+      <span>
+        <span class="name">Random Variables</span>
+        <p class="desc">Turning the outcome of an experiment, like the colors of balls drawn from a bag, into a number you can actually work with, and why the right choice of random variable depends on what you care about.</p>
+      </span>
+    </li>
+    <li>
+      <span class="num">05</span>
+      <span>
+        <span class="name">Probability Distributions</span>
+        <p class="desc">Once outcomes are numbers, this covers finding how likely every possible value is, and showing that as a table, a chart, or an equation.</p>
+      </span>
+    </li>
+    <li>
+      <span class="num">06</span>
+      <span>
+        <span class="name">Expected Value</span>
+        <p class="desc">The single number that tells you what a random variable is worth "on average" over the long run, and how that number is used to judge whether a game, a bet, or an investment is worth it.</p>
+      </span>
+    </li>
+    <li>
+      <span class="num">07</span>
+      <span>
+        <span class="name">Summary: Random Variables to Expected Value</span>
+        <p class="desc">A short recap tying chapters 4 through 6 together in one place.</p>
+      </span>
+    </li>
+  </ul>
+
+  <h2>One running example</h2>
+  <p>Chapters 4 through 7 all follow the same running example: a simple bag-of-balls game, used first to illustrate what a random variable is, then to build its probability distribution, and finally to work out whether the game is profitable for the player or the house. Chapters 2 and 3 stand on their own and do not depend on this example.</p>
+
+  <div class="note-box"><b>How to use these notes:</b> reading in order gives the smoothest path, since later chapters reuse specific numbers and definitions from earlier ones. Each chapter also restates the exact fact it is building on, so you can jump to any single chapter without having to reread everything before it.</div>
+
+  <p>Next, we start with the basics: probability recap.</p>
+
+</main>
+<footer>Notes by @Ankit Surana</footer>
+</body>
+</html>

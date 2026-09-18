@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Normal Distribution</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FAF7F2;
+    --paper-dim:#F1ECE2;
+    --ink:#1E1B16;
+    --ink-soft:#5B5548;
+    --navy:#1F2A44;
+    --navy-soft:#2C3A5C;
+    --brass:#A9793D;
+    --rule:#D9D2C3;
+    --serif:'Spectral', Georgia, serif;
+    --sans:'IBM Plex Sans', -apple-system, sans-serif;
+    --mono:'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.6;
+  }
+  main{
+    max-width:680px;
+    margin:0 auto;
+    padding:3.6rem 1.6rem 5rem;
+  }
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:.7rem;
+    color:var(--brass);
+    letter-spacing:.03em;
+    margin:0 0 .6rem;
+  }
+  h1{
+    font-family:var(--serif);
+    font-weight:500;
+    font-size:2.1rem;
+    margin:0 0 .3rem;
+  }
+  .sub{
+    color:var(--ink-soft);
+    font-size:.95rem;
+    margin:0 0 2.2rem;
+    padding-bottom:1.6rem;
+    border-bottom:1px solid var(--rule);
+  }
+  h2{
+    font-family:var(--sans);
+    font-weight:600;
+    font-size:.95rem;
+    color:var(--navy-soft);
+    margin:2.1rem 0 .6rem;
+  }
+  h2:first-of-type{ margin-top:0; }
+  p{ margin:.5rem 0; }
+  ul{ margin:.5rem 0; padding-left:1.2rem; }
+  ol{ margin:.5rem 0; padding-left:1.4rem; }
+  li{ margin:.3rem 0; }
+  b{ color:var(--ink); }
+  a{ color:var(--navy-soft); }
+  .formula{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:.4rem;
+    font-family:var(--mono);
+    font-size:1rem;
+    background:var(--paper-dim);
+    border-left:2px solid var(--brass);
+    padding:.75rem 1rem;
+    margin:.7rem 0;
+  }
+  .formula .eq{ margin:0 .15rem; color:var(--ink-soft); }
+
+  .calc{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:.55rem;
+    font-family:var(--mono);
+    font-size:.92rem;
+    color:var(--ink);
+    background:var(--paper);
+    border:1px solid var(--rule);
+    border-radius:2px;
+    padding:.6rem .8rem;
+    margin:.55rem 0 .1rem;
+  }
+  .calc .eq{ color:var(--ink-soft); }
+  .calc .result{ color:var(--brass); font-weight:600; }
+
+  table.prob-table{
+    border-collapse:collapse;
+    width:100%;
+    margin:.9rem 0 1.3rem;
+    font-family:var(--mono);
+    font-size:.85rem;
+  }
+  table.prob-table th, table.prob-table td{
+    border:1px solid var(--rule);
+    padding:.55rem .8rem;
+    text-align:center;
+  }
+  table.prob-table thead th{
+    background:var(--paper-dim);
+    color:var(--navy-soft);
+    font-weight:600;
+  }
+  table.prob-table th[scope="row"]{
+    background:var(--paper-dim);
+    color:var(--navy-soft);
+    font-weight:600;
+    text-align:center;
+  }
+  table.prob-table .tot{ color:var(--brass); font-weight:600; }
+  .table-caption{
+    font-family:var(--sans);
+    font-size:.82rem;
+    color:var(--ink-soft);
+    margin:-.6rem 0 .8rem;
+  }
+  .ex{
+    background:var(--paper-dim);
+    border:1px solid var(--rule);
+    border-radius:2px;
+    padding:.8rem 1rem;
+    margin:.7rem 0;
+  }
+  .ex .q{ font-weight:600; font-size:.9rem; }
+  .ex .a{ font-size:.88rem; color:var(--ink-soft); margin-top:.2rem; }
+
+  .chart-wrap{ margin:1.1rem 0 .3rem; }
+  .chart-svg{ width:100%; height:auto; display:block; }
+  .chart-axis-label{
+    text-align:center;
+    font-size:.8rem;
+    color:var(--ink-soft);
+    margin-top:.5rem;
+  }
+  .fig-label{
+    font-family:var(--mono);
+    font-weight:600;
+    color:var(--brass);
+  }
+
+  footer{
+    max-width:680px;
+    margin:0 auto;
+    padding:0 1.6rem 3rem;
+    font-size:.76rem;
+    color:var(--ink-soft);
+  }
+</style>
+</head>
+<body>
+<main>
+
+  <p class="eyebrow">CHAPTER 16 &middot; LESSON NOTES</p>
+  <h1>The Normal Distribution</h1>
+  <p class="sub">The most common continuous distribution: the bell curve. Its two parameters, its 1-2-3 rule for reading off probabilities without any calculus, and enough worked examples to make it feel automatic.</p>
+
+  <h2>Why the normal distribution matters</h2>
+  <p>The <b>normal distribution</b>, also known as the <b>Gaussian distribution</b> or simply the <b>bell curve</b>, is the most commonly used continuous probability distribution. Every real-world variable in the list below tends to follow one:</p>
+  <ul>
+    <li>Heights of a group of adult men or women.</li>
+    <li>IQ scores in a large enough population.</li>
+    <li>The weight of a mass-produced item, like a Coca-Cola bottle or a loaf of bread from the same factory.</li>
+    <li>Measurement errors when the same thing is measured many times.</li>
+  </ul>
+  <p>The pattern is so common that when a continuous variable has "most of its values clustered around a middle, with a symmetric spread on both sides," the normal distribution is almost always the first thing to try.</p>
+
+  <h2>Shape and parameters</h2>
+  <p>A normal distribution is fully described by just two numbers:</p>
+  <ul>
+    <li>Its mean, written <b>&mu;</b> (the Greek letter mu), which fixes the centre of the curve.</li>
+    <li>Its standard deviation, written <b>&sigma;</b> (the Greek letter sigma), which fixes how spread out it is.</li>
+  </ul>
+  <p>The curve is <b>symmetric about &mu;</b>. The mean, the median, and the mode all coincide there, at the peak. The tails on either side become very thin very quickly, which is what makes the 1-2-3 rule below work so cleanly.</p>
+
+  <h2 id="one-two-three-rule">The 1-2-3 rule</h2>
+  <p>For any normal distribution with mean &mu; and standard deviation &sigma;, three probabilities are worth memorising:</p>
+  <ol>
+    <li>About <b>68%</b> of values lie within <b>1&sigma;</b> of the mean, meaning between &mu; &minus; &sigma; and &mu; + &sigma;.</li>
+    <li>About <b>95%</b> of values lie within <b>2&sigma;</b> of the mean, meaning between &mu; &minus; 2&sigma; and &mu; + 2&sigma;.</li>
+    <li>About <b>99.7%</b> of values lie within <b>3&sigma;</b> of the mean, meaning between &mu; &minus; 3&sigma; and &mu; + 3&sigma;.</li>
+  </ol>
+  <p>This is called the <b>1-2-3 rule</b> (or the 68-95-99.7 rule), and it is shown visually in Figure 1:</p>
+
+  <div class="chart-wrap">
+    <svg class="chart-svg" viewBox="0 0 520 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Normal bell curve with the 68 95 99.7 percent bands marked">
+      <!-- Filled area under bell curve : smooth polyline (50 points from z=-3.5 to +3.5) -->
+      <path d="M 75.0 260 L 75.0 259.69 L 82.0 259.5 L 89.0 259.2 L 96.0 258.76 L 103.0 258.11 L 110.0 257.18 L 117.0 255.87 L 124.0 254.07 L 131.0 251.64 L 138.0 248.44 L 145.0 244.34 L 152.0 239.2 L 159.0 232.89 L 166.0 225.37 L 173.0 216.61 L 180.0 206.7 L 187.0 195.79 L 194.0 184.15 L 201.0 172.14 L 208.0 160.2 L 215.0 148.84 L 222.0 138.59 L 229.0 129.97 L 236.0 123.44 L 243.0 119.36 L 250.0 117.98 L 257.0 119.36 L 264.0 123.44 L 271.0 129.97 L 278.0 138.59 L 285.0 148.84 L 292.0 160.2 L 299.0 172.14 L 306.0 184.15 L 313.0 195.79 L 320.0 206.7 L 327.0 216.61 L 334.0 225.37 L 341.0 232.89 L 348.0 239.2 L 355.0 244.34 L 362.0 248.44 L 369.0 251.64 L 376.0 254.07 L 383.0 255.87 L 390.0 257.18 L 397.0 258.11 L 404.0 258.76 L 411.0 259.2 L 418.0 259.5 L 418.0 260 Z"
+            fill="#5B5548" fill-opacity="0.08"/>
+
+      <!-- Vertical guide lines at 7 sigma positions. All from x-axis up to y=95 (just below inner bracket). -->
+      <g stroke="#8C3A2E" stroke-width="1.4">
+        <line x1="100" y1="260" x2="100" y2="95"/> <!-- mu - 3 sigma -->
+        <line x1="150" y1="260" x2="150" y2="95"/> <!-- mu - 2 sigma -->
+        <line x1="200" y1="260" x2="200" y2="95"/> <!-- mu - sigma -->
+        <line x1="250" y1="260" x2="250" y2="95"/> <!-- mu -->
+        <line x1="300" y1="260" x2="300" y2="95"/> <!-- mu + sigma -->
+        <line x1="350" y1="260" x2="350" y2="95"/> <!-- mu + 2 sigma -->
+        <line x1="400" y1="260" x2="400" y2="95"/> <!-- mu + 3 sigma -->
+      </g>
+
+      <!-- Bell curve outline : smooth polyline (drawn on top of the fill and guides) -->
+      <path d="M 75.0 259.69 L 82.0 259.5 L 89.0 259.2 L 96.0 258.76 L 103.0 258.11 L 110.0 257.18 L 117.0 255.87 L 124.0 254.07 L 131.0 251.64 L 138.0 248.44 L 145.0 244.34 L 152.0 239.2 L 159.0 232.89 L 166.0 225.37 L 173.0 216.61 L 180.0 206.7 L 187.0 195.79 L 194.0 184.15 L 201.0 172.14 L 208.0 160.2 L 215.0 148.84 L 222.0 138.59 L 229.0 129.97 L 236.0 123.44 L 243.0 119.36 L 250.0 117.98 L 257.0 119.36 L 264.0 123.44 L 271.0 129.97 L 278.0 138.59 L 285.0 148.84 L 292.0 160.2 L 299.0 172.14 L 306.0 184.15 L 313.0 195.79 L 320.0 206.7 L 327.0 216.61 L 334.0 225.37 L 341.0 232.89 L 348.0 239.2 L 355.0 244.34 L 362.0 248.44 L 369.0 251.64 L 376.0 254.07 L 383.0 255.87 L 390.0 257.18 L 397.0 258.11 L 404.0 258.76 L 411.0 259.2 L 418.0 259.5"
+            fill="none" stroke="#1E1B16" stroke-width="1.8"/>
+
+      <!-- x-axis -->
+      <line x1="30" y1="260" x2="470" y2="260" stroke="#1E1B16" stroke-width="1"/>
+
+      <!-- Brackets: 68% (inner), 95% (middle), 99.7% (outer). All with left/right arrows pointing outward. -->
+      <!-- 68% bracket: from x=200 to x=300 at y=75 -->
+      <line x1="200" y1="75" x2="300" y2="75" stroke="#5B5548" stroke-width="1"/>
+      <polygon points="200,75 210,71 210,79" fill="#5B5548"/>
+      <polygon points="300,75 290,71 290,79" fill="#5B5548"/>
+      <text x="250" y="70" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="600" fill="#5B5548">68%</text>
+
+      <!-- 95% bracket: from x=150 to x=350 at y=50 -->
+      <line x1="150" y1="50" x2="350" y2="50" stroke="#5B5548" stroke-width="1"/>
+      <polygon points="150,50 160,46 160,54" fill="#5B5548"/>
+      <polygon points="350,50 340,46 340,54" fill="#5B5548"/>
+      <text x="250" y="45" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="600" fill="#5B5548">95%</text>
+
+      <!-- 99.7% bracket: from x=100 to x=400 at y=25 -->
+      <line x1="100" y1="25" x2="400" y2="25" stroke="#5B5548" stroke-width="1"/>
+      <polygon points="100,25 110,21 110,29" fill="#5B5548"/>
+      <polygon points="400,25 390,21 390,29" fill="#5B5548"/>
+      <text x="250" y="20" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="600" fill="#5B5548">99.7%</text>
+
+      <!-- x-axis labels (red, monospace) -->
+      <g font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="600" fill="#8C3A2E">
+        <text x="100" y="276" text-anchor="middle">&mu;-3&sigma;</text>
+        <text x="150" y="276" text-anchor="middle">&mu;-2&sigma;</text>
+        <text x="200" y="276" text-anchor="middle">&mu;-&sigma;</text>
+        <text x="250" y="276" text-anchor="middle">&mu;</text>
+        <text x="300" y="276" text-anchor="middle">&mu;+&sigma;</text>
+        <text x="350" y="276" text-anchor="middle">&mu;+2&sigma;</text>
+        <text x="400" y="276" text-anchor="middle">&mu;+3&sigma;</text>
+      </g>
+
+      <!-- Axis titles -->
+      <text x="250" y="298" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#5B5548">X</text>
+      <text x="18" y="180" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#5B5548" transform="rotate(-90 18 180)">Probability density</text>
+
+      <!-- Callout: Mean and Standard Deviation (inside plot area, right side, over the near-zero right tail) -->
+      <text x="410" y="140" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#5B5548">Mean = &mu;</text>
+      <text x="410" y="158" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#5B5548">Std Dev = &sigma;</text>
+    </svg>
+    <p class="chart-axis-label"><span class="fig-label">Figure 1.</span> A normal distribution with mean &mu; and standard deviation &sigma;. The three brackets at the top mark the 1&sigma;, 2&sigma;, and 3&sigma; ranges, containing about 68%, 95%, and 99.7% of the probability respectively.</p>
+  </div>
+
+  <h2>Making the rule concrete: a loaf of bread</h2>
+  <p>Suppose you buy a loaf of bread every day from the same bakery, and someone tells you the weight of a loaf is normally distributed with mean 100 g and standard deviation 1 g. The 1-2-3 rule then says:</p>
+  <ol>
+    <li>About 68% of the loaves weigh between 99 g and 101 g (that is, within 1&sigma; of 100).</li>
+    <li>About 95% weigh between 98 g and 102 g (within 2&sigma; of 100).</li>
+    <li>About 99.7% weigh between 97 g and 103 g (within 3&sigma; of 100).</li>
+  </ol>
+  <p>Turning those percentages into a day-count:</p>
+  <div class="calc">
+    <span>0.68 &times; 7 days</span><span class="eq">=</span><span class="result">~5 days per week</span>
+  </div>
+  <div class="calc">
+    <span>0.95 &times; 21 days</span><span class="eq">=</span><span class="result">~20 days every 3 weeks</span>
+  </div>
+  <div class="calc">
+    <span>0.997 &times; 365 days</span><span class="eq">=</span><span class="result">~364 days every year</span>
+  </div>
+  <p>So the loaves you buy will fall inside the tight 99 to 101 g band on about 5 days of a typical week, and only about 1 day a year will the loaf fall outside 97 to 103 g. The 1-2-3 rule turns an abstract "standard deviation" into concrete expectations you can check against reality.</p>
+
+  <h2>Where you actually see normal distributions</h2>
+  <p>To make the abstract concrete another way, 50 employees at an office were asked their height (in inches). The probability density of those heights was then plotted in Figure 2:</p>
+
+  <div class="chart-wrap">
+    <svg class="chart-svg" viewBox="0 0 500 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Density plot of heights for 50 employees, roughly bell shaped">
+      <!-- Grid -->
+      <g stroke="#E8E1D0" stroke-width="1">
+        <line x1="60" y1="60" x2="460" y2="60"/>
+        <line x1="60" y1="105" x2="460" y2="105"/>
+        <line x1="60" y1="150" x2="460" y2="150"/>
+      </g>
+      <!-- x-axis and y-axis -->
+      <line x1="60" y1="195" x2="460" y2="195" stroke="#5B5548" stroke-width="1"/>
+      <line x1="60" y1="20" x2="60" y2="195" stroke="#5B5548" stroke-width="1"/>
+
+      <!-- Data curve: peak near x=65, slight asymmetry to be realistic for a small sample of 50.
+           Screen mapping: data x=57 → 60, data x=73 → 460 (per unit = 25).
+           Data y range 0 to 0.15 → screen 195 to 30 (per 0.05 = 55).
+           Key points:
+             (58, 0.010) → (85, 184)
+             (59, 0.018) → (110, 175)
+             (61, 0.045) → (160, 145)
+             (63, 0.095) → (210, 90)
+             (65, 0.135) → (260, 47)     ← peak
+             (67, 0.100) → (310, 85)
+             (69, 0.055) → (360, 135)
+             (71, 0.028) → (410, 164)
+             (73, 0.010) → (460, 184)   -->
+      <!-- Light fill under curve : smooth polyline (approximates a normal PDF centered at 65 with sd=3) -->
+      <path d="M 60.0 195 L 60.0 190.82 L 70.0 189.09 L 80.0 186.79 L 90.0 183.79 L 100.0 179.97 L 110.0 175.2 L 120.0 169.38 L 130.0 162.43 L 140.0 154.33 L 150.0 145.1 L 160.0 134.86 L 170.0 123.8 L 180.0 112.18 L 190.0 100.37 L 200.0 88.78 L 210.0 77.87 L 220.0 68.11 L 230.0 59.97 L 240.0 53.83 L 250.0 50.02 L 260.0 48.72 L 270.0 50.02 L 280.0 53.83 L 290.0 59.97 L 300.0 68.11 L 310.0 77.87 L 320.0 88.78 L 330.0 100.37 L 340.0 112.18 L 350.0 123.8 L 360.0 134.86 L 370.0 145.1 L 380.0 154.33 L 390.0 162.43 L 400.0 169.38 L 410.0 175.2 L 420.0 179.97 L 430.0 183.79 L 440.0 186.79 L 450.0 189.09 L 460.0 190.82 L 460.0 195 Z"
+            fill="#5B5548" fill-opacity="0.06"/>
+      <!-- Curve itself -->
+      <path d="M 60.0 190.82 L 70.0 189.09 L 80.0 186.79 L 90.0 183.79 L 100.0 179.97 L 110.0 175.2 L 120.0 169.38 L 130.0 162.43 L 140.0 154.33 L 150.0 145.1 L 160.0 134.86 L 170.0 123.8 L 180.0 112.18 L 190.0 100.37 L 200.0 88.78 L 210.0 77.87 L 220.0 68.11 L 230.0 59.97 L 240.0 53.83 L 250.0 50.02 L 260.0 48.72 L 270.0 50.02 L 280.0 53.83 L 290.0 59.97 L 300.0 68.11 L 310.0 77.87 L 320.0 88.78 L 330.0 100.37 L 340.0 112.18 L 350.0 123.8 L 360.0 134.86 L 370.0 145.1 L 380.0 154.33 L 390.0 162.43 L 400.0 169.38 L 410.0 175.2 L 420.0 179.97 L 430.0 183.79 L 440.0 186.79 L 450.0 189.09 L 460.0 190.82"
+            fill="none" stroke="#1E1B16" stroke-width="1.6"/>
+
+      <!-- y-axis ticks -->
+      <g font-family="IBM Plex Mono, monospace" font-size="10" fill="#5B5548">
+        <text x="54" y="198" text-anchor="end">0.00</text>
+        <text x="54" y="153" text-anchor="end">0.05</text>
+        <text x="54" y="108" text-anchor="end">0.10</text>
+        <text x="54" y="63" text-anchor="end">0.15</text>
+      </g>
+      <!-- x-axis ticks: 60, 65, 70 (heights in inches) -->
+      <g font-family="IBM Plex Mono, monospace" font-size="10" fill="#5B5548">
+        <text x="135" y="210" text-anchor="middle">60</text>
+        <text x="260" y="210" text-anchor="middle">65</text>
+        <text x="385" y="210" text-anchor="middle">70</text>
+      </g>
+
+      <!-- Axis titles -->
+      <text x="260" y="228" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#5B5548">Height (inches)</text>
+      <text x="20" y="110" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#5B5548" transform="rotate(-90 20 110)">Probability density</text>
+    </svg>
+    <p class="chart-axis-label"><span class="fig-label">Figure 2.</span> The probability density of self-reported heights from 50 employees. The shape is roughly bell-shaped, peaking near 65 inches, with tails on both sides. A larger sample would look even more like an ideal normal curve.</p>
+  </div>
+
+  <p>The shape is not perfectly smooth (50 people is a small sample), but the overall pattern is unmistakable: most heights sit near the middle, and the distribution tapers off symmetrically on either side. This is what "roughly normal" data looks like in practice.</p>
+
+  <h2 id="worked-examples">Using the 1-2-3 rule to compute probabilities</h2>
+  <p>The 1-2-3 rule, combined with the fact that the normal curve is symmetric about the mean, is enough to answer a lot of probability questions without any calculus at all. To see how, assume for the next three examples that a normal random variable X has mean &mu; = 35 and standard deviation &sigma; = 5.</p>
+
+  <p>First, translate a few key positions on the x-axis into &sigma;-multiples of the mean, since that is the language the 1-2-3 rule speaks:</p>
+  <div class="calc">
+    <span>&mu; &minus; &sigma; = 35 &minus; 5 = 30</span>
+    <span>&mu; + &sigma; = 35 + 5 = 40</span>
+  </div>
+  <div class="calc">
+    <span>&mu; &minus; 2&sigma; = 35 &minus; 10 = 25</span>
+    <span>&mu; + 2&sigma; = 35 + 10 = 45</span>
+  </div>
+  <div class="calc">
+    <span>&mu; &minus; 3&sigma; = 35 &minus; 15 = 20</span>
+    <span>&mu; + 3&sigma; = 35 + 15 = 50</span>
+  </div>
+
+  <div class="ex">
+    <p class="q">What is P(25 &le; X &le; 45)?</p>
+    <p class="a">The range 25 to 45 is exactly &mu; &minus; 2&sigma; to &mu; + 2&sigma;. Reading straight off the 1-2-3 rule:</p>
+    <div class="calc">
+      <span>P(&mu; &minus; 2&sigma; &le; X &le; &mu; + 2&sigma;)</span><span class="eq">=</span>
+      <span class="result">95%</span>
+    </div>
+    <p class="a">No arithmetic beyond the rule itself was needed.</p>
+  </div>
+
+  <div class="ex">
+    <p class="q">What is P(25 &le; X &le; 50)? This range is not symmetric about the mean, so the 1-2-3 rule does not apply directly.</p>
+    <p class="a">The trick is to split the range at the mean (&mu; = 35), then use the fact that the curve is symmetric to get each half separately from the 1-2-3 rule.</p>
+
+    <p class="a"><b>Right half, from &mu; to &mu; + 3&sigma; (that is, 35 to 50):</b> the full &mu; &minus; 3&sigma; to &mu; + 3&sigma; range covers 99.7% of the probability. By symmetry, the half of that range on the right of the mean covers exactly half of 99.7%:</p>
+    <div class="calc">
+      <span>P(&mu; &le; X &le; &mu; + 3&sigma;) = 99.7% &divide; 2</span><span class="eq">=</span>
+      <span class="result">49.85%</span>
+    </div>
+
+    <p class="a"><b>Left half, from &mu; &minus; 2&sigma; to &mu; (that is, 25 to 35):</b> by the same symmetry argument, this covers half of the 95% band:</p>
+    <div class="calc">
+      <span>P(&mu; &minus; 2&sigma; &le; X &le; &mu;) = 95% &divide; 2</span><span class="eq">=</span>
+      <span class="result">47.5%</span>
+    </div>
+
+    <p class="a">The two halves cover different pieces of the whole 25 to 50 range with no overlap, so add them together:</p>
+    <div class="calc">
+      <span>P(25 &le; X &le; 50) = 49.85% + 47.5%</span><span class="eq">=</span>
+      <span class="result">97.35%</span>
+    </div>
+  </div>
+
+  <div class="ex">
+    <p class="q">What is P(X &lt; 40)? Note this is a one-sided range (everything below 40), not a symmetric one, so it needs the same "split at the mean" trick.</p>
+    <p class="a">40 is &mu; + &sigma;. Split "everything below 40" into two pieces at the mean:</p>
+
+    <p class="a"><b>Below the mean (X &lt; &mu; = 35):</b> the curve is symmetric about the mean, so exactly half the probability lies below it:</p>
+    <div class="calc">
+      <span>P(X &lt; &mu;)</span><span class="eq">=</span>
+      <span class="result">50%</span>
+    </div>
+
+    <p class="a"><b>Between the mean and &mu; + &sigma; (35 to 40):</b> half of the 68% band:</p>
+    <div class="calc">
+      <span>P(&mu; &le; X &le; &mu; + &sigma;) = 68% &divide; 2</span><span class="eq">=</span>
+      <span class="result">34%</span>
+    </div>
+
+    <p class="a">Add the two pieces together:</p>
+    <div class="calc">
+      <span>P(X &lt; 40) = 50% + 34%</span><span class="eq">=</span>
+      <span class="result">84%</span>
+    </div>
+  </div>
+
+  <p>Every problem of this type follows the same pattern: split the range at the mean if needed, look up each half in the 1-2-3 rule (using symmetry to halve a band when only one side is wanted), then add the pieces up. No calculus, no tables, no calculator.</p>
+
+  <p>Next, we look at a special case of the normal distribution that lets you answer even more general "what is the probability" questions: the <b>standard normal distribution</b>.</p>
+
+</main>
+<footer>Notes by @Ankit Surana</footer>
+</body>
+</html>
