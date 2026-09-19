@@ -142,7 +142,7 @@ writing/visual conventions — the complete HTML template, tone rules, math
 verification requirement — see **`docs/CHAPTER_AUTHORING_SKILL.md`**, which
 is written to be portable: paste it into a brand new chat with no history
 of this project, alongside the raw notes for a new chapter, and it should
-produce something consistent with the existing 10.
+produce something consistent with the existing chapters.
 
 A new **section** works the same way — add an object to `chapters.json`'s
 top-level array with its own `chapters` list. The existing "Resources"

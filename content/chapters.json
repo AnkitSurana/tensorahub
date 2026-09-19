@@ -116,7 +116,7 @@
         "id": "12",
         "file": "12-summary-discrete-distributions.html",
         "title": "Summary: Discrete Probability Distributions",
-        "visible": false,
+        "visible": true,
         "batches": [
           "batch-2026-a"
         ]
@@ -133,7 +133,7 @@
         "id": "13",
         "file": "13-intro-continuous-distributions.html",
         "title": "Introduction",
-        "visible": false,
+        "visible": true,
         "batches": [
           "batch-2026-a"
         ]
@@ -142,7 +142,7 @@
         "id": "14",
         "file": "14-probability-density-functions.html",
         "title": "Probability Density Functions",
-        "visible": false,
+        "visible": true,
         "batches": [
           "batch-2026-a"
         ]
@@ -151,7 +151,7 @@
         "id": "15",
         "file": "15-uniform-distribution.html",
         "title": "Uniform Distribution",
-        "visible": false,
+        "visible": true,
         "batches": [
           "batch-2026-a"
         ]
@@ -160,7 +160,7 @@
         "id": "16",
         "file": "16-normal-distribution.html",
         "title": "The Normal Distribution",
-        "visible": false,
+        "visible": true,
         "batches": [
           "batch-2026-a"
         ]
@@ -169,7 +169,7 @@
         "id": "17",
         "file": "17-standard-normal-distribution.html",
         "title": "The Standard Normal Distribution",
-        "visible": false,
+        "visible": true,
         "batches": [
           "batch-2026-a"
         ]

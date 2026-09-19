@@ -1,6 +1,6 @@
 ---
 name: aiml-course-chapter-authoring
-description: Write a new lesson-notes chapter for an AI/ML probability & statistics course, in the exact visual and writing style of the existing 10 chapters (paper/navy/brass design, Spectral+IBM Plex fonts, worked-example blocks, verified math, simple English). Use this whenever asked to write, draft, or add a new course chapter for this specific course.
+description: Write a new lesson-notes chapter for an AI/ML probability & statistics course, in the exact visual and writing style of the existing chapters (paper/navy/brass design, Spectral+IBM Plex fonts, worked-example blocks, verified math, simple English). Use this whenever asked to write, draft, or add a new course chapter for this specific course.
 ---
 
 # Course chapter authoring — style and structure
@@ -8,14 +8,16 @@ description: Write a new lesson-notes chapter for an AI/ML probability & statist
 This document is self-contained: paste it into a fresh conversation (no
 prior history of this project needed) along with the actual course
 transcript/notes content for the new chapter, and it should produce a
-chapter matching the existing 10 almost exactly.
+chapter matching the existing ones almost exactly.
 
 ## What this course is
 
 An AI/ML course (EPGPMLAI-style), currently covering: probability recap,
 Bayes' theorem, random variables, probability distributions, expected
-value, and the binomial distribution, split across two "sections"
-(Foundations of Probability; Discrete Probability Distributions), plus a
+value, the binomial and cumulative distributions, and continuous
+distributions (PDFs, uniform, normal, standard normal), split across
+three "sections" (Foundations of Probability; Discrete Probability
+Distributions; Continuous Probability Distributions), plus a
 "Resources" section for external tools. Each chapter is one standalone
 HTML file, served through a login-gated portal.
 
